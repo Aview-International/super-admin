@@ -12,7 +12,7 @@ import FAQ from '../components/sections/home/FAQ';
 import GoGlobal from '../components/sections/home/GoGlobal';
 import FeaturedBlogs from '../components/sections/reused/FeaturedBlogs';
 import Footer from '../components/navigation/Footer';
-import Blobs from '../components/UI/Blobs';
+import Blobs from '../components/UI/blobs';
 
 const Home = () => {
   return (

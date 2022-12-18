@@ -1,6 +1,6 @@
 import Header from '../../components/navigation/Header';
 import Footer from '../../components/navigation/Footer';
-import Blobs from '../../components/UI/Blobs';
+import Blobs from '../../components/UI/blobs';
 import SEO from '../../components/SEO/SEO';
 import FAQ from '../../components/sections/home/FAQ';
 import GenerateAviewForCompany from '../../components/sections/corporate/GenerateAviewForCompany';
