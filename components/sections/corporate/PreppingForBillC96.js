@@ -3,10 +3,7 @@ import billC96Graphic from '../../../public/img/graphics/prepping-bill-c96.png';
 
 const PreppingForBillC96 = () => {
   return (
-    <section
-      className="section m-horizontal grid items-center md:grid-cols-[3fr_2fr] md:gap-s5"
-      data-aos="fade-left"
-    >
+    <section className="section m-horizontal grid items-center md:grid-cols-[3fr_2fr] md:gap-s5">
       <div>
         <h2 className="title mb-s2">
           Prepping for{' '}

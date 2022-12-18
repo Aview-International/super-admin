@@ -4,7 +4,7 @@ import { OUR_SERVICES } from '../../../constants/constants';
 
 const OurServices = () => {
   return (
-    <section className="section m-horizontal md:text-center" data-aos="zoom-in">
+    <section className="section m-horizontal md:text-center">
       <h2 className="title mb-s2">
         Our <span className="gradient-2 gradient-text">Services</span>
       </h2>

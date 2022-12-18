@@ -5,7 +5,6 @@ const GenerateAviewForCompany = () => {
     <section
       className="section m-horizontal -mt-s4 pt-s4 text-white md:-mt-s8 md:pt-s8"
       id="generate-aview"
-      data-aos="zoom-in"
     >
       <h2 className="title mb-s4 text-center">
         Generate <span className="gradient-text gradient-2">Aview</span>

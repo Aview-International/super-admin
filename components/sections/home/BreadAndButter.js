@@ -2,7 +2,7 @@ import Banner from '../../layout/Banner';
 
 const BreadAndButter = () => {
   return (
-    <section className="section" data-aos="fade-up">
+    <section className="section">
       <Banner>
         <h2 className="title mx-auto mb-4 max-w-[593px] text-center">
           Translating Content, It&apos;s Our Bread and Butter

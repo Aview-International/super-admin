@@ -5,10 +5,7 @@ import Profile from '../../UI/Profile';
 
 const MeetTheTeam = () => {
   return (
-    <section
-      className="section m-horizontal text-center"
-      data-aos="fade-up-right"
-    >
+    <section className="section m-horizontal text-center">
       <h2 className="title mb-s4 md:mb-s10">
         <span className="gradient-text gradient-2">Meet The Team</span>
       </h2>

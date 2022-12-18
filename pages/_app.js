@@ -1,6 +1,4 @@
 import { useEffect } from 'react';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
 import UserContextProvider from '../store/user-profile';
 
 import { MenuOpenContextProvider } from '../store/menu-open-context';
@@ -11,12 +9,6 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const MyApp = ({ Component, pageProps }) => {
-  // AOS animation
-  useEffect(() => {
-    AOS.init();
-    AOS.refresh();
-  }, []);
-
   useEffect(() => {
     const setViewportHeight = () => {
       let vh = window.innerHeight * 0.01;

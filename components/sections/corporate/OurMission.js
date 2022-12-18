@@ -1,6 +1,6 @@
 const OurMission = () => {
   return (
-    <section className="section m-horizontal" data-aos="zoom-in-up">
+    <section className="section m-horizontal">
       <p className="body mb-s2">
         <span className="gradient-text gradient-2"> Our Mission </span>
       </p>

@@ -6,7 +6,7 @@ import { baseUrl } from '../baseUrl';
 
 const Footer = ({ curPage }) => {
   return (
-    <div className="navigation mb-s5" data-aos="zoom-in-down">
+    <div className="navigation mb-s5">
       <hr className="gradient-1 mb-s5 h-[3px]" />
       <div className="flex items-center justify-between md:items-start">
         <div className="flex flex-col items-center gap-s2 md:items-start">

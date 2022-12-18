@@ -10,7 +10,7 @@ import PhoneNumberWithButton from '../../FormComponents/PhoneNumberWithButton';
 const TranslateYourSocialMediaContent = () => {
   const [showText, setShowText] = useState(false);
   return (
-    <section className="section m-horizontal mt-s6 lg:mt-s17" data-aos="fade-up">
+    <section className="section m-horizontal mt-s6 lg:mt-s17">
       <div className="grid lg:grid-cols-2">
         <div>
           <h1 className="title mb-s2">

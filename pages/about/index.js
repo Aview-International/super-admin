@@ -3,7 +3,7 @@ import Header from '../../components/navigation/Header';
 import OurMission from '../../components/sections/about/OurMission';
 import AboutAview from '../../components/sections/about/AboutAview';
 import AtAview from '../../components/sections/about/AtAview';
-import Blobs from '../../components/UI/Blobs';
+import Blobs from '../../components/UI/blobs';
 import OurCoreValues from '../../components/sections/about/OurCoreValues';
 import AviewsGrowth from '../../components/sections/about/AviewGrowth';
 import OurMilestones from '../../components/sections/reused/OurMilestones';

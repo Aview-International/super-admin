@@ -4,7 +4,7 @@ import howItWorksLarge from '../../../public/img/graphics/how-it-works-large.svg
 
 const HowItWorks = () => {
   return (
-    <section className="section m-horizontal text-center" data-aos="zoom-in-up">
+    <section className="section m-horizontal text-center">
       <h2 className="title mb-s4 md:mb-s10">
         <span className="gradient-text gradient-2">How It Works</span>
       </h2>
