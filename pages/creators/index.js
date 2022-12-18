@@ -2,7 +2,7 @@ import Header from '../../components/navigation/Header';
 import Footer from '../../components/navigation/Footer';
 import BenefitsOfTranslations from '../../components/sections/creators/BenefitsOfTranslations';
 import InternationalGrowth from '../../components/sections/creators/InternationalGrowth';
-import Blobs from '../../components/UI/Blobs';
+import Blobs from '../../components/UI/blobs';
 import SEO from '../../components/SEO/SEO';
 import FeaturedBlogs from '../../components/sections/reused/FeaturedBlogs';
 import ContentCreators from '../../components/sections/home/ContentCreators';

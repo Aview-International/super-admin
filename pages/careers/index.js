@@ -4,7 +4,7 @@ import FavoriteInfluencer from '../../components/sections/careers/FavoriteInflue
 import PerksAview from '../../components/sections/careers/PerksAview';
 import MakeImpact from '../../components/sections/careers/MakeImpact';
 import CompanyCulture from '../../components/sections/careers/CompanyCulture';
-import Blobs from '../../components/UI/Blobs';
+import Blobs from '../../components/UI/blobs';
 import SEO from '../../components/SEO/SEO';
 import ApplyToday from '../../components/sections/careers/ApplyToday';
 import Process from '../../components/sections/careers/Process';
