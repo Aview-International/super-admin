@@ -72,12 +72,6 @@ import { emailValidator, urlValidator } from '../utils/regex';
 
 // dashboard sidebar icons
 import home from '../public/img/icons/home.svg';
-import upload from '../public/img/icons/upload.svg';
-import analytics from '../public/img/icons/analytics.svg';
-import content from '../public/img/icons/content.svg';
-import billing from '../public/img/icons/billing.svg';
-import history from '../public/img/icons/history.svg';
-import settings from '../public/img/icons/settings.svg';
 
 export const ROUTES = [
   { id: 'route-1', text: 'Home', route: '/' },
@@ -1246,36 +1240,6 @@ export const DASHBOARD_NAVLINKS = [
     text: 'Home',
     image: home,
     route: '/dashboard',
-  },
-  {
-    text: 'Upload',
-    image: upload,
-    route: '/dashboard/upload',
-  },
-  {
-    text: 'Analytics',
-    image: analytics,
-    route: '/dashboard/analytics',
-  },
-  {
-    text: 'Content',
-    image: content,
-    route: '/dashboard/content',
-  },
-  {
-    text: 'Billing',
-    image: billing,
-    route: '/dashboard/billing',
-  },
-  {
-    text: 'History',
-    image: history,
-    route: '/dashboard/history',
-  },
-  {
-    text: 'Settings',
-    image: settings,
-    route: '/dashboard/settings',
   },
 ];
 

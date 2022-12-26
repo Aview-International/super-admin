@@ -1,42 +1,82 @@
-import SEO from '../components/SEO/SEO';
-import Header from '../components/navigation/Header';
-import YouCreateWeTranslate from '../components/sections/home/YouCreateWeTranslate';
-import OurServices from '../components/sections/reused/OurServices';
-import ContentCreators from '../components/sections/home/ContentCreators';
-import OurTranslatedContent from '../components/sections/home/TranslatedContent';
-import LeaderInTranslations from '../components/sections/home/LeaderInTranslations';
-import BreadAndButter from '../components/sections/home/BreadAndButter';
-import WhyWorkWithUs from '../components/sections/home/LeadInTranslations';
-import StartGenerating from '../components/sections/home/StartGenerating';
-import FAQ from '../components/sections/home/FAQ';
-import GoGlobal from '../components/sections/home/GoGlobal';
-import FeaturedBlogs from '../components/sections/reused/FeaturedBlogs';
-import Footer from '../components/navigation/Footer';
-import Blobs from '../components/UI/blobs';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useContext, useState } from 'react';
+import Border from '../components/UI/Border';
+import Shadow from '../components/UI/Shadow';
+import Google from '../public/img/icons/google.svg';
+import Facebook from '../public/img/icons/facebook-logo-onboarding.svg';
+import { checkUserEmail, signInWithGoogle } from './api/onboarding';
+import { UserContext } from '../store/user-profile';
+import ButtonLoader from '../public/loaders/ButtonLoader';
 
-const Home = () => {
+const Login = () => {
+  const router = useRouter();
+  const { user, updateUser } = useContext(UserContext);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    const { _tokenResponse } = await signInWithGoogle();
+    const res = await checkUserEmail(_tokenResponse.localId);
+    if (!res) router.push('/onboarding?stage=1&account=false');
+    else {
+      localStorage.setItem('token', _tokenResponse.idToken);
+      localStorage.setItem('uid', _tokenResponse.localId);
+      updateUser({
+        ...user,
+        email: _tokenResponse.email,
+        firstName: _tokenResponse.firstName,
+        lastName: _tokenResponse.lastName,
+        picture: _tokenResponse.photoUrl,
+      });
+      router.push('/dashboard');
+    }
+  };
+
   return (
     <>
-      <SEO
-        title="Video Translation & Subtitling - AVIEW"
-        description="Translate your Social Media Content. AVIEW is a leading multi-media translation service. We help you expand your international viewership. Start Now!"
-      />
-      <Header curPage="Home" />
-      <YouCreateWeTranslate />
-      <OurServices />
-      <ContentCreators />
-      <OurTranslatedContent />
-      <LeaderInTranslations />
-      <BreadAndButter />
-      <WhyWorkWithUs />
-      <StartGenerating />
-      <FAQ />
-      <GoGlobal />
-      <FeaturedBlogs />
-      <Footer curPage="Home" />
-      <Blobs />
+      <div className="fixed top-2/4 left-2/4 w-[min(400px,90%)] -translate-x-2/4 -translate-y-2/4 text-white">
+        <h2 className="text-center text-7xl md:text-8xl">Log In</h2>
+        <p className="my-s3 text-center text-lg md:text-xl">
+          Don&apos;t have an account?
+          <br /> Get started{' '}
+          <Link href="/register">
+            <a className="underline">here</a>
+          </Link>
+        </p>
+        <Shadow classes="w-full mb-4">
+          <Border borderRadius="full" classes="w-full">
+            <button
+              className="flex w-full items-center justify-center rounded-full bg-black p-2 text-white md:p-3"
+              onClick={handleSubmit}
+            >
+              {isLoading ? (
+                <ButtonLoader />
+              ) : (
+                <>
+                  <span className="flex items-center justify-center pr-s1">
+                    <Image src={Google} alt="Google" />
+                  </span>
+                  Continue with Google
+                </>
+              )}
+            </button>
+          </Border>
+        </Shadow>
+        <Shadow classes="w-full">
+          <Border borderRadius="full" classes="w-full">
+            <button className="align-center flex w-full justify-center rounded-full bg-black p-2 text-white md:p-3">
+              <span className="flex items-center justify-center pr-s1">
+                <Image src={Facebook} alt="Facebook" />
+              </span>
+              Continue with Facebook
+            </button>
+          </Border>
+        </Shadow>
+      </div>
     </>
   );
 };
 
-export default Home;
+export default Login;
