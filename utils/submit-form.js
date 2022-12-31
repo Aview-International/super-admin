@@ -34,8 +34,3 @@ export const submitFile = (name, data) => {
     method: 'POST',
   });
 };
-
-export const initiateBot = async (data) => {
-  const res = await axios.post(`/api/submit-phone`, data);
-  return res;
-};
