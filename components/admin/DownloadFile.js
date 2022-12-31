@@ -1,6 +1,6 @@
 import Download from '../../public/img/icons/download.svg';
 import Image from 'next/image';
-import OnboardingButton from '../UI/DashboardButton';
+import OnboardingButton from '../Onboarding/button';
 
 const DownloadFile = ({ name }) => {
   return (

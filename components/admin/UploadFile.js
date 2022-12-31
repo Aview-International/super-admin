@@ -1,6 +1,6 @@
 import UploadIcon from '../../public/img/icons/upload-icon1.svg';
 import Image from 'next/image';
-import OnboardingButton from '../UI/DashboardButton';
+import OnboardingButton from '../Onboarding/button';
 import DottedBorder from '../UI/DottedBorder';
 
 const UploadFile = ({ file, onChange }) => {

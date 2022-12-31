@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import PlayButton from '../../public/img/icons/play-button.svg';
 import Playback from '../../public/img/icons/video-playback.svg';
-import OnboardingButton from '../UI/DashboardButton';
+import OnboardingButton from '../Onboarding/button';
 
 const VideoPlayer = () => {
   return (
