@@ -4,6 +4,7 @@ import { UserContext } from '../../store/user-profile';
 import FullScreenLoader from '../../public/loaders/FullScreenLoader';
 import DashBoardHeader from './Header';
 import DashboardSidebar from './Sidebar';
+import { hasPermisions, PermissionSet, Roles } from '../../hooks/permissions';
 
 const DashboardStructure = ({ children }) => {
   const { user, updateUser } = useContext(UserContext);
