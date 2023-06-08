@@ -6,6 +6,7 @@ import dropdown_arrow from '../../public/img/icons/dropdown-arrow.svg'
 import { DASHBOARD_FEATURES } from '../../constants/constants.js'
 import UploadFile from '../../components/admin/UploadFile'
 import ReviewBlock from '../sections/reused/ReviewBlock'
+import OnboardingButton from '../Onboarding/button'
 import Border from '../UI/Border'
 import Image from 'next/image';
 
@@ -59,6 +60,11 @@ export const IterateData = () =>{
             )
           })
        }
+       <div className="mt-s4 flex justify-start">
+          <div className="w-46 text-xl font-semibold block">
+            <OnboardingButton theme="light" disabled={true}>Submit Video</OnboardingButton>
+          </div>
+        </div>
     </>
   )
 }
