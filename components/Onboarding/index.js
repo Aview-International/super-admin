@@ -3,8 +3,8 @@ import Shadow from '../UI/Shadow';
 import Image from 'next/image';
 import OnboardingButton from './button';
 import { useContext, useEffect, useState } from 'react';
-import Personal from '../../public/img/graphics/personal-use.png';
-import Team from '../../public/img/graphics/team-use.png';
+// import Personal from '../../public/img/graphics/personal-use.png';
+// import Team from '../../public/img/graphics/team-use.png';
 import { useRouter } from 'next/router';
 import {
   AVERAGE_MONTHLY_VIEWS,
@@ -60,13 +60,13 @@ export const OnboardingStep1 = () => {
 
   const Options = [
     {
-      image: Team,
+     // image: Team,
       title: 'For my content creators',
       desc: 'I manage a team of content creators.',
       data: 'Content Manager',
     },
     {
-      image: Personal,
+     // image: Personal,
       title: 'For myself',
       desc: 'Get access to translations for your online content.',
       data: 'Content Creator',

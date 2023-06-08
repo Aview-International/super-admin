@@ -38,7 +38,7 @@ const Profile = ({ user }) => {
         height={100}
         className="rounded-full"
       />
-      <h3 className="mt-s2 mb-s1 text-lg">
+      <h3 className="mt-s2 text-lg">
         {user.firstName} {user?.lastName}
       </h3>
       <p className="text-sm">Content Creator</p>
@@ -54,7 +54,7 @@ const Navlink = () => {
       {DASHBOARD_NAVLINKS.map((link, index) => (
         <Link href={link.route} key={`sidebar-link-${index}`}>
           <a
-            className={`hover:gradient-dark group relative mb-s2 flex items-center py-s1 px-s3 ${
+            className={`hover:gradient-dark group relative mb-s2 flex gap-2 items-start py-s1 px-s3 ${
               route === link.route && 'gradient-dark'
             }`}
           >
@@ -66,14 +66,14 @@ const Navlink = () => {
               }`}
             ></span>
             <span
-              className={`mr-5 group-hover:animate-popup ${
+              className={`group-hover:animate-popup ${
                 route === link.route ? 'animate-popup' : ''
               }`}
             >
               <Image src={link.image} alt={link.text} width={20} height={20} />
             </span>
             <span
-              className={route === link.route ? 'gradient-text gradient-1' : ''}
+              className={route === link.route ? 'gradient-text gradient-1 mt-[2px]' : 'mt-[2px]'}
             >
               {link.text}
             </span>
@@ -95,7 +95,7 @@ const Signout = () => {
       className="mt-s8 flex w-full items-center px-s3 text-sm"
       onClick={handleLogout}
     >
-      <span className="mr-5">
+      <span className="mr-2">
         <Image src={signout} alt="Sign out" width={20} height={20} />
       </span>
       Sign Out
