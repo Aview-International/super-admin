@@ -18,7 +18,6 @@
   .m-horizontal {
     @apply mx-auto w-[90%] max-w-[1240px];
   }
-
   .gradient-1 {
     background: linear-gradient(54deg, #ff00ff 0%, #00ffff 100%);
   }
@@ -62,7 +61,7 @@
     @apply max-w-[90%];
   }
   .phone-number > div > div > div:last-of-type {
-    @apply ml-s2 mb-s1 h-[11px] w-[11px] border-r-[3px] border-b-[3px] border-white opacity-100;
+    @apply ml-s2 mb-s1 h-[11px] w-[11px] border-r-[3px] border-b-[3px] opacity-100;
   }
   .h-screen-trick {
     height: 100vh;

@@ -30,7 +30,7 @@ const Login = () => {
         lastName: _tokenResponse.lastName,
         picture: _tokenResponse.photoUrl,
       });
-      router.push('/dashboard');
+      router.push('/transcription');
     }
   };
 
