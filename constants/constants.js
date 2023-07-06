@@ -1,6 +1,6 @@
 // dashboard sidebar icons
 import home from '../public/img/icons/home.svg';
-import transcription from '../public/img/icons/transcription.svg';
+import transcription from '../public/img/icons/transcript.svg';
 import translation from '../public/img/icons/translation.svg';
 import dubbing from '../public/img/icons/dubbing.svg';
 import videoedit from '../public/img/icons/video-edit.svg';
@@ -77,10 +77,28 @@ export const DASHBOARD_NAVLINKS = [
     image: videoedit,
     route: '/video-edits',
   },
+]
+
+export const DASHBOARD_FEATURES = [ 
   {
-    text: 'Home',
-    image: home,
-    route: '/dashboard',
+    name:'Transcription',
+    id:1,
+    placeHolder: 'Click here to Upload and download transcription files'
+  },
+  {
+    name:'Translation',
+    id:2,
+    placeHolder: 'Click here to Upload and download transcription files. You may need to upload multiple files if it is over 10000 words.'
+  },
+  {
+    name:'Dubbing',
+    id:3,
+    placeHolder: 'Click here to Upload and download transcription files. You may need to upload multiple files if it is over 10000 words.'
+  },
+  {
+    name:'Video Edits',
+    id:4,
+    placeHolder: 'Click here to Upload and download transcription files. You may need to upload multiple files if it is over 10000 words.'
   },
 ];
 
