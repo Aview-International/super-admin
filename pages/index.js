@@ -6,9 +6,11 @@ import Border from '../components/UI/Border';
 import Shadow from '../components/UI/Shadow';
 import Google from '../public/img/icons/google.svg';
 import Facebook from '../public/img/icons/facebook-logo-onboarding.svg';
-import { checkUserEmail, signInWithGoogle } from './api/onboarding';
+
 import { UserContext } from '../store/user-profile';
 import ButtonLoader from '../public/loaders/ButtonLoader';
+import Cookies from 'js-cookie';
+import { signInWithGoogle } from './api/firebase';
 
 const Login = () => {
   const router = useRouter();
@@ -18,20 +20,17 @@ const Login = () => {
   const handleSubmit = async () => {
     setIsLoading(true);
     const { _tokenResponse } = await signInWithGoogle();
-    const res = await checkUserEmail(_tokenResponse.localId);
-    if (!res) router.push('/onboarding?stage=1&account=false');
-    else {
-      localStorage.setItem('token', _tokenResponse.idToken);
-      localStorage.setItem('uid', _tokenResponse.localId);
-      updateUser({
-        ...user,
-        email: _tokenResponse.email,
-        firstName: _tokenResponse.firstName,
-        lastName: _tokenResponse.lastName,
-        picture: _tokenResponse.photoUrl,
-      });
-      router.push('/transcription');
-    }
+    Cookies.set('token', _tokenResponse.idToken, { expires: 3 });
+    localStorage.setItem('token', _tokenResponse.idToken);
+    localStorage.setItem('uid', _tokenResponse.localId);
+    updateUser({
+      ...user,
+      email: _tokenResponse.email,
+      firstName: _tokenResponse.firstName,
+      lastName: _tokenResponse.lastName,
+      picture: _tokenResponse.photoUrl,
+    });
+    router.push('/transcription');
   };
 
   return (

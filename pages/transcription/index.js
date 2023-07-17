@@ -1,24 +1,32 @@
+import { useState } from 'react';
+import AllVideos from '../../components/admin/allVideos';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import PageTitle from '../../components/SEO/PageTitle';
-import VideoPlayer from '../../components/admin/VideoPlayer';
-import VideoDetails from '../../components/admin/VideoDetails';
-import { TranscriptionVideoFiles } from '../../components/admin/VideoData';
 
 const Transcription = () => {
+  const [reloadTrigger, setReloadTrigger] = useState(0);
+  const [modalIndex, setModalIndex] = useState(undefined);
+
+  const getPendingJobs = async () => {
+    const res = await getAllPendingJobs();
+    setJobs(
+      res
+        ? Object.values(res).map((item, i) => ({
+            ...item,
+            jobId: Object.keys(res)[i],
+          }))
+        : []
+    );
+  };
+
+  useEffect(() => {
+    getPendingJobs();
+  }, [reloadTrigger]);
+
   return (
     <>
       <PageTitle title="Transcription" />
-      <div className="gradient-dark rounded-2xl p-s3">
-        <VideoDetails name="Transcription" />
-        <div className="mt-s5 flex text-white">
-          <div className="w-1/2">
-            <VideoPlayer />
-          </div>
-          <div className="w-1/2">
-            <TranscriptionVideoFiles />
-          </div>
-        </div>
-      </div>
+      <AllVideos />
     </>
   );
 };
