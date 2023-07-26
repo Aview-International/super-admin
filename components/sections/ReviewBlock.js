@@ -1,6 +1,6 @@
 import React from 'react';
-import OnboardingButton from '../../Onboarding/button';
-import DottedBorder from '../../UI/DottedBorder';
+import OnboardingButton from '../Onboarding/button';
+import DottedBorder from '../UI/DottedBorder';
 
 const ReviewBlock = ({ textPlaceHolder }) => {
   return (
