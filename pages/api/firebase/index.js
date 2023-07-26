@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
-import { getDatabase, set, ref, child, get, update } from 'firebase/database';
+import { getDatabase, ref, child, get, update } from 'firebase/database';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -24,22 +24,6 @@ const database = getDatabase(app);
 // Initialize the auth service
 const auth = getAuth();
 
-export const getAllAdmins = async () => {
-  const res = await get(ref(database, `admins/`)).then((snapshot) => {
-    if (snapshot.exists()) return snapshot.val();
-    else return null;
-  });
-  return res;
-};
-
-export const getAllCreators = async () => {
-  const res = await get(ref(database, `users/`)).then((snapshot) => {
-    if (snapshot.exists()) return snapshot.val();
-    else return null;
-  });
-  return res;
-};
-
 // get user from google account
 export const signInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
@@ -47,33 +31,28 @@ export const signInWithGoogle = async () => {
   return response;
 };
 
-// create new user account in the database after signup
-export const createNewSuperAdmin = async (
-  id,
-  firstName,
-  lastName,
-  email,
-  picture
-) => {
-  const data = {
-    id,
-    firstName,
-    lastName,
-    email,
-    picture,
-  };
-  await set(ref(database, `super-admins/${id}`), data);
-};
-
 export const getAllPendingJobs = async () => {
   const res = await get(ref(database, `admin-jobs/pending/transcription`)).then(
     (snapshot) => {
-      if (snapshot.exists()) return snapshot.val();
-      else return null;
+      if (snapshot.exists()) {
+        return snapshot.val();
+      } else return null;
     }
   );
   return res;
 };
+
+export const getAllPendingTranslations = async () => {
+  const res = await get(ref(database, `admin-jobs/pending/translation`)).then(
+    (snapshot) => {
+      if (snapshot.exists()) {
+        return snapshot.val();
+      } else return null;
+    }
+  );
+  return res;
+};
+
 
 // get all user data from the database
 export const getUserProfile = async (_id) => {

@@ -1,5 +1,3 @@
-// dashboard sidebar icons
-import home from '../public/img/icons/home.svg';
 import transcription from '../public/img/icons/transcript.svg';
 import translation from '../public/img/icons/translation.svg';
 import dubbing from '../public/img/icons/dubbing.svg';
@@ -15,45 +13,6 @@ export const LANGUAGES = [
   'Arabic',
   'Russian',
   'Chinese',
-];
-
-export const ONBOARDING_STAGE_4 = [
-  {
-    title: 'Translations',
-    content: 'Translations of your content in any language of your choice.',
-  },
-  {
-    title: 'Shorts',
-    content: 'Your content edited into 15-30 second clips.',
-  },
-  {
-    title: 'Dubbing',
-    content: 'Dubbing and subtitles for your content. ',
-  },
-  {
-    title: 'Distribution',
-    content: 'We will manage and distribute your translated content for you.',
-  },
-];
-
-export const AVERAGE_MONTHLY_VIEWS = [
-  '0 - 1,000',
-  '1,000 - 5,000',
-  '5,000 - 10,000',
-  '10,000 - 25,000',
-  '25,000 - 100,000',
-  '100,000 - 250,000',
-  '250,000 - 500,000',
-  '500,000 - 1,000,00',
-  '1,000,000+',
-];
-
-export const AVERAGE_VIDEO_DURATION = [
-  '1 - 5 minutes',
-  '5 - 15 minutes',
-  '15 - 30 minutes',
-  '30 - 60 minutes',
-  '60+ minutes',
 ];
 
 export const DASHBOARD_NAVLINKS = [
@@ -77,28 +36,31 @@ export const DASHBOARD_NAVLINKS = [
     image: videoedit,
     route: '/video-edits',
   },
-]
+];
 
-export const DASHBOARD_FEATURES = [ 
+export const DASHBOARD_FEATURES = [
   {
-    name:'Transcription',
-    id:1,
-    placeHolder: 'Click here to Upload and download transcription files'
+    name: 'Transcription',
+    id: 1,
+    placeHolder: 'Click here to Upload and download transcription files',
   },
   {
-    name:'Translation',
-    id:2,
-    placeHolder: 'Click here to Upload and download transcription files. You may need to upload multiple files if it is over 10000 words.'
+    name: 'Translation',
+    id: 2,
+    placeHolder:
+      'Click here to Upload and download transcription files. You may need to upload multiple files if it is over 10000 words.',
   },
   {
-    name:'Dubbing',
-    id:3,
-    placeHolder: 'Click here to Upload and download transcription files. You may need to upload multiple files if it is over 10000 words.'
+    name: 'Dubbing',
+    id: 3,
+    placeHolder:
+      'Click here to Upload and download transcription files. You may need to upload multiple files if it is over 10000 words.',
   },
   {
-    name:'Video Edits',
-    id:4,
-    placeHolder: 'Click here to Upload and download transcription files. You may need to upload multiple files if it is over 10000 words.'
+    name: 'Video Edits',
+    id: 4,
+    placeHolder:
+      'Click here to Upload and download transcription files. You may need to upload multiple files if it is over 10000 words.',
   },
 ];
 
