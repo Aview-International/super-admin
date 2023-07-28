@@ -4,7 +4,7 @@ import PageTitle from '../../components/SEO/PageTitle';
 import { getAllPendingDubbings } from '../api/firebase';
 import Logo from '../../public/img/aview/logo.svg';
 import Image from 'next/image';
-import AllVideos from '../../components/admin/AllVideos';
+import AllVideos from '../../components/admin/AllVideoss';
 import SelectedVideo from '../../components/dubbing/SelectedVideo-Dubbing';
 
 const Dubbing = () => {
