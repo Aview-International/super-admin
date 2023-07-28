@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import { getUserProfile } from '../../pages/api/firebase';
 import OnboardingButton from '../Onboarding/button';
-import { downloadSrtFile, approveTranslation } from '../../services/apis';
+import { downloadAudioFile, approveTranslation } from '../../services/apis';
 import Check from '../../public/img/icons/check-circle-green.svg';
 import Download from '../../public/img/icons/download.svg';
 import Upload from '../../public/img/icons/upload.svg';
-import Cancel from '../../public/img/icons/cancel-white.svg';
+// import Cancel from '../../public/img/icons/cancel-white.svg';
 import Image from 'next/image';
 
-const SelectedVideo = ({ selectedJob }) => {
-  console.log(selectedJob);
+const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
+  const [button, setButton] = useState('');
+  const [loader, setLoader] = useState('');
   const [creatorData, setCreatorData] = useState({
     name: '',
     picture: '',
@@ -28,20 +29,24 @@ const SelectedVideo = ({ selectedJob }) => {
   }, [selectedJob.creatorId]);
 
   const handleDownload = async (date, key) => {
-    const { data } = await downloadSrtFile(date, key, selectedJob.creatorId);
+    setButton(key);
+    setLoader('download');
+    const { data } = await downloadAudioFile(date, key, selectedJob.creatorId);
+    setLoader('');
     window.open(data, '_blank');
   };
 
-  const handleApproval = (date, key) => {
-    // console.log(selectedJob.creatorId, date, key);
-    // console.log(creatorId, date, s3ObjectKey);
-    approveTranslation(
+  const handleApproval = async (date, objectS3Key, translatedLanguageKey) => {
+    setLoader('approve');
+    await approveTranslation(
       selectedJob.jobId,
+      objectS3Key,
       date,
-      key,
-      selectedJob.creatorId,
-      selectedJob.languages
+      translatedLanguageKey,
+      selectedJob.creatorId
     );
+    setReloadTrigger(Math.random());
+    setLoader('');
   };
 
   return (
@@ -60,8 +65,8 @@ const SelectedVideo = ({ selectedJob }) => {
             allowFullScreen
           ></iframe>
 
-          {vid.translatedLanguageKeys &&
-            vid.translatedLanguageKeys.map((lang, i) => (
+          {vid.dubbedAudioKeys &&
+            vid.dubbedAudioKeys.map((lang, i) => (
               <div className="my-s3" key={i}>
                 <p>{lang.split('-')[0].substring(5)}</p>
                 <div className="grid grid-cols-3 justify-center gap-s2">
@@ -69,6 +74,7 @@ const SelectedVideo = ({ selectedJob }) => {
                     theme="light"
                     classes="flex justify-center items-center"
                     onClick={() => handleDownload(vid.date, lang)}
+                    isLoading={loader === 'download' && button === lang}
                   >
                     <span className="mr-2">Download</span>
                     <Image src={Download} alt="" width={22} height={22} />
@@ -84,7 +90,10 @@ const SelectedVideo = ({ selectedJob }) => {
                   <OnboardingButton
                     theme="success"
                     classes="flex justify-center items-center"
-                    onClick={() => handleApproval(vid.date, lang)}
+                    onClick={() =>
+                      handleApproval(vid.date, vid.objectS3Key, lang)
+                    }
+                    isLoading={loader === 'approve' && button === lang}
                   >
                     <span className="mr-2">Approve</span>
                     <Image src={Check} alt="" width={24} height={24} />

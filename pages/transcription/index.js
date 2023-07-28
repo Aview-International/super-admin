@@ -2,19 +2,20 @@ import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import PageTitle from '../../components/SEO/PageTitle';
 import { getAllPendingJobs } from '../api/firebase';
-import SelectedVideo from '../../components/transcription/SelectedVideo';
+import SelectedVideo from '../../components/transcription/SelectedVideo-Transcription';
 import AllVideos from '../../components/admin/AllVideos';
+import Image from 'next/image';
+import Logo from '../../public/img/aview/logo.svg';
 
 const Transcription = () => {
   const [reloadTrigger, setReloadTrigger] = useState(0);
-  const [modalIndex, setModalIndex] = useState(undefined);
   const [jobs, setJobs] = useState([]);
 
   const [selectedJob, setSelectedJob] = useState(undefined);
 
   const getPendingJobs = async () => {
+    setSelectedJob(undefined);
     const res = await getAllPendingJobs();
-    console.log(res);
     setJobs(
       res
         ? Object.values(res).map((item, i) => ({
@@ -27,6 +28,7 @@ const Transcription = () => {
 
   useEffect(() => {
     getPendingJobs();
+    console.log('again');
   }, [reloadTrigger]);
 
   return (
@@ -39,9 +41,16 @@ const Transcription = () => {
             <AllVideos job={job} key={i} setSelectedJob={setSelectedJob} />
           ))}
         </div>
-        {selectedJob && (
+        {selectedJob ? (
           <div className="ml-s3 w-1/2">
-            <SelectedVideo selectedJob={selectedJob} />
+            <SelectedVideo
+              selectedJob={selectedJob}
+              setReloadTrigger={setReloadTrigger}
+            />
+          </div>
+        ) : (
+          <div className="flex w-1/2 items-start justify-center pt-s10">
+            <Image src={Logo} alt="" />
           </div>
         )}
       </div>

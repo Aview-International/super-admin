@@ -21,14 +21,14 @@ const OnboardingButton = ({
   ) : theme === 'success' ? (
     <button
       className={`transition-300 w-full cursor-pointer rounded-full bg-green px-s5 pt-s1.5 pb-s1 text-black ${classes}`}
-      onClick={onClick}
+      onClick={isLoading ? () => null : onClick}
     >
       {isLoading ? <Loader /> : children}
     </button>
   ) : theme === 'error' ? (
     <button
       className={`transition-300 w-full cursor-pointer rounded-full bg-red px-s5 pt-s1.5 pb-s1 text-white ${classes}`}
-      onClick={onClick}
+      onClick={isLoading ? () => null : onClick}
     >
       {isLoading ? <Loader /> : children}
     </button>
@@ -39,7 +39,7 @@ const OnboardingButton = ({
           className={`transition-300 w-full cursor-pointer rounded-full px-s5 pt-s1.5 pb-s1 ${
             theme === 'light' && 'text-black'
           } ${theme === 'dark' && 'bg-black text-white'} ${classes}`}
-          onClick={onClick}
+          onClick={isLoading ? () => null : onClick}
         >
           {isLoading ? <Loader /> : children}
         </button>

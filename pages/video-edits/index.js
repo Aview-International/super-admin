@@ -1,42 +1,60 @@
-import UploadIcon from '../../public/img/icons/upload-icon1.svg';
-import Image from 'next/image';
-import {
-  DubbingVideoFiles,
-  ThumbnailVideoFiles,
-  TranscriptionVideoFiles,
-  TranslationVideoFiles,
-} from '../../components/admin/VideoData';
-import VideoDetails from '../../components/admin/VideoDetails';
-import VideoPlayer from '../../components/admin/VideoPlayer';
+import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
-import OnboardingButton from '../../components/Onboarding/button';
 import PageTitle from '../../components/SEO/PageTitle';
+import { getAllPendingDubbings } from '../api/firebase';
+import Logo from '../../public/img/aview/logo.svg';
+import Image from 'next/image';
+import AllVideos from '../../components/admin/AllVideos';
+import SelectedVideo from '../../components/video-edits/SelectedVideo-Edits';
 
 const VideoEdits = () => {
+  const [reloadTrigger, setReloadTrigger] = useState(0);
+  const [jobs, setJobs] = useState([]);
+  const [selectedJob, setSelectedJob] = useState(undefined);
+
+  const getPendingJobs = async () => {
+    const res = await getAllPendingDubbings();
+    setJobs(
+      res
+        ? Object.values(res).map((item, i) => ({
+            ...item,
+            jobId: Object.keys(res)[i],
+          }))
+        : []
+    );
+  };
+
+  useEffect(() => {
+    getPendingJobs();
+  }, [reloadTrigger]);
+
   return (
     <>
       <PageTitle title="Video Edits" />
-      <div className="gradient-dark rounded-2xl p-s3">
-        <VideoDetails name="Video Edits" />
-        <div className="mt-s5 flex text-white">
-          <div className="w-1/2">
-            <VideoPlayer />
-          </div>
-          <div className="w-1/2">
-            <TranscriptionVideoFiles />
-            <br />
-            <TranslationVideoFiles />
-            <br />
-            <DubbingVideoFiles />
-            <br />
-            <ThumbnailVideoFiles />
-            <br />
-            <p>Press Upload once all files have been checked and approved.</p>
-            <div className="my-s2 w-48">
-              <OnboardingButton theme="light">Upload</OnboardingButton>
-            </div>
-          </div>
+      <div className="flex text-white">
+        <div className="w-1/2 rounded-md bg-white-transparent">
+          <h2 className="p-s2">Videos Selection</h2>
+          {jobs.map((job, i) => (
+            <AllVideos
+              job={job}
+              key={i}
+              setSelectedJob={setSelectedJob}
+              selectedJob={selectedJob}
+            />
+          ))}
         </div>
+        {selectedJob ? (
+          <div className="ml-s3 w-1/2">
+            <SelectedVideo
+              selectedJob={selectedJob}
+              setReloadTrigger={setReloadTrigger}
+            />
+          </div>
+        ) : (
+          <div className="flex w-1/2 items-start justify-center pt-s10">
+            <Image src={Logo} alt="" />
+          </div>
+        )}
       </div>
     </>
   );
