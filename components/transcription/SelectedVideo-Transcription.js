@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getUserProfile } from '../../pages/api/firebase';
-import OnboardingButton from '../Onboarding/button';
+import Button from '../UI/button';
 import { approveSrt, downloadSrtFile } from '../../services/apis';
 import Check from '../../public/img/icons/check-circle-green.svg';
 import Image from 'next/image';
@@ -65,15 +65,15 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
           ></iframe>
 
           <div className="my-s3 grid grid-cols-3 gap-s2">
-            <OnboardingButton
+            <Button
               theme="light"
               onClick={() => handleDownload(vid.date, vid.objectS3Key)}
               isLoading={loader === 'download'}
             >
               Download
-            </OnboardingButton>
-            <OnboardingButton theme="dark">Upload</OnboardingButton>
-            <OnboardingButton
+            </Button>
+            <Button theme="dark">Upload</Button>
+            <Button
               theme="success"
               classes="flex items-center"
               onClick={() => handleApproval(vid.date, vid.objectS3Key)}
@@ -81,7 +81,7 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
             >
               <Image src={Check} alt="" width={24} height={24} />
               <span className="ml-2">Approve</span>
-            </OnboardingButton>
+            </Button>
           </div>
         </div>
       ))}

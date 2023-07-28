@@ -1,6 +1,6 @@
 import Image from 'next/image';
-import Button from '../components/UI/Button';
 import aviewLogo from '../public/img/aview/logo.svg';
+import Link from 'next/link';
 
 const Page404 = () => {
   return (
@@ -27,9 +27,12 @@ const Page404 = () => {
         Sorry, we were unable to find that page!
       </p>
       <div>
-        <Button type="primary" purpose="route" route="/">
+        <Link
+          className={`gradient-1 transition-300 relative block w-max cursor-pointer rounded-full px-s5 pt-s1.5 pb-s1 text-lg text-black`}
+          href="/"
+        >
           Home
-        </Button>
+        </Link>
       </div>
     </div>
   );

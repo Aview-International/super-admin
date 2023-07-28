@@ -5,7 +5,6 @@ import { useContext, useState } from 'react';
 import Border from '../components/UI/Border';
 import Shadow from '../components/UI/Shadow';
 import Google from '../public/img/icons/google.svg';
-import Facebook from '../public/img/icons/facebook-logo-onboarding.svg';
 
 import { UserContext } from '../store/user-profile';
 import ButtonLoader from '../public/loaders/ButtonLoader';
@@ -60,16 +59,6 @@ const Login = () => {
                   Continue with Google
                 </>
               )}
-            </button>
-          </Border>
-        </Shadow>
-        <Shadow classes="w-full">
-          <Border borderRadius="full" classes="w-full">
-            <button className="align-center flex w-full justify-center rounded-full bg-black p-2 text-white md:p-3">
-              <span className="flex items-center justify-center pr-s1">
-                <Image src={Facebook} alt="Facebook" />
-              </span>
-              Continue with Facebook
             </button>
           </Border>
         </Shadow>

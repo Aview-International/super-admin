@@ -1,43 +1,51 @@
-import Link from 'next/link';
 import Border from './Border';
+import Loader from '../../public/loaders/ButtonLoader';
 import Shadow from './Shadow';
-import HoverGradientFill from './HoverGradientFill';
 
-const Button = ({ children, type, purpose, route, onClick }) => {
-  let button = (
-    <a
-      className={`
-          ${type === 'primary' && `gradient-1 text-black `}
-          ${type === 'secondary' && `bg-black text-white hover:text-black `}
-          ${
-            type === 'tertiary' &&
-            `border-[3px] border-solid border-white bg-transparent text-white hover:bg-white hover:text-black `
-          }
-          transition-300 relative block w-max cursor-pointer rounded-full px-s5 pt-s1.5 pb-s1 text-lg
-        `}
+const Button = ({
+  children,
+  isLoading,
+  onClick,
+  disabled,
+  theme,
+  classes,
+}) => {
+  return disabled ? (
+    <button
+      className={`transition-300 w-full cursor-not-allowed rounded-full bg-gray-1 px-s5 pt-s1.5 pb-s1 text-black ${classes}`}
+      onClick={() => null}
+      disabled
     >
-      {type === 'secondary' && <HoverGradientFill borderRadius="full" />}
-      <span className="relative">{children}</span>
-    </a>
+      {children}
+    </button>
+  ) : theme === 'success' ? (
+    <button
+      className={`transition-300 w-full cursor-pointer rounded-full bg-green px-s5 pt-s1.5 pb-s1 text-black ${classes}`}
+      onClick={isLoading ? () => null : onClick}
+    >
+      {isLoading ? <Loader /> : children}
+    </button>
+  ) : theme === 'error' ? (
+    <button
+      className={`transition-300 w-full cursor-pointer rounded-full bg-red px-s5 pt-s1.5 pb-s1 text-white ${classes}`}
+      onClick={isLoading ? () => null : onClick}
+    >
+      {isLoading ? <Loader /> : children}
+    </button>
+  ) : (
+    <Shadow classes="w-full">
+      <Border borderRadius="full" classes="w-full">
+        <button
+          className={`transition-300 w-full cursor-pointer rounded-full px-s5 pt-s1.5 pb-s1 ${
+            theme === 'light' && 'text-black'
+          } ${theme === 'dark' && 'bg-black text-white'} ${classes}`}
+          onClick={isLoading ? () => null : onClick}
+        >
+          {isLoading ? <Loader /> : children}
+        </button>
+      </Border>
+    </Shadow>
   );
-
-  if (purpose === 'route') {
-    button = <Link href={route}>{button}</Link>;
-  } else if (purpose === 'submit') {
-    button = <button type="submit">{button}</button>;
-  } else if (purpose === 'onClick') {
-    button = <div onClick={onClick}>{button}</div>;
-  }
-
-  if (type !== 'tertiary') {
-    button = (
-      <Shadow>
-        <Border borderRadius="full">{button}</Border>
-      </Shadow>
-    );
-  }
-
-  return button;
 };
 
 export default Button;

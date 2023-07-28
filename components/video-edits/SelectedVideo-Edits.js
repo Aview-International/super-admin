@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { getUserProfile } from '../../pages/api/firebase';
-import OnboardingButton from '../Onboarding/button';
+import Button from '../UI/button';
 import {
   downloadAudioFile,
   downloadYoutubeVideo,
@@ -79,13 +79,13 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
           <p className="my-s2 text-lg font-medium">{creatorData.name}</p>
 
           <div className="my-s3 w-[300px]">
-            <OnboardingButton
+            <Button
               theme={'light'}
               isLoading={loader === 'download-youtube'}
               onClick={() => handleYoutubeDownload(vid.id)}
             >
               Download Original Video
-            </OnboardingButton>
+            </Button>
           </div>
 
           <iframe
@@ -112,7 +112,7 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
 
                 <p>{lang.split('-')[0].substring(5)} - Audio</p>
                 <div className="grid grid-cols-2 justify-center gap-s2">
-                  <OnboardingButton
+                  <Button
                     theme="light"
                     classes="flex justify-center items-center"
                     onClick={() => handleDownload(vid.date, lang)}
@@ -120,16 +120,16 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
                   >
                     <span className="mr-2">Download</span>
                     <Image src={Download} alt="" width={22} height={22} />
-                  </OnboardingButton>
+                  </Button>
                   {/* 
-                  <OnboardingButton
+                  <Button
                     theme="dark"
                     classes="flex justify-center items-center"
                   >
                     <span className="mr-2">Upload</span>
                     <Image src={Upload} alt="" width={22} height={22} />
-                  </OnboardingButton> */}
-                  <OnboardingButton
+                  </Button> */}
+                  <Button
                     theme="dark"
                     classes="flex justify-center items-center"
                     onClick={() => handleVideoUploadModal()}
@@ -143,7 +143,7 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
                       height={24}
                       className="brightness-0 invert"
                     />
-                  </OnboardingButton>
+                  </Button>
                 </div>
               </div>
             ))}
