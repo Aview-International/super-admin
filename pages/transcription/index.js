@@ -3,7 +3,7 @@ import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import PageTitle from '../../components/SEO/PageTitle';
 import { getAllPendingJobs } from '../api/firebase';
 import SelectedVideo from '../../components/transcription/SelectedVideo-Transcription';
-import AllVideos from '../../components/admin/AllVideoss';
+import AllVideos from '../../components/admin/AllVideos';
 import Image from 'next/image';
 import Logo from '../../public/img/aview/logo.svg';
 
