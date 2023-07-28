@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
-import { getDatabase, ref, child, get, update } from 'firebase/database';
+import { getDatabase, ref, get } from 'firebase/database';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -14,7 +14,6 @@ const firebaseConfig = {
 };
 
 // Initialize the applications
-// const admin_app = initializeApp(admin_firebaseConfig);
 const app = initializeApp(firebaseConfig);
 
 // Initialize Realtime Database and get a reference to the service
@@ -34,9 +33,8 @@ export const signInWithGoogle = async () => {
 export const getAllPendingJobs = async () => {
   const res = await get(ref(database, `admin-jobs/pending/transcription`)).then(
     (snapshot) => {
-      if (snapshot.exists()) {
-        return snapshot.val();
-      } else return null;
+      if (snapshot.exists()) return snapshot.val();
+      else return null;
     }
   );
   return res;
@@ -45,26 +43,15 @@ export const getAllPendingJobs = async () => {
 export const getAllPendingTranslations = async () => {
   const res = await get(ref(database, `admin-jobs/pending/translation`)).then(
     (snapshot) => {
-      if (snapshot.exists()) {
-        return snapshot.val();
-      } else return null;
+      if (snapshot.exists()) return snapshot.val();
+      else return null;
     }
   );
   return res;
 };
 
-
-// get all user data from the database
-export const getUserProfile = async (_id) => {
-  const res = await get(ref(database, `users/${_id}`)).then((snapshot) => {
-    if (snapshot.exists()) return snapshot.val();
-    else return null;
-  });
-  return res;
-};
-
-export const getAllCompletedJobs = async () => {
-  const res = await get(ref(database, `admin-jobs/completed`)).then(
+export const getAllPendingDubbings = async () => {
+  const res = await get(ref(database, `admin-jobs/pending/dubbing`)).then(
     (snapshot) => {
       if (snapshot.exists()) return snapshot.val();
       else return null;
@@ -73,32 +60,11 @@ export const getAllCompletedJobs = async () => {
   return res;
 };
 
-export const markVideoAsCompleted = async (creatorId, jobId, jobDetails) => {
-  await get(child(ref(database), `users/${creatorId}`)).then(
-    async (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        const newPostData = {
-          ...data,
-          completedVideos: 1,
-          pendingVideos: +data.pendingVideos - 1,
-        };
-        const existingPostData = {
-          ...data,
-          pendingVideos: +data.pendingVideos - 1,
-          completedVideos: +data.completedVideos + 1,
-        };
-        const updates = {
-          [`users/${creatorId}`]: data.completedVideos
-            ? existingPostData
-            : newPostData,
-          [`user-jobs/completed/${creatorId}/${jobId}`]: jobDetails,
-          [`admin-jobs/pending/${jobId}`]: null,
-          [`user-jobs/pending/${creatorId}/${jobId}`]: null,
-          [`admin-jobs/completed/${jobId}`]: jobDetails,
-        };
-        await update(ref(database), updates);
-      }
-    }
-  );
+// get all user data from the database
+export const getUserProfile = async (_id) => {
+  const res = await get(ref(database, `users/${_id}`)).then((snapshot) => {
+    if (snapshot.exists()) return snapshot.val();
+    else return null;
+  });
+  return res;
 };

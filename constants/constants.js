@@ -26,11 +26,11 @@ export const DASHBOARD_NAVLINKS = [
     image: translation,
     route: '/translation',
   },
-  {
-    text: 'Dubbing',
-    image: dubbing,
-    route: '/dubbing',
-  },
+  // {
+  //   text: 'Dubbing',
+  //   image: dubbing,
+  //   route: '/dubbing',
+  // },
   {
     text: 'Video Edits',
     image: videoedit,

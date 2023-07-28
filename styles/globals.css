@@ -3,6 +3,9 @@
 @tailwind utilities;
 
 @layer components {
+  input {
+    @apply cursor-pointer;
+  }
   .link {
     @apply text-blue underline;
   }
