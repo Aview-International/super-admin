@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import OnboardingButton from '../Onboarding/button';
+import Button from '../UI/button';
 
 const VideoUpload = ({
   setVideoFile,
@@ -24,16 +24,16 @@ const VideoUpload = ({
           />
 
           <div className="flex gap-s3">
-            <OnboardingButton theme="error" onClick={closeModal}>
+            <Button theme="error" onClick={closeModal}>
               Cancel
-            </OnboardingButton>
-            <OnboardingButton
+            </Button>
+            <Button
               theme="light"
               disabled={!videoFile}
               onClick={handleVideoUpload}
             >
               Upload Video
-            </OnboardingButton>
+            </Button>
           </div>
         </div>
       </div>

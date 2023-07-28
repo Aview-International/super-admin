@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getUserProfile } from '../../pages/api/firebase';
-import OnboardingButton from '../Onboarding/button';
+import Button from '../UI/button';
 import { downloadSrtFile, approveTranslation } from '../../services/apis';
 import Check from '../../public/img/icons/check-circle-green.svg';
 import Download from '../../public/img/icons/download.svg';
@@ -75,7 +75,7 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
               <div className="my-s3" key={i}>
                 <p>{lang.split('-')[0].substring(5)}</p>
                 <div className="grid grid-cols-3 justify-center gap-s2">
-                  <OnboardingButton
+                  <Button
                     theme="light"
                     classes="flex justify-center items-center"
                     onClick={() => handleDownload(vid.date, lang)}
@@ -83,16 +83,16 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
                   >
                     <span className="mr-2">Download</span>
                     <Image src={Download} alt="" width={22} height={22} />
-                  </OnboardingButton>
+                  </Button>
 
-                  <OnboardingButton
+                  <Button
                     theme="light"
                     classes="flex justify-center items-center"
                   >
                     <span className="mr-2">Upload</span>
                     <Image src={Upload} alt="" width={22} height={22} />
-                  </OnboardingButton>
-                  <OnboardingButton
+                  </Button>
+                  <Button
                     theme="success"
                     classes="flex justify-center items-center"
                     onClick={() =>
@@ -102,7 +102,7 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
                   >
                     <span className="mr-2">Approve</span>
                     <Image src={Check} alt="" width={24} height={24} />
-                  </OnboardingButton>
+                  </Button>
                 </div>
               </div>
             ))}
