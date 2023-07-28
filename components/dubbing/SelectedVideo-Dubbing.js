@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getUserProfile } from '../../pages/api/firebase';
-import Button from '../UI/button';
+import Button from '../UI/Button';
 import { downloadAudioFile, approveTranslation } from '../../services/apis';
 import Check from '../../public/img/icons/check-circle-green.svg';
 import Download from '../../public/img/icons/download.svg';

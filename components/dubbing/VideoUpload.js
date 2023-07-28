@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import Button from '../UI/button';
+import Button from '../UI/Button';
 
 const VideoUpload = ({
   setVideoFile,

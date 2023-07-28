@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { getUserProfile } from '../../pages/api/firebase';
-import Button from '../UI/button';
+import Button from '../UI/Button';
 import {
   downloadAudioFile,
   downloadYoutubeVideo,
