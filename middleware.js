@@ -28,5 +28,11 @@ export function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/transcription', '/translation', '/dubbing'],
+  matcher: [
+    '/transcription',
+    '/translation',
+    '/dubbing',
+    '/video-edits',
+    '/distribution/:path*',
+  ],
 };

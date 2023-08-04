@@ -13,6 +13,7 @@ import Image from 'next/image';
 import VideoUpload from '../dubbing/VideoUpload';
 
 const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
+  console.log(selectedJob);
   const [uploadModal, setUploadModal] = useState(false);
   const [videoFile, setVideoFile] = useState(undefined);
   const [button, setButton] = useState('');
@@ -58,13 +59,15 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
 
   const closeModal = () => setUploadModal(false);
 
-  const handleVideoUpload = async (date, objectKey) => {
+  const handleVideoUpload = async (date, objectS3Key, dubbedAudioKey) => {
     try {
       const res = await uploadFinalVideo(
         videoFile,
-        selectedJob.creatorId,
+        selectedJob.jobId,
+        objectS3Key,
         date,
-        objectKey
+        selectedJob.creatorId,
+        dubbedAudioKey
       );
     } catch (error) {
       console.log(error);
@@ -99,24 +102,32 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
 
           <p className="my-s3 text-xl">Audio files</p>
           {vid.dubbedAudioKeys &&
-            vid.dubbedAudioKeys.map((lang, i) => (
+            vid.dubbedAudioKeys.map((dubbedAudioKey, i) => (
               <div className="mb-s3" key={i}>
                 {uploadModal && (
                   <VideoUpload
                     setVideoFile={setVideoFile}
                     videoFile={videoFile}
                     closeModal={closeModal}
-                    handleVideoUpload={() => handleVideoUpload(vid.date, lang)}
+                    handleVideoUpload={() =>
+                      handleVideoUpload(
+                        vid.date,
+                        vid.objectS3Key,
+                        dubbedAudioKey
+                      )
+                    }
                   />
                 )}
 
-                <p>{lang.split('-')[0].substring(5)} - Audio</p>
+                <p>{dubbedAudioKey.split('-')[0].substring(5)} - Audio</p>
                 <div className="grid grid-cols-2 justify-center gap-s2">
                   <Button
                     theme="light"
                     classes="flex justify-center items-center"
-                    onClick={() => handleDownload(vid.date, lang)}
-                    isLoading={loader === 'download' && button === lang}
+                    onClick={() => handleDownload(vid.date, dubbedAudioKey)}
+                    isLoading={
+                      loader === 'download' && button === dubbedAudioKey
+                    }
                   >
                     <span className="mr-2">Download</span>
                     <Image src={Download} alt="" width={22} height={22} />
@@ -133,7 +144,9 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
                     theme="dark"
                     classes="flex justify-center items-center"
                     onClick={() => handleVideoUploadModal()}
-                    isLoading={loader === 'approve' && button === lang}
+                    isLoading={
+                      loader === 'approve' && button === dubbedAudioKey
+                    }
                   >
                     <span className="mr-2">Upload Final Video</span>
                     <Image

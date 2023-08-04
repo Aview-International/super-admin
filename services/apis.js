@@ -68,16 +68,40 @@ export const downloadYoutubeVideo = async (id) => {
 
 export const uploadFinalVideo = async (
   file,
-  creatorId,
+  jobId,
+  objectKey,
   date,
-  objectKey
+  creatorId,
+  dubbedAudioKey
 ) => {
   let formData = new FormData();
   formData.append('file', file);
   formData.append('creatorId', creatorId);
+  formData.append('jobId', jobId);
   formData.append('date', date);
   formData.append('objectKey', objectKey);
+  formData.append('dubbedAudioKey', dubbedAudioKey);
   await axios.post(baseUrl + 'admin/upload-final-video', formData, {
     'Content-Type': 'multipart/form-data',
   });
+};
+
+export const getYoutubeVideoData = async (videoId) => {
+  const res = await axios.post(baseUrl + 'admin/get-youtube-data', {
+    videoId,
+  });
+  return res.data;
+};
+
+export const getYoutubePlaylistData = async (videoId) => {
+  const response = await axios.post(baseUrl + 'admin/get-youtube-playlist', {
+    videoId,
+  });
+
+  const playlists = response.data.items.map((playlist) => ({
+    name: playlist.snippet.title,
+    id: playlist.id,
+  }));
+
+  return playlists;
 };

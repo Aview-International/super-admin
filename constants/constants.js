@@ -26,15 +26,15 @@ export const DASHBOARD_NAVLINKS = [
     image: translation,
     route: '/translation',
   },
-  // {
-  //   text: 'Dubbing',
-  //   image: dubbing,
-  //   route: '/dubbing',
-  // },
   {
     text: 'Video Edits',
     image: videoedit,
     route: '/video-edits',
+  },
+  {
+    text: 'Distribution',
+    image: dubbing,
+    route: '/distribution',
   },
 ];
 
