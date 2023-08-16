@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { DASHBOARD_NAVLINKS } from '../../constants/constants';
 import aviewLogo from '../../public/img/aview/logo.svg';
 import signout from '../../public/img/icons/signout.svg';
+import Cookies from 'js-cookie';
 
 const DashboardSidebar = ({ user }) => {
   return (
@@ -91,9 +92,10 @@ const Navlink = () => {
 const Signout = () => {
   const handleLogout = () => {
     localStorage.removeItem('uid');
-    localStorage.removeItem('token');
+    Cookies.remove('token');
     window.location.href = '/';
   };
+
   return (
     <button
       className="mt-s8 flex w-full items-center px-s3 text-sm"

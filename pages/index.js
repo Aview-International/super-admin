@@ -10,6 +10,7 @@ import { UserContext } from '../store/user-profile';
 import ButtonLoader from '../public/loaders/ButtonLoader';
 import Cookies from 'js-cookie';
 import { signInWithGoogle } from './api/firebase';
+import PageTitle from '../components/SEO/PageTitle';
 
 const Login = () => {
   const router = useRouter();
@@ -20,7 +21,6 @@ const Login = () => {
     setIsLoading(true);
     const { _tokenResponse } = await signInWithGoogle();
     Cookies.set('token', _tokenResponse.idToken, { expires: 3 });
-    localStorage.setItem('token', _tokenResponse.idToken);
     localStorage.setItem('uid', _tokenResponse.localId);
     updateUser({
       ...user,
@@ -34,6 +34,7 @@ const Login = () => {
 
   return (
     <>
+      <PageTitle title="Login" />
       <div className="fixed top-2/4 left-2/4 w-[min(400px,90%)] -translate-x-2/4 -translate-y-2/4 text-white">
         <h2 className="text-center text-7xl md:text-8xl">Log In</h2>
         <p className="my-s3 text-center text-lg md:text-xl">

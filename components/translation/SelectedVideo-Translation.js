@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { getUserProfile } from '../../pages/api/firebase';
 import Button from '../UI/Button';
-import { downloadSrtFile, approveTranslation } from '../../services/apis';
+import { downloadS3Object, approveTranslation } from '../../services/apis';
 import Check from '../../public/img/icons/check-circle-green.svg';
 import Download from '../../public/img/icons/download.svg';
 import Upload from '../../public/img/icons/upload.svg';
 // import Cancel from '../../public/img/icons/cancel-white.svg';
 import Image from 'next/image';
 
-const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
+const SelectedVideo = ({ selectedJob, setSelectedJob }) => {
   const [loader, setLoader] = useState('');
   const [button, setButton] = useState('');
   const [creatorData, setCreatorData] = useState({
@@ -31,7 +31,12 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
   const handleDownload = async (date, key) => {
     setButton(key);
     setLoader('download');
-    const { data } = await downloadSrtFile(date, key, selectedJob.creatorId);
+    const { data } = await downloadS3Object(
+      date,
+      key,
+      selectedJob.creatorId,
+      'srt'
+    );
     setLoader('');
     window.open(data, '_blank');
   };
@@ -47,7 +52,7 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
         translatedLanguageKey,
         selectedJob.creatorId
       );
-      setReloadTrigger(Math.random());
+      setSelectedJob(undefined);
       setLoader('');
     } catch (error) {
       setLoader('');

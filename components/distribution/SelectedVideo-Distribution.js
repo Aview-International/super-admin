@@ -5,9 +5,12 @@ import { downloadS3Object, approveTranslation } from '../../services/apis';
 import Check from '../../public/img/icons/check-circle-green.svg';
 import Download from '../../public/img/icons/download.svg';
 import Upload from '../../public/img/icons/upload.svg';
+// import Cancel from '../../public/img/icons/cancel-white.svg';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
-const SelectedVideo = ({ selectedJob, setSelectedJob }) => {
+const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
+  const router = useRouter();
   const [button, setButton] = useState('');
   const [loader, setLoader] = useState('');
   const [creatorData, setCreatorData] = useState({
@@ -34,23 +37,16 @@ const SelectedVideo = ({ selectedJob, setSelectedJob }) => {
       date,
       key,
       selectedJob.creatorId,
-      'audio'
+      'video'
     );
     setLoader('');
     window.open(data, '_blank');
   };
 
-  const handleApproval = async (date, objectS3Key, translatedLanguageKey) => {
-    setLoader('approve');
-    await approveTranslation(
-      selectedJob.jobId,
-      objectS3Key,
-      date,
-      translatedLanguageKey,
-      selectedJob.creatorId
+  const handleApproval = async (videoId, date, key) => {
+    router.push(
+      `/distribution/${selectedJob.jobId}?video-id=${videoId}&date=${date}&${key}`
     );
-    setSelectedJob(undefined);
-    setLoader('');
   };
 
   return (
@@ -69,11 +65,11 @@ const SelectedVideo = ({ selectedJob, setSelectedJob }) => {
             allowFullScreen
           ></iframe>
 
-          {vid.dubbedAudioKeys &&
-            vid.dubbedAudioKeys.map((lang, i) => (
+          {vid.finalVideoKeys &&
+            vid.finalVideoKeys.map((lang, i) => (
               <div className="my-s3" key={i}>
-                <p>{lang.split('-')[0].substring(5)}</p>
-                <div className="grid grid-cols-3 justify-center gap-s2">
+                <p>{lang.split('-')[0].substring(5)} - Video</p>
+                <div className="flex justify-center gap-s2">
                   <Button
                     theme="light"
                     classes="flex justify-center items-center"
@@ -85,21 +81,12 @@ const SelectedVideo = ({ selectedJob, setSelectedJob }) => {
                   </Button>
 
                   <Button
-                    theme="light"
-                    classes="flex justify-center items-center"
-                  >
-                    <span className="mr-2">Upload</span>
-                    <Image src={Upload} alt="" width={22} height={22} />
-                  </Button>
-                  <Button
                     theme="success"
                     classes="flex justify-center items-center"
-                    onClick={() =>
-                      handleApproval(vid.date, vid.objectS3Key, lang)
-                    }
+                    onClick={() => handleApproval(vid.id, vid.date, lang)}
                     isLoading={loader === 'approve' && button === lang}
                   >
-                    <span className="mr-2">Approve</span>
+                    <span className="mr-2">Post to youtube</span>
                     <Image src={Check} alt="" width={24} height={24} />
                   </Button>
                 </div>

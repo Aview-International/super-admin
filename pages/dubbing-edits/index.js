@@ -1,32 +1,33 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import PageTitle from '../../components/SEO/PageTitle';
-import { getAllPendingDubbings } from '../api/firebase';
+import { getAllPendingVideoEdits } from '../api/firebase';
 import Logo from '../../public/img/aview/logo.svg';
 import Image from 'next/image';
 import AllVideos from '../../components/admin/AllVideos';
 import SelectedVideo from '../../components/video-edits/SelectedVideo-Edits';
 
 const VideoEdits = () => {
-  const [reloadTrigger, setReloadTrigger] = useState(0);
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(undefined);
 
+  const callback = (data) => {
+    const pending = data
+      ? Object.values(data).map((item, i) => ({
+          ...item,
+          jobId: Object.keys(data)[i],
+        }))
+      : [];
+    setJobs(pending);
+  };
+
   const getPendingJobs = async () => {
-    const res = await getAllPendingDubbings();
-    setJobs(
-      res
-        ? Object.values(res).map((item, i) => ({
-            ...item,
-            jobId: Object.keys(res)[i],
-          }))
-        : []
-    );
+    await getAllPendingVideoEdits(callback);
   };
 
   useEffect(() => {
     getPendingJobs();
-  }, [reloadTrigger]);
+  }, []);
 
   return (
     <>
@@ -34,20 +35,26 @@ const VideoEdits = () => {
       <div className="flex text-white">
         <div className="w-1/2 rounded-md bg-white-transparent">
           <h2 className="p-s2">Videos Selection</h2>
-          {jobs.map((job, i) => (
-            <AllVideos
-              job={job}
-              key={i}
-              setSelectedJob={setSelectedJob}
-              selectedJob={selectedJob}
-            />
-          ))}
+          {jobs.length > 0 ? (
+            jobs.map((job, i) => (
+              <AllVideos
+                job={job}
+                key={i}
+                setSelectedJob={setSelectedJob}
+                selectedJob={selectedJob}
+              />
+            ))
+          ) : (
+            <p className="mt-s3 text-center text-xl">
+              Nothing to see here folks, come back later
+            </p>
+          )}
         </div>
         {selectedJob ? (
           <div className="ml-s3 w-1/2">
             <SelectedVideo
               selectedJob={selectedJob}
-              setReloadTrigger={setReloadTrigger}
+              setSelectedJob={setSelectedJob}
             />
           </div>
         ) : (

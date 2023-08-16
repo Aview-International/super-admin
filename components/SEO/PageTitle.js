@@ -5,7 +5,7 @@ const PageTitle = ({ title }) => {
     <Head>
       <title>
         {title}
-        {title && ' -'}&nbsp;Aview International
+        {title && ' -'}&nbsp;Aview Admin
       </title>
       <link
         rel="apple-touch-icon"

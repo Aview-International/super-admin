@@ -20,6 +20,7 @@ const authStatus = (token) => {
 
 export function middleware(request) {
   const token = request.cookies.get('token');
+  console.log(request.url);
   const status = authStatus(token);
   if (!status) {
     request.cookies.delete('token');
@@ -28,5 +29,11 @@ export function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/transcription', '/translation', '/dubbing'],
+  matcher: [
+    '/transcription',
+    '/translation',
+    '/dubbing-edits',
+    '/creator',
+    '/distribution/:path*',
+  ],
 };
