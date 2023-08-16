@@ -1,4 +1,4 @@
-const useGreeting = () => {
+const timeGreeting = () => {
   const date = new Date();
   const time = date.getHours();
   let greeting = '';
@@ -11,4 +11,4 @@ const useGreeting = () => {
   return greeting;
 };
 
-export default useGreeting;
+export default timeGreeting;

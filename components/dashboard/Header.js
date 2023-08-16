@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import useGreeting from '../../hooks/useGreeting';
+import timeGreeting from '../../utils/timeGreeting';
 
 const DashBoardHeader = ({ user }) => {
-  const [time, setTime] = useState(useGreeting());
+  const [time, setTime] = useState(timeGreeting());
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setTime(useGreeting());
+      setTime(timeGreeting());
     }, 5000);
 
     return () => {
