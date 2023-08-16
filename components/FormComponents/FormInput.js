@@ -47,7 +47,7 @@ const FormInput = ({
             className={`peer w-full rounded-[5px] px-s2 py-2 text-white focus:outline-none ${
               bgColor ? bgColor : 'bg-black'
             } ${textBlack ? 'text-black' : 'text-white'}`}
-            onChange={(e) => onChange(e)}
+            onChange={onChange}
             value={value}
           />
           <div

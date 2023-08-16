@@ -2,17 +2,16 @@ import { useEffect, useState } from 'react';
 import { getUserProfile } from '../../pages/api/firebase';
 import Button from '../UI/Button';
 import {
-  downloadAudioFile,
+  downloadS3Object,
   downloadYoutubeVideo,
   uploadFinalVideo,
 } from '../../services/apis';
 import Download from '../../public/img/icons/download.svg';
 import Upload from '../../public/img/icons/upload.svg';
-// import Cancel from '../../public/img/icons/cancel-white.svg';
 import Image from 'next/image';
 import VideoUpload from '../dubbing/VideoUpload';
 
-const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
+const SelectedVideo = ({ selectedJob, setSelectedJob }) => {
   console.log(selectedJob);
   const [uploadModal, setUploadModal] = useState(false);
   const [videoFile, setVideoFile] = useState(undefined);
@@ -38,7 +37,12 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
   const handleDownload = async (date, key) => {
     setButton(key);
     setLoader('download');
-    const { data } = await downloadAudioFile(date, key, selectedJob.creatorId);
+    const { data } = await downloadS3Object(
+      date,
+      key,
+      selectedJob.creatorId,
+      'audio'
+    );
     setLoader('');
     window.open(data, '_blank');
   };
@@ -132,14 +136,7 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
                     <span className="mr-2">Download</span>
                     <Image src={Download} alt="" width={22} height={22} />
                   </Button>
-                  {/* 
-                  <Button
-                    theme="dark"
-                    classes="flex justify-center items-center"
-                  >
-                    <span className="mr-2">Upload</span>
-                    <Image src={Upload} alt="" width={22} height={22} />
-                  </Button> */}
+
                   <Button
                     theme="dark"
                     classes="flex justify-center items-center"

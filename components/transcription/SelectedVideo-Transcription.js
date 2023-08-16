@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { getUserProfile } from '../../pages/api/firebase';
 import Button from '../UI/Button';
-import { approveSrt, downloadSrtFile } from '../../services/apis';
+import { approveSrt, downloadS3Object } from '../../services/apis';
 import Check from '../../public/img/icons/check-circle-green.svg';
 import Image from 'next/image';
 
-const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
+const SelectedVideo = ({ selectedJob, setSelectedJob }) => {
   const [loader, setLoader] = useState('');
   const [creatorData, setCreatorData] = useState({
     name: '',
@@ -26,7 +26,12 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
 
   const handleDownload = async (date, key) => {
     setLoader('download');
-    const { data } = await downloadSrtFile(date, key, selectedJob.creatorId);
+    const { data } = await downloadS3Object(
+      date,
+      key,
+      selectedJob.creatorId,
+      'srt'
+    );
     setLoader('');
     window.open(data, '_blank');
   };
@@ -41,7 +46,7 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
         selectedJob.creatorId,
         selectedJob.languages
       );
-      setReloadTrigger(Math.random());
+      setSelectedJob(undefined);
       setLoader('');
     } catch (error) {
       setLoader('');

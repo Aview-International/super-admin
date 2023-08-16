@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import PageTitle from '../../components/SEO/PageTitle';
-import { getAllPendingDubbings } from '../api/firebase';
+import { getAllPendingDistribution } from '../api/firebase';
 import Logo from '../../public/img/aview/logo.svg';
 import Image from 'next/image';
 import AllVideos from '../../components/admin/AllVideos';
@@ -13,7 +13,7 @@ const Distribution = () => {
   const [selectedJob, setSelectedJob] = useState(undefined);
 
   const getPendingJobs = async () => {
-    const res = await getAllPendingDubbings();
+    const res = await getAllPendingDistribution();
     setJobs(
       res
         ? Object.values(res).map((item, i) => ({
@@ -28,22 +28,26 @@ const Distribution = () => {
     getPendingJobs();
   }, [reloadTrigger]);
 
-  console.log(jobs);
-
   return (
     <>
       <PageTitle title="Distribution" />
       <div className="flex text-white">
         <div className="w-1/2 rounded-md bg-white-transparent">
           <h2 className="p-s2">Videos Selection</h2>
-          {jobs.map((job, i) => (
-            <AllVideos
-              job={job}
-              key={i}
-              setSelectedJob={setSelectedJob}
-              selectedJob={selectedJob}
-            />
-          ))}
+          {jobs.length > 0 ? (
+            jobs.map((job, i) => (
+              <AllVideos
+                job={job}
+                key={i}
+                setSelectedJob={setSelectedJob}
+                selectedJob={selectedJob}
+              />
+            ))
+          ) : (
+            <p className="mt-s3 text-center text-xl">
+              Nothing to see here folks, come back later
+            </p>
+          )}
         </div>
         {selectedJob ? (
           <div className="ml-s3 w-1/2">

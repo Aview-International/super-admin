@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { baseUrl } from './baseUrl';
 
-export const downloadSrtFile = async (date, filePath, creatorId) =>
-  await axios.post(baseUrl + 'admin/download-srt', {
+export const downloadS3Object = async (date, filePath, creatorId, object) =>
+  await axios.post(baseUrl + 'admin/download-object', {
     date,
     filePath,
     creatorId,
+    object,
   });
 
 export const approveSrt = async (
@@ -39,13 +40,6 @@ export const approveTranslation = async (
     creatorId,
   });
 };
-
-export const downloadAudioFile = async (date, filePath, creatorId) =>
-  await axios.post(baseUrl + 'admin/download-audio', {
-    date,
-    filePath,
-    creatorId,
-  });
 
 export const downloadYoutubeVideo = async (id) => {
   const filename = id + '.mp4';
@@ -104,4 +98,56 @@ export const getYoutubePlaylistData = async (videoId) => {
   }));
 
   return playlists;
+};
+
+export const getSupportedLanguages = async () => {
+  const response = await axios.get(baseUrl + 'admin/supported-languages');
+  return response.data;
+};
+
+export const getRegionCategory = async (language) => {
+  const response = await axios.post(baseUrl + 'admin/youtube-categories', {
+    language,
+  });
+
+  const categories = response.data
+    .map((category) => {
+      if (category.snippet.assignable)
+        return {
+          name: category.snippet.title,
+          id: category.id,
+        };
+      else return;
+    })
+    .filter((item) => item !== undefined);
+
+  return categories;
+};
+
+export const translateText = async (text, target_lang) => {
+  const response = await axios.post(baseUrl + 'admin/translate-text', {
+    text,
+    target_lang,
+  });
+  return response.data;
+};
+
+export const postToYouTube = async (
+  filePath,
+  creatorId,
+  date,
+  youtubePayload
+) => {
+  const response = await axios.post(baseUrl + 'admin/post-to-youtube', {
+    filePath,
+    creatorId,
+    date,
+    youtubePayload,
+  });
+
+  console.log(response);
+};
+
+export const authorizeUser = async () => {
+  const response = await axios.get(baseUrl + 'admin/authorize-user');
 };

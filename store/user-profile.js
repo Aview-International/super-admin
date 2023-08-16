@@ -1,10 +1,8 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useState } from 'react';
 
 export const UserContext = createContext(null);
 
 const UserContextProvider = ({ children }) => {
-
-
   const [user, updateUser] = useState({
     email: '',
     firstName: '',
@@ -12,10 +10,6 @@ const UserContextProvider = ({ children }) => {
     picture: '',
     youtubeChannelId: '',
   });
-
-  useEffect(() => {
-    console.log(user)
-  }, [user]);
 
   return (
     <UserContext.Provider value={{ user, updateUser }}>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getUserProfile } from '../../pages/api/firebase';
 import Button from '../UI/Button';
-import { downloadAudioFile, approveTranslation } from '../../services/apis';
+import { downloadS3Object, approveTranslation } from '../../services/apis';
 import Check from '../../public/img/icons/check-circle-green.svg';
 import Download from '../../public/img/icons/download.svg';
 import Upload from '../../public/img/icons/upload.svg';
@@ -33,13 +33,20 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
   const handleDownload = async (date, key) => {
     setButton(key);
     setLoader('download');
-    const { data } = await downloadAudioFile(date, key, selectedJob.creatorId);
+    const { data } = await downloadS3Object(
+      date,
+      key,
+      selectedJob.creatorId,
+      'video'
+    );
     setLoader('');
     window.open(data, '_blank');
   };
 
-  const handleApproval = async (videoId, lang) => {
-    router.push(`/distribution/${videoId}?lang=${lang}`);
+  const handleApproval = async (videoId, date, key) => {
+    router.push(
+      `/distribution/${selectedJob.jobId}?video-id=${videoId}&date=${date}&${key}`
+    );
   };
 
   return (
@@ -58,11 +65,11 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
             allowFullScreen
           ></iframe>
 
-          {vid.dubbedAudioKeys &&
-            vid.dubbedAudioKeys.map((lang, i) => (
+          {vid.finalVideoKeys &&
+            vid.finalVideoKeys.map((lang, i) => (
               <div className="my-s3" key={i}>
-                <p>{lang.split('-')[0].substring(5)}</p>
-                <div className="grid grid-cols-3 justify-center gap-s2">
+                <p>{lang.split('-')[0].substring(5)} - Video</p>
+                <div className="flex justify-center gap-s2">
                   <Button
                     theme="light"
                     classes="flex justify-center items-center"
@@ -74,18 +81,9 @@ const SelectedVideo = ({ selectedJob, setReloadTrigger }) => {
                   </Button>
 
                   <Button
-                    theme="light"
-                    classes="flex justify-center items-center"
-                  >
-                    <span className="mr-2">Upload</span>
-                    <Image src={Upload} alt="" width={22} height={22} />
-                  </Button>
-                  <Button
                     theme="success"
                     classes="flex justify-center items-center"
-                    onClick={() =>
-                      handleApproval(vid.id, lang.split('-')[0].substring(5))
-                    }
+                    onClick={() => handleApproval(vid.id, vid.date, lang)}
                     isLoading={loader === 'approve' && button === lang}
                   >
                     <span className="mr-2">Post to youtube</span>

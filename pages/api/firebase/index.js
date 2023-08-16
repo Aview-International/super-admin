@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
-import { getDatabase, ref, get } from 'firebase/database';
+import { getDatabase, ref, get, onValue } from 'firebase/database';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -30,8 +30,29 @@ export const signInWithGoogle = async () => {
   return response;
 };
 
-export const getAllPendingJobs = async () => {
-  const res = await get(ref(database, `admin-jobs/pending/transcription`)).then(
+export const getAllPendingTranscriptions = async (callback) => {
+  const transcriptionRef = ref(database, `admin-jobs/pending/transcription`);
+  onValue(transcriptionRef, (snapshot) => {
+    callback(snapshot.val());
+  });
+};
+
+export const getAllPendingTranslations = async (callback) => {
+  const translationRef = ref(database, `admin-jobs/pending/translation`);
+  onValue(translationRef, (snapshot) => {
+    callback(snapshot.val());
+  });
+};
+
+export const getAllPendingVideoEdits = async (callback) => {
+  const dubbingRef = ref(database, `admin-jobs/pending/dubbing`);
+  onValue(dubbingRef, (snapshot) => {
+    callback(snapshot.val());
+  });
+};
+
+export const getAllPendingDistribution = async () => {
+  const res = await get(ref(database, `admin-jobs/pending/video-edit`)).then(
     (snapshot) => {
       if (snapshot.exists()) return snapshot.val();
       else return null;
@@ -40,23 +61,13 @@ export const getAllPendingJobs = async () => {
   return res;
 };
 
-export const getAllPendingTranslations = async () => {
-  const res = await get(ref(database, `admin-jobs/pending/translation`)).then(
-    (snapshot) => {
-      if (snapshot.exists()) return snapshot.val();
-      else return null;
-    }
-  );
-  return res;
-};
-
-export const getAllPendingDubbings = async () => {
-  const res = await get(ref(database, `admin-jobs/pending/dubbing`)).then(
-    (snapshot) => {
-      if (snapshot.exists()) return snapshot.val();
-      else return null;
-    }
-  );
+export const getSingleVideoData = async (id) => {
+  const res = await get(
+    ref(database, `admin-jobs/pending/video-edit/${id}`)
+  ).then((snapshot) => {
+    if (snapshot.exists()) return snapshot.val();
+    else return null;
+  });
   return res;
 };
 
