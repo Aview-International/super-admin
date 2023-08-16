@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { baseUrl } from './baseUrl';
+import FormData from 'form-data';
 
 export const downloadS3Object = async (date, filePath, creatorId, object) =>
   await axios.post(baseUrl + 'admin/download-object', {
@@ -148,6 +149,40 @@ export const postToYouTube = async (
   console.log(response);
 };
 
-export const authorizeUser = async () => {
-  const response = await axios.get(baseUrl + 'admin/authorize-user');
+export const uploadManualVideoTranscription = async (video, setProgress) => {
+  let formData = new FormData();
+  formData.append('video', video);
+  const response = await axios({
+    method: 'POST',
+    url: baseUrl + 'transcription/manual-transcription',
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    data: formData,
+    onUploadProgress: (progressEvent) =>
+      setProgress(
+        Math.round((progressEvent.loaded * 100) / progressEvent.total)
+      ),
+  });
+  return response.data;
+};
+
+export const uploadManualSrtTranslation = async (
+  srt,
+  langugageCode,
+  languageName
+) => {
+  let formData = new FormData();
+  formData.append('srt', srt);
+  formData.append('langugageCode', langugageCode);
+  formData.append('languageName', languageName);
+  const response = await axios({
+    method: 'POST',
+    url: baseUrl + 'admin/manual-translation',
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    data: formData,
+  });
+  return response.data;
 };

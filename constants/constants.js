@@ -37,4 +37,9 @@ export const DASHBOARD_NAVLINKS = [
     image: creator,
     route: '/distribution',
   },
+  {
+    text: 'Manual',
+    image: dubbing,
+    route: '/manual',
+  },
 ];
