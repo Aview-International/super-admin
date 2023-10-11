@@ -35,5 +35,6 @@ export const config = {
     '/dubbing-edits',
     '/creator',
     '/distribution/:path*',
+    '/manual/:path*',
   ],
 };

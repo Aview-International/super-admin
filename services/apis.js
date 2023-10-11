@@ -1,9 +1,19 @@
 import axios from 'axios';
 import { baseUrl } from './baseUrl';
 import FormData from 'form-data';
+import Cookies from 'js-cookie';
+
+const token = Cookies.get('token');
+
+const axiosInstance = axios.create({
+  baseURL: baseUrl,
+  headers: {
+    Authorization: 'Bearer ' + token,
+  },
+});
 
 export const downloadS3Object = async (date, filePath, creatorId, object) =>
-  await axios.post(baseUrl + 'admin/download-object', {
+  await axiosInstance.post(baseUrl + 'admin/download-object', {
     date,
     filePath,
     creatorId,
@@ -17,7 +27,7 @@ export const approveSrt = async (
   creatorId,
   languages
 ) => {
-  return axios.post(baseUrl + 'admin/approve-srt', {
+  return axiosInstance.post(baseUrl + 'admin/approve-srt', {
     jobId,
     date,
     creatorId,
@@ -33,7 +43,7 @@ export const approveTranslation = async (
   translatedLanguageKey,
   creatorId
 ) => {
-  return axios.post(baseUrl + 'admin/approve-translation', {
+  return axiosInstance.post(baseUrl + 'admin/approve-translation', {
     jobId,
     objectKey,
     date,
@@ -44,7 +54,7 @@ export const approveTranslation = async (
 
 export const downloadYoutubeVideo = async (id) => {
   const filename = id + '.mp4';
-  const response = await axios.post(
+  const response = await axiosInstance.post(
     baseUrl + 'admin/download-youtube-video',
     { id },
     { responseType: 'blob' }
@@ -76,22 +86,25 @@ export const uploadFinalVideo = async (
   formData.append('date', date);
   formData.append('objectKey', objectKey);
   formData.append('dubbedAudioKey', dubbedAudioKey);
-  await axios.post(baseUrl + 'admin/upload-final-video', formData, {
+  await axiosInstance.post(baseUrl + 'admin/upload-final-video', formData, {
     'Content-Type': 'multipart/form-data',
   });
 };
 
 export const getYoutubeVideoData = async (videoId) => {
-  const res = await axios.post(baseUrl + 'admin/get-youtube-data', {
+  const res = await axiosInstance.post(baseUrl + 'admin/get-youtube-data', {
     videoId,
   });
   return res.data;
 };
 
 export const getYoutubePlaylistData = async (videoId) => {
-  const response = await axios.post(baseUrl + 'admin/get-youtube-playlist', {
-    videoId,
-  });
+  const response = await axiosInstance.post(
+    baseUrl + 'admin/get-youtube-playlist',
+    {
+      videoId,
+    }
+  );
 
   const playlists = response.data.items.map((playlist) => ({
     name: playlist.snippet.title,
@@ -102,14 +115,19 @@ export const getYoutubePlaylistData = async (videoId) => {
 };
 
 export const getSupportedLanguages = async () => {
-  const response = await axios.get(baseUrl + 'admin/supported-languages');
+  const response = await axiosInstance.get(
+    baseUrl + 'admin/supported-languages'
+  );
   return response.data;
 };
 
 export const getRegionCategory = async (language) => {
-  const response = await axios.post(baseUrl + 'admin/youtube-categories', {
-    language,
-  });
+  const response = await axiosInstance.post(
+    baseUrl + 'admin/youtube-categories',
+    {
+      language,
+    }
+  );
 
   const categories = response.data
     .map((category) => {
@@ -126,7 +144,7 @@ export const getRegionCategory = async (language) => {
 };
 
 export const translateText = async (text, target_lang) => {
-  const response = await axios.post(baseUrl + 'admin/translate-text', {
+  const response = await axiosInstance.post(baseUrl + 'admin/translate-text', {
     text,
     target_lang,
   });
@@ -139,7 +157,7 @@ export const postToYouTube = async (
   date,
   youtubePayload
 ) => {
-  const response = await axios.post(baseUrl + 'admin/post-to-youtube', {
+  const response = await axiosInstance.post(baseUrl + 'admin/post-to-youtube', {
     filePath,
     creatorId,
     date,
@@ -152,7 +170,7 @@ export const postToYouTube = async (
 export const uploadManualVideoTranscription = async (video, setProgress) => {
   let formData = new FormData();
   formData.append('video', video);
-  const response = await axios({
+  const response = await axiosInstance({
     method: 'POST',
     url: baseUrl + 'transcription/manual-transcription',
     headers: {
@@ -176,7 +194,7 @@ export const uploadManualSrtTranslation = async (
   formData.append('srt', srt);
   formData.append('langugageCode', langugageCode);
   formData.append('languageName', languageName);
-  const response = await axios({
+  const response = await axiosInstance({
     method: 'POST',
     url: baseUrl + 'admin/manual-translation',
     headers: {

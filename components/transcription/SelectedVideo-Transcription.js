@@ -6,6 +6,7 @@ import Check from '../../public/img/icons/check-circle-green.svg';
 import Image from 'next/image';
 
 const SelectedVideo = ({ selectedJob, setSelectedJob }) => {
+  console.log(selectedJob);
   const [loader, setLoader] = useState('');
   const [creatorData, setCreatorData] = useState({
     name: '',
@@ -36,12 +37,12 @@ const SelectedVideo = ({ selectedJob, setSelectedJob }) => {
     window.open(data, '_blank');
   };
 
-  const handleApproval = async (date, key) => {
+  const handleApproval = async (key) => {
     setLoader('approve');
     try {
       await approveSrt(
         selectedJob.jobId,
-        date,
+        selectedJob.date,
         key,
         selectedJob.creatorId,
         selectedJob.languages
@@ -81,7 +82,7 @@ const SelectedVideo = ({ selectedJob, setSelectedJob }) => {
             <Button
               theme="success"
               classes="flex items-center"
-              onClick={() => handleApproval(vid.date, vid.objectS3Key)}
+              onClick={() => handleApproval(vid.objectS3Key)}
               isLoading={loader === 'approve'}
             >
               <Image src={Check} alt="" width={24} height={24} />

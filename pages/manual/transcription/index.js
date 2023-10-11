@@ -52,7 +52,7 @@ const ManualTranscription = () => {
           <input
             type="file"
             className="hidden"
-            accept="video/mp4"
+            accept="video/*"
             onChange={(e) => setVideo(e.target.files[0])}
             id="video_upload"
           />
