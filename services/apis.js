@@ -204,3 +204,18 @@ export const uploadManualSrtTranslation = async (
   });
   return response.data;
 };
+
+export const uploadManualSrtDubbing = async (srt, voiceId) => {
+  let formData = new FormData();
+  formData.append('srt', srt);
+  formData.append('voiceId', voiceId);
+  const response = await axiosInstance({
+    method: 'POST',
+    url: baseUrl + 'admin/manual-dubbing',
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    data: formData,
+  });
+  return response.data;
+};

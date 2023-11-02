@@ -80,7 +80,7 @@ const ManualTranslation = () => {
                   <span
                     className={`transition-300 mx-auto block rounded-full bg-black px-s3 pt-s1.5 pb-s1 text-center text-white`}
                   >
-                    Select Srt File
+                    Upload Srt File
                   </span>
                 </Border>
               </label>
