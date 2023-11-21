@@ -22,6 +22,7 @@ const ManualTranscription = () => {
       );
       setIsLoading(false);
       window.open(res, '_blank');
+      // console.log(res);
     } catch (error) {
       console.log(error);
     }

@@ -29,6 +29,8 @@ const Transcription = () => {
     getPendingJobs();
   }, []);
 
+  console.log(jobs);
+
   return (
     <>
       <PageTitle title="Transcription" />

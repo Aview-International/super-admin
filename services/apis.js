@@ -12,12 +12,9 @@ const axiosInstance = axios.create({
   },
 });
 
-export const downloadS3Object = async (date, filePath, creatorId, object) =>
+export const downloadS3Object = async (s3Path) =>
   await axiosInstance.post(baseUrl + 'admin/download-object', {
-    date,
-    filePath,
-    creatorId,
-    object,
+    s3Path,
   });
 
 export const approveSrt = async (

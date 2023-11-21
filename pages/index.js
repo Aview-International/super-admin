@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
 import Border from '../components/UI/Border';
@@ -37,13 +36,6 @@ const Login = () => {
       <PageTitle title="Login" />
       <div className="fixed top-2/4 left-2/4 w-[min(400px,90%)] -translate-x-2/4 -translate-y-2/4 text-white">
         <h2 className="text-center text-7xl md:text-8xl">Log In</h2>
-        <p className="my-s3 text-center text-lg md:text-xl">
-          Don&apos;t have an account?
-          <br /> Get started{' '}
-          <Link href="/register">
-            <a className="underline">here</a>
-          </Link>
-        </p>
         <Shadow classes="w-full mb-4">
           <Border borderRadius="full" classes="w-full">
             <button
