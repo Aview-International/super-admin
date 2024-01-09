@@ -1,30 +1,15 @@
 import { NextResponse } from 'next/server';
-import { decodeJwt } from 'jose';
-
-const authStatus = (token) => {
-  if (!token) return false;
-  else {
-    const data = decodeJwt(token);
-    if (!data) return false;
-    const newDate = new Date(data.exp) * 1000;
-    if (newDate < new Date().getTime()) return false;
-    else {
-      const newTime = newDate - new Date().getTime();
-      return {
-        newTime,
-        data,
-      };
-    }
-  }
-};
+import { authStatus } from './utils/authStatus';
 
 export function middleware(request) {
   const token = request.cookies.get('token');
-  console.log(request.url);
   const status = authStatus(token);
+  const currentUrl = request.url;
   if (!status) {
     request.cookies.delete('token');
-    return NextResponse.redirect(new URL('/', request.url));
+    const response = NextResponse.redirect(new URL('/login?rdr=true', currentUrl));
+    response.cookies.set('redirectUrl', currentUrl);
+    return response;
   }
 }
 
