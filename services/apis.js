@@ -216,3 +216,9 @@ export const uploadManualSrtDubbing = async (srt, voiceId) => {
   });
   return response.data;
 };
+
+export const getPlayHtVoices = async () =>
+  (await axiosInstance.get('dubbing/get-play-ht-voices')).data;
+
+export const getElevenLabsVoices = async () =>
+  (await axiosInstance.get('dubbing/get-elevenlabs-voices')).data;

@@ -3,15 +3,27 @@ import DottedBorder from '../../../components/UI/DottedBorder';
 import DashboardLayout from '../../../components/dashboard/DashboardLayout';
 import UploadIcon from '../../../public/img/icons/upload-icon1.svg';
 import Border from '../../../components/UI/Border';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import PageTitle from '../../../components/SEO/PageTitle';
-import FormInput from '../../../components/FormComponents/FormInput';
-import { uploadManualSrtDubbing } from '../../../services/apis';
+import {
+  getElevenLabsVoices,
+  getPlayHtVoices,
+  uploadManualSrtDubbing,
+} from '../../../services/apis';
+import ErrorHandler from '../../../utils/errorHandler';
+import RadioInput from '../../../components/FormComponents/RadioContent';
+import PlayIcon from '../../../public/img/icons/play.svg';
 
 const ManualDubbing = () => {
+  const audioRef = useRef(null);
+
   const [file, setFile] = useState(null);
   const [voiceId, setVoiceId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [voices, setVoices] = useState({
+    playHt: [],
+    elevenLabs: [],
+  });
 
   const handleUpload = async () => {
     try {
@@ -24,6 +36,43 @@ const ManualDubbing = () => {
     }
   };
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await getPlayHtVoices();
+        console.log(res);
+        setVoices((prev) => ({
+          ...prev,
+          playHt: res,
+        }));
+      } catch (error) {
+        ErrorHandler(error);
+      }
+    })();
+    (async () => {
+      try {
+        const { voices } = await getElevenLabsVoices();
+        console.log(voices);
+        setVoices((prev) => ({
+          ...prev,
+          elevenLabs: voices,
+        }));
+      } catch (error) {
+        ErrorHandler(error);
+      }
+    })();
+  }, []);
+
+  const handleVoiceSelection = (data) => {
+    setVoiceId(data);
+  };
+
+  const handlePreviewVoice = (previewUrl) => {
+    let audioPlayer = audioRef.current;
+    audioPlayer.src = previewUrl;
+    audioPlayer.load();
+    audioPlayer.play();
+  };
   return (
     <>
       <PageTitle title="Manual Translation" />
@@ -66,12 +115,47 @@ const ManualDubbing = () => {
           </div>
         </DottedBorder>
         <br />
-        <br />
-        <FormInput
-          label="Input Voice Id"
-          onChange={(e) => setVoiceId(e.target.value)}
-          placeholder="Input voice id"
-        />
+        <h3 className="my-s2 text-center text-2xl">Select Voice</h3>
+        <audio hidden={true} ref={audioRef} controls></audio>
+
+        <div className="flex">
+          <div className="text-lg">
+            <p>Eleven Labs Voices</p>
+            {voices.elevenLabs.map((voice, i) => (
+              <div className="my-2 flex items-center" key={i}>
+                <button
+                  onClick={() => handlePreviewVoice(voice.preview_url)}
+                  className="flex items-center justify-center mr-s2"
+                >
+                  <Image src={PlayIcon} alt="" width={30} height={30} />
+                </button>
+                <RadioInput
+                  key={i}
+                  chosenValue={voiceId}
+                  name={'voices'}
+                  text={voice.name}
+                  value={voice.voice_id}
+                  onChange={() => handleVoiceSelection(voice.voice_id)}
+                />
+              </div>
+            ))}
+          </div>
+          <div>
+            <p>Play HT Voices</p>
+            {voices.playHt.map((voice, i) => (
+              <div className="my-2" key={i}>
+                <RadioInput
+                  chosenValue={voiceId}
+                  name={'voices'}
+                  text={voice.name}
+                  value={voice.id}
+                  onChange={() => handleVoiceSelection(voice.id)}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
         {file && voiceId && (
           <button
             onClick={handleUpload}
