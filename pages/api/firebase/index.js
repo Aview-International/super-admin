@@ -37,6 +37,13 @@ export const getAllPendingTranscriptions = async (callback) => {
   });
 };
 
+export const getAllPendingTranscriptionsApproval = async (callback) => {
+  const transcriptionRef = ref(database, `admin-jobs/pending/transcription-approve`);
+  onValue(transcriptionRef, (snapshot) => {
+    callback(snapshot.val());
+  });
+};
+
 export const getAllPendingTranslations = async (callback) => {
   const translationRef = ref(database, `admin-jobs/pending/translation`);
   onValue(translationRef, (snapshot) => {

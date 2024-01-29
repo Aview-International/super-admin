@@ -32,10 +32,7 @@ const SelectedVideo = ({ selectedJob, setSelectedJob }) => {
     setButton(key);
     setLoader('download');
     const { data } = await downloadS3Object(
-      date,
-      key,
-      selectedJob.creatorId,
-      'srt'
+      `srt-files/${selectedJob.creatorId}/${date}/${key}`
     );
     setLoader('');
     window.open(data, '_blank');

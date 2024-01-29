@@ -32,14 +32,14 @@ export const approveSrt = async (
   date,
   objectKey,
   creatorId,
-  languages
+  language
 ) => {
   return axiosInstance.post(baseUrl + 'admin/approve-srt', {
     jobId,
     date,
     creatorId,
     objectKey,
-    languages,
+    language,
   });
 };
 
@@ -50,7 +50,7 @@ export const approveTranslation = async (
   translatedLanguageKey,
   creatorId
 ) => {
-  return axiosInstance.post(baseUrl + 'admin/approve-translation', {
+  return axiosInstance.post(baseUrl + 'dubbing/dub-srt', {
     jobId,
     objectKey,
     date,
@@ -232,3 +232,6 @@ export const getPlayHtVoices = async () =>
 
 export const getElevenLabsVoices = async () =>
   (await axiosInstance.get('dubbing/get-elevenlabs-voices')).data;
+
+export const transcribeSocialLink = async (body) =>
+  await axiosInstance.post('transcription/social', body);

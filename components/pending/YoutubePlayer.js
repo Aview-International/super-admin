@@ -1,7 +1,7 @@
 import Button from '../UI/Button';
 import Image from 'next/image';
 import Check from '../../public/img/icons/check-circle-green.svg';
-import { downloadS3Object } from '../../services/apis';
+import { downloadS3Object, transcribeSocialLink } from '../../services/apis';
 import ErrorHandler from '../../utils/errorHandler';
 
 const YoutubePlayer = ({
@@ -10,21 +10,19 @@ const YoutubePlayer = ({
   loader,
   setLoader,
   selectedJob,
-  handleApproval,
 }) => {
-  const handleDownload = async (date, key) => {
+  console.log(selectedJob, vidData);
+  const handleTranscribe = async () => {
     try {
-      setLoader('download');
-      const { data } = await downloadS3Object(
-        `srt-files/${selectedJob.creatorId}/${date}/${key}`
-      );
+      setLoader('transcribe');
+      await transcribeSocialLink(selectedJob);
       setLoader('');
-      window.open(data, '_blank');
     } catch (error) {
       setLoader('');
       ErrorHandler(error);
     }
   };
+
   return (
     <div>
       <h2 className="text-2xl font-semibold">{vidData.caption}</h2>
@@ -42,23 +40,15 @@ const YoutubePlayer = ({
         allowFullScreen
       ></iframe>
 
-      <div className="my-s3 grid grid-cols-3 gap-s2">
-        <Button
-          theme="light"
-          onClick={() => handleDownload(vidData.date, vidData.objectS3Key)}
-          isLoading={loader === 'download'}
-        >
-          Download
-        </Button>
-        <Button theme="dark">Upload</Button>
+      <div className="my-s3 w-3/5">
         <Button
           theme="success"
           classes="flex items-center"
-          onClick={() => handleApproval(vidData.objectS3Key)}
-          isLoading={loader === 'approve'}
+          onClick={handleTranscribe}
+          isLoading={loader === 'transcribe'}
         >
           <Image src={Check} alt="" width={24} height={24} />
-          <span className="ml-2">Approve</span>
+          <span className="ml-2">Transcribe</span>
         </Button>
       </div>
     </div>

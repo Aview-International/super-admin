@@ -18,6 +18,11 @@ export const LANGUAGES = [
 
 export const DASHBOARD_NAVLINKS = [
   {
+    text: 'Pending',
+    image: transcription,
+    route: '/pending',
+  },
+  {
     text: 'Transcription',
     image: transcription,
     route: '/transcription',

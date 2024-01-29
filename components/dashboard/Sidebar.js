@@ -8,7 +8,7 @@ import Cookies from 'js-cookie';
 
 const DashboardSidebar = ({ user }) => {
   return (
-    <aside className="fixed top-0 left-0 flex max-h-screen w-[170px] flex-col items-center overflow-y-auto py-s4 text-white">
+    <aside className="relative flex h-full w-[170px] flex-col items-center overflow-hidden overflow-y-auto py-s4 text-white">
       <div>
         <Link href="/dashboard">
           <a>
@@ -30,7 +30,7 @@ const DashboardSidebar = ({ user }) => {
 
 const Profile = ({ user }) => {
   return (
-    <div className="justify-content mt-s8 mb-s5 flex flex-col items-center">
+    <div className="justify-content my-s3 flex flex-col items-center">
       <Image
         loader={() => user.picture}
         src={user.picture}
@@ -55,7 +55,7 @@ const Navlink = () => {
       {DASHBOARD_NAVLINKS.map((link, index) => (
         <Link href={link.route} key={`sidebar-link-${index}`}>
           <a
-            className={`hover:gradient-dark group relative mb-s2 flex items-start gap-2 py-s1 px-s3 ${
+            className={`hover:gradient-dark group relative mb-s1.5 flex items-start gap-2 py-s1 px-s3 ${
               route === link.route && 'gradient-dark'
             }`}
           >
@@ -98,7 +98,7 @@ const Signout = () => {
 
   return (
     <button
-      className="mt-s8 flex w-full items-center px-s3 text-sm"
+      className="mt-s8 flex w-full items-center px-s3 text-sm absolute bottom-10"
       onClick={handleLogout}
     >
       <span className="mr-2">

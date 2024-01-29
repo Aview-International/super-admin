@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import PageTitle from '../../components/SEO/PageTitle';
-import { getAllPendingTranscriptionsApproval } from '../api/firebase';
-import SelectedVideo from '../../components/transcription/SelectedVideo-Transcription';
+import { getAllPendingTranscriptions } from '../api/firebase';
+import SelectedVideo from '../../components/pending/SelectedVideo-Transcription';
 import AllVideos from '../../components/admin/AllVideos';
 import Image from 'next/image';
 import Logo from '../../public/img/aview/logo.svg';
@@ -22,7 +22,7 @@ const Transcription = () => {
   };
 
   const getPendingJobs = async () => {
-    await getAllPendingTranscriptionsApproval(callback);
+    await getAllPendingTranscriptions(callback);
   };
 
   useEffect(() => {
