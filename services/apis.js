@@ -22,10 +22,19 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-export const downloadS3Object = async (s3Path) =>
+export const downloadS3Object = async (s3Path) => {
   await axiosInstance.post(baseUrl + 'admin/download-object', {
     s3Path,
   });
+};
+
+export const getRawSRT = async (s3Path) => {
+  const response = await axiosInstance.post(baseUrl + 'admin/get-raw-srt', {
+    s3Path,
+  });
+
+  return response.data;
+};
 
 export const approveSrt = async (
   jobId,
