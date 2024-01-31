@@ -13,6 +13,8 @@ module.exports = {
       blue: '#00FFFF',
       'gray-1': '#494B5B',
       'gray-2': '#99999C',
+      'gray-3': '#444455',
+      'gray-4': '#2c2c3f',
       white: {
         DEFAULT: '#FCFCFC',
         transparent: 'rgba(252, 252, 252, 0.15)',

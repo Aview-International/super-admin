@@ -23,11 +23,11 @@ const QATranslationBubble = ({ index, time, text, width, height }) => {
   return (
     <div className="qa-translation-bubble">
         <div className="header">
-            <span className="text-white mr-2">{index}</span>
+            <span className="text-white mr-3">{index}</span>
             <span className="text-gray-2 text-sm">{times[0]} - {times[1]}</span>
         </div>
       <textarea 
-        className="w-full active:outline-none focus:outline-none rounded-md p-2 bg-white-transparent text-white resize-none"  
+        className="w-full active:outline-none focus:outline-none rounded-lg p-3 bg-white-transparent text-white resize-none"  
         value={editedText} 
         onChange={handleTextChange} 
         ref={textAreaRef}

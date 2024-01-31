@@ -4,6 +4,7 @@ import QATranslationBubble from '../../../components/translation/QATranslationBu
 import { useRouter } from 'next/router';
 import Button from '/components/UI/Button';
 import Check from '/public/img/icons/check-circle-green.svg';
+import Save from '/public/img/icons/download.svg';
 import Image from 'next/image';
 import useWindowSize from '../../../hooks/useWindowSize';
 
@@ -17,13 +18,15 @@ const QA = () => {
     let transcriptLang = translatedLanguageKey.split(' ')[0];
     const {width: windowWidth, height: windowHeight} = useWindowSize();
 
+    const acceptedJob = true;
+
     useEffect(() => {
         if (creatorid && date && translatedLanguageKey) {
             translatedLanguageKey = `lang=${translatedLanguageKey}`;
             console.log(creatorid, date, translatedLanguageKey);
             get_srt(creatorid, date, translatedLanguageKey);
         }
-    }, [creatorid, date, translatedLanguageKey]); // Depend on the router query params
+    }, [creatorid, date, translatedLanguageKey,acceptedJob]); // Depend on the router query params
 
     const get_srt = async (creatorId, date, key) => {
         const data  = await getRawSRT(`srt-files/${creatorId}/${date}/${key}`);
@@ -67,85 +70,108 @@ const QA = () => {
 
 
     return (
-        <div className="flex">
-            <div className="w-1/2 max-h-screen overflow-y-auto">
-                <div className="p-10">
-                    <h2 className="text-white mb-5 text-xl">Transcription - {transcriptLang}</h2>
-                    {subtitles.map(subtitle => subtitle.index && (
+        <div>
+        {acceptedJob ? 
+            <div className="flex overflow-y-auto">
+                <div className="w-1/2 max-h-screen">
+                    <div className="py-10 pl-10">
+                        <h2 className="text-white mb-5 text-xl">Transcription - {transcriptLang}</h2>
+                        {subtitles.map(subtitle => subtitle.index && (
+                            <QATranslationBubble
+                                key={subtitle.index}
+                                index={subtitle.index}
+                                time={subtitle.time}
+                                text={subtitle.text}
+                                width={windowWidth}
+                                height={windowHeight}
+                            />
+                        ))}
                         <QATranslationBubble
-                            key={subtitle.index}
-                            index={subtitle.index}
-                            time={subtitle.time}
-                            text={subtitle.text}
-                            width={windowWidth}
-                            height={windowHeight}
+                                index={'1'}
+                                time={'1'}
+                                text={'The thing is that this is not only not consistent, if you use same classes elsewhere, it will work (this also includes cached builds), but it also doesn’t show any kind of errors or warnings.Actually as it currently stands, it seems that the limitation is that the string should be known at compile-time, things such as this work:'}
+                                width={windowWidth}
+                                height={windowHeight}
                         />
-                    ))}
-                    <QATranslationBubble
-                            index={'1'}
-                            time={'1'}
-                            text={'The thing is that this is not only not consistent, if you use same classes elsewhere, it will work (this also includes cached builds), but it also doesn’t show any kind of errors or warnings.Actually as it currently stands, it seems that the limitation is that the string should be known at compile-time, things such as this work:'}
-                            width={windowWidth}
-                            height={windowHeight}
-                    />
-                    
+                        
+                    </div>
+                </div>
+
+                {/* <div className="w-1/2 max-h-screen bg-transparent p-10 flex flex-col"> */}
+                <div className="w-1/2 fixed right-0 top-0 p-10 h-screen flex flex-col">
+                    <div className="bg-white-transparent flex-1 rounded-3xl p-6">
+                        <h2 className="text-white mb-2 text-xl">I Made a Tiny Touch ID Button for Mac!</h2>
+                        <h2 className="text-white mb-4 text-base">Snazzy Labs</h2>
+                        <div className="relative w-full overflow-hidden mb-10" style={{paddingTop:"56.25%"}}>
+                            <iframe
+                            className="absolute top-0 left-0 w-full h-full rounded-3xl"
+                            width="100%"
+                            height="100%"
+                            src={`https://www.youtube.com/embed/hz9Ek6fxX48`}
+                            title="YouTube video player"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowFullScreen
+                            ></iframe>
+                        </div>
+                        <div className="grid grid-cols-3 justify-center gap-s2">
+                            <Button
+                                theme="gray"
+                                classes="flex justify-center items-center"
+                                onClick={() =>
+                                    handleSaveSRT()
+                                }
+                                isLoading={loader === 'approve'}
+                            >
+                                <span className="mr-2">Reset</span>
+                            </Button>
+
+                            <Button
+                                theme="gray"
+                                classes="flex flex-row justify-center items-center"
+                                onClick={() => handleSaveSRT()}
+                                isLoading={loader === 'approve'}
+                            >
+                                <Image src={Save} alt="" width={24} height={24} className="relative"/>
+                                <span className="ml-2">Save</span>
+                            </Button>
+
+                            <Button
+                                theme="success"
+                                classes="flex justify-center items-center"
+                                onClick={() =>
+                                handleApproval(vid.date, vid.objectS3Key, lang)
+                                }
+                                isLoading={loader === 'approve' && button === lang}
+                            >
+                                <span className="mr-2">Approve</span>
+                                <Image src={Check} alt="" width={24} height={24} />
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+
+            :
+
+            <div className="flex justify-center items-center h-screen w-screen p-9">
+                <div className="w-[1360px] bg-white-transparent h-full rounded-2xl flex justify-center p-9">
+                    <div className="w-[656px] bg-white">
+                        <div className="flex-1"> {/* Responsive padding */}
+                            <div className="relative overflow-hidden mb-10" style={{paddingTop:"56.25%"}}>
+                                <iframe
+                                    className="absolute top-0 left-0 w-full h-full rounded-3xl"
+                                    src={`https://www.youtube.com/embed/hz9Ek6fxX48`}
+                                    title="YouTube video player"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowFullScreen
+                                ></iframe>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div className="w-1/2 max-h-screen bg-white-transparent p-10">
-                <h2 className="text-white mb-2 text-xl">I Made a Tiny Touch ID Button for Mac!</h2>
-                <h2 className="text-white mb-4 text-base">Snazzy Labs</h2>
-                <div className="relative w-full overflow-hidden mb-5" style={{paddingTop:"56.25%"}}>
-                    <iframe
-                    className="absolute top-0 left-0 w-full h-full"
-                    width="100%"
-                    height="100%"
-                    src={`https://www.youtube.com/embed/hz9Ek6fxX48`}
-                    title="YouTube video player"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                    ></iframe>
-                </div>
-                <div className="grid grid-cols-3 justify-center gap-s2">
-                    <Button
-                        theme="light"
-                        classes="flex justify-center items-center"
-                        onClick={() =>
-                            handleSaveSRT()
-                        }
-                        isLoading={loader === 'approve'}
-                    >
-                        <span className="mr-2">Reset Changes</span>
-                    </Button>
-
-                    <Button
-                        theme="light"
-                        classes="flex justify-center items-center"
-                        onClick={() =>
-                        handleApproval(vid.date, vid.objectS3Key, lang)
-                        }
-                        isLoading={loader === 'approve' && button === lang}
-                    >
-                        <span className="mr-2">Save Progress</span>
-                        
-                    </Button>
-
-                    <Button
-                        theme="success"
-                        classes="flex justify-center items-center"
-                        onClick={() =>
-                        handleApproval(vid.date, vid.objectS3Key, lang)
-                        }
-                        isLoading={loader === 'approve' && button === lang}
-                    >
-                        <span className="mr-2">Approve</span>
-                        <Image src={Check} alt="" width={24} height={24} />
-                    </Button>
-                </div>
-                        
-                
-
-            </div>
+        }
         </div>
     );
 };
