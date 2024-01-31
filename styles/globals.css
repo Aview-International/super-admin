@@ -132,6 +132,27 @@
         #7017ff 89.32%
       );
   }
+  /* width */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #000017;
+    border-radius: 100vw;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #99999C;
+    border-radius: 100vw;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #00FFFF;
+  }
   @keyframes fadeInDown {
     0% {
       opacity: 0;
