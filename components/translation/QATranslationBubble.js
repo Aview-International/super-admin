@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useEffect, useRef, } from 'react';
 
-const QATranslationBubble = ({ index, time, text }) => {
+const QATranslationBubble = ({ index, time, text, width, height }) => {
   // State for the editable text
   const textAreaRef = useRef(null);
   const [editedText, setEditedText] = useState(text);
@@ -18,7 +18,7 @@ const QATranslationBubble = ({ index, time, text }) => {
   useEffect(() => {
     textAreaRef.current.style.height = "auto";
     textAreaRef.current.style.height = textAreaRef.current.scrollHeight + "px";
-  }, [editedText])
+  }, [editedText, width, height])
   
   return (
     <div className="qa-translation-bubble">

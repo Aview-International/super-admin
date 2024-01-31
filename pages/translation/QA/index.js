@@ -4,26 +4,28 @@ import QATranslationBubble from '../../../components/translation/QATranslationBu
 import { useRouter } from 'next/router';
 import Button from '/components/UI/Button';
 import Check from '/public/img/icons/check-circle-green.svg';
-import Upload from '/public/img/icons/upload.svg';
 import Image from 'next/image';
+import useWindowSize from '../../../hooks/useWindowSize';
 
 const QA = () => {
     const [subtitles, setSubtitles] = useState([]);
     const [loader, setLoader] = useState('');
+
     const router = useRouter();
     const { creatorid, date } = router.query;
-    let { translatedLanguageKey } = router.query;
+    let { translatedLanguageKey = ''} = router.query;
     let transcriptLang = translatedLanguageKey.split(' ')[0];
+    const {width: windowWidth, height: windowHeight} = useWindowSize();
 
     useEffect(() => {
         if (creatorid && date && translatedLanguageKey) {
             translatedLanguageKey = `lang=${translatedLanguageKey}`;
             console.log(creatorid, date, translatedLanguageKey);
-            process_srt(creatorid, date, translatedLanguageKey);
+            get_srt(creatorid, date, translatedLanguageKey);
         }
     }, [creatorid, date, translatedLanguageKey]); // Depend on the router query params
 
-    const process_srt = async (creatorId, date, key) => {
+    const get_srt = async (creatorId, date, key) => {
         const data  = await getRawSRT(`srt-files/${creatorId}/${date}/${key}`);
         console.log(data);
         const processedSubtitles = [];
@@ -39,8 +41,28 @@ const QA = () => {
             processedSubtitles.push(subtitleBlock);
         }
 
-
         setSubtitles(processedSubtitles);
+    };
+
+    const rebuildSRTFile = () => {
+        let srtContent = "";
+
+        subtitles.forEach(subtitle => {
+            // Ensure that each subtitle block has an index, time, and text
+            if(subtitle.index && subtitle.time && subtitle.text) {
+                srtContent += `${subtitle.index}\n`;
+                srtContent += `${subtitle.time}\n`;
+                srtContent += `${subtitle.text}\n\n`; // Two newlines to separate this block from the next
+            }
+        });
+
+        return srtContent.trim(); // Trim to remove extra newline at the end if any
+    };
+
+    const handleSaveSRT = () => {
+        const srtContent = rebuildSRTFile();
+        console.log(srtContent); // You can replace this with actual file saving logic
+        // Logic to save srtContent to a file or send it to a backend server
     };
 
 
@@ -55,12 +77,16 @@ const QA = () => {
                             index={subtitle.index}
                             time={subtitle.time}
                             text={subtitle.text}
+                            width={windowWidth}
+                            height={windowHeight}
                         />
                     ))}
                     <QATranslationBubble
                             index={'1'}
                             time={'1'}
                             text={'The thing is that this is not only not consistent, if you use same classes elsewhere, it will work (this also includes cached builds), but it also doesn’t show any kind of errors or warnings.Actually as it currently stands, it seems that the limitation is that the string should be known at compile-time, things such as this work:'}
+                            width={windowWidth}
+                            height={windowHeight}
                     />
                     
                 </div>
@@ -80,7 +106,18 @@ const QA = () => {
                     allowFullScreen
                     ></iframe>
                 </div>
-                <div className="grid grid-cols-2 justify-center gap-s2">
+                <div className="grid grid-cols-3 justify-center gap-s2">
+                    <Button
+                        theme="light"
+                        classes="flex justify-center items-center"
+                        onClick={() =>
+                            handleSaveSRT()
+                        }
+                        isLoading={loader === 'approve'}
+                    >
+                        <span className="mr-2">Reset Changes</span>
+                    </Button>
+
                     <Button
                         theme="light"
                         classes="flex justify-center items-center"
@@ -89,8 +126,8 @@ const QA = () => {
                         }
                         isLoading={loader === 'approve' && button === lang}
                     >
-                        <span className="mr-2">Save</span>
-                        <Image src={Upload} alt="" width={24} height={24} />
+                        <span className="mr-2">Save Progress</span>
+                        
                     </Button>
 
                     <Button
