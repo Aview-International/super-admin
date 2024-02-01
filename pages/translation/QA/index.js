@@ -7,6 +7,7 @@ import Check from '/public/img/icons/check-circle-green.svg';
 import Save from '/public/img/icons/download.svg';
 import Image from 'next/image';
 import useWindowSize from '../../../hooks/useWindowSize';
+import ExpandableText from '../../../components/translation/ExpandableDescription';
 
 const QA = () => {
     const [subtitles, setSubtitles] = useState([]);
@@ -18,7 +19,7 @@ const QA = () => {
     let transcriptLang = translatedLanguageKey.split(' ')[0];
     const {width: windowWidth, height: windowHeight} = useWindowSize();
 
-    const acceptedJob = true;
+    const acceptedJob = false;
 
     useEffect(() => {
         if (creatorid && date && translatedLanguageKey) {
@@ -68,6 +69,15 @@ const QA = () => {
         // Logic to save srtContent to a file or send it to a backend server
     };
 
+    const GridItem = ({ label, value, style=''}) => {
+        return (
+            <div className={`w-[208px] ${style}`}>
+                <h2 className="text-gray-2 text-xs mb-[8px]">{label}</h2>
+                <h2 className="text-white text-lg">{value}</h2>
+            </div>
+        );
+    };
+
 
     return (
         <div>
@@ -99,12 +109,12 @@ const QA = () => {
 
                 {/* <div className="w-1/2 max-h-screen bg-transparent p-10 flex flex-col"> */}
                 <div className="w-1/2 fixed right-0 top-0 p-10 h-screen flex flex-col">
-                    <div className="bg-white-transparent flex-1 rounded-3xl p-6">
+                    <div className="bg-white-transparent flex-1 rounded-2xl p-6">
                         <h2 className="text-white mb-2 text-xl">I Made a Tiny Touch ID Button for Mac!</h2>
                         <h2 className="text-white mb-4 text-base">Snazzy Labs</h2>
                         <div className="relative w-full overflow-hidden mb-10" style={{paddingTop:"56.25%"}}>
                             <iframe
-                            className="absolute top-0 left-0 w-full h-full rounded-3xl"
+                            className="absolute top-0 left-0 w-full h-full rounded-2xl"
                             width="100%"
                             height="100%"
                             src={`https://www.youtube.com/embed/hz9Ek6fxX48`}
@@ -113,16 +123,16 @@ const QA = () => {
                             allowFullScreen
                             ></iframe>
                         </div>
-                        <div className="grid grid-cols-3 justify-center gap-s2">
+                        <div className="grid grid-cols-3 justify-center gap-s4">
                             <Button
-                                theme="gray"
+                                theme="error"
                                 classes="flex justify-center items-center"
                                 onClick={() =>
                                     handleSaveSRT()
                                 }
                                 isLoading={loader === 'approve'}
                             >
-                                <span className="mr-2">Reset</span>
+                                <span className="mr-2">Discard Changes</span>
                             </Button>
 
                             <Button
@@ -132,7 +142,7 @@ const QA = () => {
                                 isLoading={loader === 'approve'}
                             >
                                 <Image src={Save} alt="" width={24} height={24} className="relative"/>
-                                <span className="ml-2">Save</span>
+                                <span className="ml-2">Save Progress</span>
                             </Button>
 
                             <Button
@@ -153,20 +163,47 @@ const QA = () => {
 
             :
 
-            <div className="flex justify-center items-center h-screen w-screen p-9">
-                <div className="w-[1360px] bg-white-transparent h-full rounded-2xl flex justify-center p-9">
-                    <div className="w-[656px] bg-white">
-                        <div className="flex-1"> {/* Responsive padding */}
-                            <div className="relative overflow-hidden mb-10" style={{paddingTop:"56.25%"}}>
-                                <iframe
-                                    className="absolute top-0 left-0 w-full h-full rounded-3xl"
-                                    src={`https://www.youtube.com/embed/hz9Ek6fxX48`}
-                                    title="YouTube video player"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                    allowFullScreen
-                                ></iframe>
+            <div className="flex justify-center items-center h-screen w-screen py-[40px]">
+                <div className="w-[1360px] bg-white-transparent h-full rounded-2xl flex justify-center overflow-y-auto overflow-x-hidden">
+                    <div>
+                        <div className="w-[656px] flex justify-center flex-col">
+                            <div className="flex-1 my-[40px]"> 
+                                <div className="relative overflow-hidden mb-10" style={{paddingTop:"56.25%"}}>
+                                    <iframe
+                                        className="absolute top-0 left-0 w-full h-full rounded-2xl"
+                                        src={`https://www.youtube.com/embed/hz9Ek6fxX48`}
+                                        title="YouTube video player"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowFullScreen
+                                    ></iframe>
+                                </div>
+
+                                <div className="grid grid-cols-3 gap-y-[40px] gap-x-[16px] grid-rows-2 justify-center mb-[40px]">
+                                    <GridItem label="REVIEWED BY" value="Victor OgunJobi"></GridItem>
+                                    <GridItem label="ORIGINAL lANGUAGE" value="English"></GridItem>
+                                    <GridItem label="TRANSLATED LANGUAGE" value="Portuguese"></GridItem>
+                                    <GridItem label="WORD COUNT" value="387"></GridItem>
+                                    <GridItem label="PRICE" value="$387"></GridItem>
+                                    <GridItem label="DATE POSTED" value="January 31, 2024"></GridItem>
+                                </div>
+
+                                <ExpandableText text="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+
+                                
+                                <div className="w-[138px] h-[40px]">
+                                    <Button
+                                        theme="light"
+                                        classes="flex flex-row justify-center items-center"
+                                        onClick={() => handleSaveSRT()}
+                                        isLoading={loader === 'approve'}
+                                    >
+                                        <span>Accept</span>
+                                    </Button>
+                                </div>
+
                             </div>
                         </div>
+                        
                     </div>
                 </div>
             </div>
