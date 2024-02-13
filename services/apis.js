@@ -245,20 +245,28 @@ export const transcribeSocialLink = async (body) =>
   await axiosInstance.post('transcription/social', body);
 
 
-  export const createTranslator = async (
+export const createTranslator = async (
+  name,
+  email,
+  nativeLanguage,
+  country,
+  paymentMethod,
+  paymentDetails,
+) => {
+  return axiosInstance.post(baseUrl + 'admin/create-translator', {
     name,
     email,
     nativeLanguage,
     country,
     paymentMethod,
     paymentDetails,
-  ) => {
-    return axiosInstance.post(baseUrl + 'admin/create-translator', {
-      name,
-      email,
-      nativeLanguage,
-      country,
-      paymentMethod,
-      paymentDetails,
-    });
-  };
+  });
+};
+
+export const sendSupportMessage = async (email, message) => {
+
+  return axiosInstance.post(baseUrl + 'admin/create-translator-inquiry', {
+    email,
+    message,
+  });
+};
