@@ -128,6 +128,14 @@ export const getSupportedLanguages = async () => {
   return response.data;
 };
 
+export const getCountriesAndCodes = async () => {
+  const response = await axiosInstance.get(
+    baseUrl + 'admin/countries-and-codes'
+  );
+
+  return response.data;
+}
+
 export const getRegionCategory = async (language) => {
   const response = await axiosInstance.post(
     baseUrl + 'admin/youtube-categories',
@@ -235,3 +243,22 @@ export const getElevenLabsVoices = async () =>
 
 export const transcribeSocialLink = async (body) =>
   await axiosInstance.post('transcription/social', body);
+
+
+  export const createTranslator = async (
+    name,
+    email,
+    nativeLanguage,
+    country,
+    paymentMethod,
+    paymentDetails,
+  ) => {
+    return axiosInstance.post(baseUrl + 'admin/create-translator', {
+      name,
+      email,
+      nativeLanguage,
+      country,
+      paymentMethod,
+      paymentDetails,
+    });
+  };
