@@ -187,7 +187,7 @@ const Onboarding = () => {
 
                         </div>
                     </Popup>
-                    <div className="mt-s2 float-right mr-[100px]">
+                    <div className="mt-s2 float-right mr-[100px] cursor-pointer">
                         <a className="relative flex items-center rounded-full bg-white-transparent px-s2 py-2.5 text-sm" onClick={() => setPopupSupport(true)}>
                             <span className="mr-s1.5 grid place-content-center brightness-0 invert">
                             <Image src={messages} alt="Messages" />

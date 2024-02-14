@@ -39,6 +39,7 @@ const Popup = ({ show, children, onClose }) => {
   const backgroundStyle = {
     opacity: animationState === 'showing' || animationState === 'visible' ? 1 : 0,
     transition: 'opacity 0.5s ease-out',
+    backdropFilter: 'blur(8px)',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     position: 'fixed',
     top: 0,
