@@ -13,6 +13,7 @@ import CheckBox from '../../../components/FormComponents/CheckBox';
 import Popup from '../../../components/UI/Popup';
 import messages from '../../../public/img/icons/messages.svg';
 import Textarea from '../../../components/FormComponents/Textarea';
+import PageTitle from '../../../components/SEO/PageTitle';
 
 
 const Onboarding = () => {
@@ -129,6 +130,7 @@ const Onboarding = () => {
 
     return (
         <>
+            <PageTitle title="Onboarding" />
             {isLoading ? (
                 <FullScreenLoader />
             ) : (
