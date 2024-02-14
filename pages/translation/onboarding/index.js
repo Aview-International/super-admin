@@ -48,9 +48,9 @@ const Onboarding = () => {
                 throw new Error('Please enter email');
             } else if (!verifyEmail(email)) {
                 throw new Error('Please enter a valid email');
-            } else if (nativeLanguage=="Select"){
+            } else if (nativeLanguage=='Select'){
                 throw new Error('Please select native language');
-            } else if (country=="Select"){
+            } else if (country=='Select'){
                 throw new Error('Please select country');
             }else if (!checkedState){
                 throw new Error('Please select payment method');
@@ -140,7 +140,7 @@ const Onboarding = () => {
                             <div className="w-[500px] bg-indigo-2 rounded-2xl p-s3">
                                 <div className="flex flex-col justify-center items-center">
                                     <h2 className="text-white text-2xl mb-s2">Success!</h2>
-                                    <p className="text-white">You'll be notified via email when there is a new translation to be reviewed, thank you.</p>
+                                    <p className="text-white">You&apos;ll be notified via email when there is a new translation to be reviewed, thank you.</p>
 
 
                                 </div>
