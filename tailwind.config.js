@@ -8,6 +8,8 @@ module.exports = {
   ],
   theme: {
     colors: {
+      'indigo-1': '#28293e',
+      'indigo-2': '#080414',
       black: '#000017',
       purple: '#FC00FF',
       blue: '#00FFFF',
