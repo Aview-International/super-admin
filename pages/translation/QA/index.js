@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getRawSRT } from '../../../services/apis';
+import { getPendingTranslation } from '../../api/firebase'
 import QATranslationBubble from '../../../components/translation/QATranslationBubble';
 import { useRouter } from 'next/router';
 import Button from '/components/UI/Button';
@@ -9,28 +10,64 @@ import Image from 'next/image';
 import useWindowSize from '../../../hooks/useWindowSize';
 import ExpandableText from '../../../components/translation/ExpandableDescription';
 
+
 const QA = () => {
     const [subtitles, setSubtitles] = useState([]);
     const [loader, setLoader] = useState('');
+    const [job, setJob] = useState(null);
 
     const router = useRouter();
-    const { creatorid, date } = router.query;
-    let { translatedLanguageKey = ''} = router.query;
-    let transcriptLang = translatedLanguageKey.split(' ')[0];
+    const { jobId } = router.query;
+    const { translatorId } = router.query;
+    const { langKey = ''} = router.query;
+    // const { creatorid, date } = router.query;
+    // let { translatedLanguageKey = ''} = router.query;
+    // let transcriptLang = translatedLanguageKey.split(' ')[0];
+    let {transcriptLang = ''} = langKey.split(' ')[0];
+
     const {width: windowWidth, height: windowHeight} = useWindowSize();
 
-    const acceptedJob = false;
+    const acceptedJob = true;
+
+
+    // useEffect(() => {
+    //     if (creatorid && date && translatedLanguageKey) {
+    //         translatedLanguageKey = `lang=${translatedLanguageKey}`;
+    //         console.log(creatorid, date, translatedLanguageKey);
+    //         get_srt(creatorid, date, translatedLanguageKey);
+    //     }
+    // }, [creatorid, date, translatedLanguageKey,acceptedJob]); // Depend on the router query params
+
+    const callback = (data) => {
+        setJob(data);
+    };
 
     useEffect(() => {
-        if (creatorid && date && translatedLanguageKey) {
-            translatedLanguageKey = `lang=${translatedLanguageKey}`;
-            console.log(creatorid, date, translatedLanguageKey);
-            get_srt(creatorid, date, translatedLanguageKey);
+        if(jobId){
+            getJob(jobId);
         }
-    }, [creatorid, date, translatedLanguageKey,acceptedJob]); // Depend on the router query params
+ 
+        
+    },[jobId]);
 
-    const get_srt = async (creatorId, date, key) => {
-        const data  = await getRawSRT(`srt-files/${creatorId}/${date}/${key}`);
+    useEffect(() => {
+        if (job){
+            console.log(job);
+            console.log(job.creatorId, jobId, langKey)
+            getSrt(job.creatorId, jobId, langKey)
+        }
+ 
+        
+    },[job]);
+      
+
+    const getJob = async (jobId) => {
+        await getPendingTranslation(jobId, callback); 
+    }
+
+    const getSrt = async (creatorId, jobId, key) => {
+        // const data  = await getRawSRT(`dubbing-tasks/${creatorId}/${jobId}/${key}`);
+        const data  = await getRawSRT(`dubbing-tasks/Vc6W8QYEaUMZvA8EWcScj6RpXd23/1707243770347/PT-BR.srt`);
         console.log(data);
         const processedSubtitles = [];
 
@@ -48,25 +85,34 @@ const QA = () => {
         setSubtitles(processedSubtitles);
     };
 
+    // const rebuildSRTFile = () => {
+    //     let srtContent = "";
+
+    //     subtitles.forEach(subtitle => {
+    //         // Ensure that each subtitle block has an index, time, and text
+    //         if(subtitle.index && subtitle.time && subtitle.text) {
+    //             srtContent += `${subtitle.index}\n`;
+    //             srtContent += `${subtitle.time}\n`;
+    //             srtContent += `${subtitle.text}\n\n`; // Two newlines to separate this block from the next
+    //         }
+    //     });
+
+    //     return srtContent.trim(); // Trim to remove extra newline at the end if any
+    // };
+
     const rebuildSRTFile = () => {
-        let srtContent = "";
+        let srtContent = [] 
 
         subtitles.forEach(subtitle => {
-            // Ensure that each subtitle block has an index, time, and text
-            if(subtitle.index && subtitle.time && subtitle.text) {
-                srtContent += `${subtitle.index}\n`;
-                srtContent += `${subtitle.time}\n`;
-                srtContent += `${subtitle.text}\n\n`; // Two newlines to separate this block from the next
-            }
+            srtContent.push(subtitle.text);
         });
+        
 
-        return srtContent.trim(); // Trim to remove extra newline at the end if any
     };
 
     const handleSaveSRT = () => {
         const srtContent = rebuildSRTFile();
-        console.log(srtContent); // You can replace this with actual file saving logic
-        // Logic to save srtContent to a file or send it to a backend server
+        console.log(srtContent); 
     };
 
     const GridItem = ({ label, value, style=''}) => {
@@ -164,7 +210,7 @@ const QA = () => {
             :
 
             <div className="flex justify-center items-center h-screen w-screen py-[40px]">
-                <div className="w-[1360px] bg-white-transparent h-full rounded-2xl flex justify-center overflow-y-auto overflow-x-hidden">
+                <div className="w-[1360px] bg-white-transparent h-full rounded-2xl flex justify-center overflow-y-auto overflow-x-hidden overflow-y-auto">
                     <div>
                         <div className="w-[656px] flex justify-center flex-col">
                             <div className="flex-1 my-[40px]"> 
@@ -178,7 +224,7 @@ const QA = () => {
                                     ></iframe>
                                 </div>
 
-                                <div className="grid grid-cols-3 gap-y-[40px] gap-x-[16px] grid-rows-2 justify-center mb-[40px]">
+                                <div className="grid grid-cols-3 gap-y-[40px] gap-x-[16px] grid-rows-2 justify-center mb-[36px]">
                                     <GridItem label="REVIEWED BY" value="Victor OgunJobi"></GridItem>
                                     <GridItem label="ORIGINAL lANGUAGE" value="English"></GridItem>
                                     <GridItem label="TRANSLATED LANGUAGE" value="Portuguese"></GridItem>

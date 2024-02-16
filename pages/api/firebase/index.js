@@ -51,6 +51,23 @@ export const getAllPendingTranslations = async (callback) => {
   });
 };
 
+export const getPendingTranslation = async (jobId, callback) => {
+  console.log(`Job ID: ${jobId}`);
+  const translationRef = ref(database, `admin-jobs/pending/${jobId}`);
+  // Listen for value changes
+  try {
+  onValue(translationRef, (snapshot) => {
+    const jobData = snapshot.val();
+    if (jobData && jobData.status == "transcription") {
+      callback(snapshot.val());
+    }
+
+  });
+  }catch(error){
+    console.log("error" + error)
+  } 
+};
+
 export const getAllPendingVideoEdits = async (callback) => {
   const dubbingRef = ref(database, `admin-jobs/pending/dubbing`);
   onValue(dubbingRef, (snapshot) => {
