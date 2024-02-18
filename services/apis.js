@@ -279,3 +279,55 @@ export const sendSupportMessage = async (email, message) => {
     message,
   });
 };
+
+export const getTranslatorById = async (id) => {
+  return axiosInstance.post(baseUrl + 'admin/get-translator-by-id', {
+    id
+  });
+}
+
+export const createTranslatorProgress = async (
+  jobId,
+  creatorId,
+  lang, 
+  translatorId,
+  progress,
+  startTimestamp,
+  endTimestamp
+) => {
+  return axiosInstance.post(baseUrl + 'admin/create-translator-progress', {
+    jobId,
+    creatorId,
+    lang,
+    translatorId,
+    progress,
+    startTimestamp,
+    endTimestamp,
+  });
+};
+
+export const updateTranslatorProgress = async (
+  jobId,
+  progress,
+) => {
+  return axiosInstance.post(baseUrl + 'admin/update-translator-progress', {
+    jobId,
+    progress,
+  });
+};
+
+export const finishTranslation = async (
+  jobId
+) => {
+  return axiosInstance.post(baseUrl + 'admin/finish-translation', {
+    jobId
+  });
+}
+
+export const getTranslatorProgress = async (
+  jobId
+) => {
+  return axiosInstance.post(baseUrl + 'admin/get-translator-progress', {
+    jobId
+  });
+}
