@@ -14,12 +14,12 @@ import Popup from '../../../components/UI/Popup';
 import messages from '../../../public/img/icons/messages.svg';
 import Textarea from '../../../components/FormComponents/Textarea';
 import PageTitle from '../../../components/SEO/PageTitle';
-
+import MultipleSelectInput from '../../../components/FormComponents/MultipleSelectInput';
 
 const Onboarding = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
-    const [nativeLanguage, setNativeLanguage] = useState('Select'); 
+    const [nativeLanguage, setNativeLanguage] = useState([]); 
     const [country, setCountry] = useState('Select'); 
     const [paypal, setPaypal] = useState('');
     const [xoom, setXoom] = useState('');
@@ -41,6 +41,7 @@ const Onboarding = () => {
 
     const handleSubmit = async () => {
         setLoader('submit');
+        console.log(nativeLanguage);
         try{
             if (!name){
                 throw new Error('Please enter name');
@@ -48,7 +49,7 @@ const Onboarding = () => {
                 throw new Error('Please enter email');
             } else if (!verifyEmail(email)) {
                 throw new Error('Please enter a valid email');
-            } else if (nativeLanguage=='Select'){
+            } else if (nativeLanguage.length == 0){
                 throw new Error('Please select native language');
             } else if (country=='Select'){
                 throw new Error('Please select country');
@@ -118,6 +119,14 @@ const Onboarding = () => {
 
         setIsLoading(false);
     }
+
+    const handleMultipleLanguages = (option) => {
+        const allLanguages = [...nativeLanguage];
+        if (allLanguages.includes(option))
+          allLanguages.splice(allLanguages.indexOf(option), 1);
+        else allLanguages.push(option);
+        setNativeLanguage(allLanguages);
+    };
 
     useEffect(() => {
         
@@ -224,27 +233,26 @@ const Onboarding = () => {
                             classes="!mb-s2"
                         />
 
-
-                        <CustomSelectInput
-                            text="Native Language"
-                            name="playlists"
-                            value={nativeLanguage}
+                        <MultipleSelectInput
+                            text="Native Languages"
+                            answer={nativeLanguage}
                             options={supportedLanguages}
-                            onChange={(selectedOption) => setNativeLanguage(selectedOption)}
-                            labelClasses="text-lg text-white !mb-[4px]"
-                            valueClasses="text-lg font-normal !text-white ml-s1 font-light"
+                            onChange={(selectedOption) => {handleMultipleLanguages(selectedOption);console.log(nativeLanguage);}}
+                            labelClasses="!text-lg !text-white !mb-[4px]"
+                            valueClasses="!text-lg !text-white ml-s1 font-light"
                             classes="!mb-s2"
+                            hideCheckmark = {true}
+
                         />
                             
 
                         <CustomSelectInput
                             text="Country"
-                            name="playlists"
                             value={country}
                             options={countriesAndCodes}
                             onChange={(selectedOption) => setCountry(selectedOption)}
                             labelClasses="text-lg text-white !mb-[4px]"
-                            valueClasses="text-lg font-normal !text-white ml-s1 font-light"
+                            valueClasses="text-lg !text-white ml-s1 font-light"
                         />
 
                         <div className="text-white text-4xl font-bold mt-s5">Payment method</div>
