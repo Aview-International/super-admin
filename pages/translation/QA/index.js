@@ -18,6 +18,7 @@ import Popup from '../../../components/UI/Popup';
 
 const QA = () => {
     const [subtitles, setSubtitles] = useState([]);
+    const [englishSubtitles, setEnglishSubtitles] = useState([]);
     const [loader, setLoader] = useState('');
     const [job, setJob] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -27,6 +28,9 @@ const QA = () => {
     const [lang, setLang] = useState("");
     const [progress, setProgress] = useState(null);
     const [popupSubmit, setPopupSubmit] = useState(false)
+    const [totalWords, setTotalWords] = useState(0);
+    const [pay, setPay] = useState(0);
+    const [content, setContent] = useState("video");
 
     const router = useRouter();
     const { jobId } = router.query;
@@ -60,6 +64,7 @@ const QA = () => {
         const fetchData = async () => {
           if (lang) {
             await getSrt(job.creatorId, jobId, lang); 
+            await getEnglishSrt(job.creatorId, jobId);
             await getTranslator(jobId); 
           }
         };
@@ -139,7 +144,7 @@ const QA = () => {
         const updatedArray = subtitles.map((item,index) => {
             return {
               ...item,
-              text:  newSubtitles[index]// Change this to whatever new value or logic you need
+              text:  newSubtitles[index]
             };
         });
 
@@ -205,7 +210,9 @@ const QA = () => {
     const getSrt = async (creatorId, jobId, key) => {
         const data  = await getRawSRT(`dubbing-tasks/${creatorId}/${jobId}/${key}.srt`);
         console.log(data);
-        const processedSubtitles = [];
+        let processedSubtitles = [];
+        let numWords = 0;
+        let estimatedPay = 0;
 
         const lines = data.split('\n');
 
@@ -218,8 +225,34 @@ const QA = () => {
             processedSubtitles.push(subtitleBlock);
         }
 
+        for (let i = 0; i < processedSubtitles.length; i ++){
+            numWords += countWords(processedSubtitles[i].text);
+        }
+
+        estimatedPay = ((processedSubtitles.length * 0.02) + ((processedSubtitles.length/4) * 0.07)).toFixed(2);
+    
         setSubtitles(processedSubtitles);
+        setTotalWords(numWords);
+        setPay(estimatedPay);
     };
+
+    const getEnglishSrt = async (creatorId, jobId) => {
+        const data  = await getRawSRT(`dubbing-tasks/${creatorId}/${jobId}/original.srt`);
+        let processedSubtitles = [];
+
+        const lines = data.split('\n');
+
+        for (let i = 0; i < lines.length; i+=4){
+            let subtitleBlock = {
+                index: lines[i],
+                time: lines[i + 1],
+                text: lines[i + 2]
+            };
+            processedSubtitles.push(subtitleBlock);
+        }
+    
+        setEnglishSubtitles(processedSubtitles);
+    }
 
     // const rebuildSRTFile = () => {
     //     let srtContent = "";
@@ -247,10 +280,16 @@ const QA = () => {
 
     };
 
-    const handleSaveSRT = () => {
-        const srtContent = rebuildSRTFile();
-        console.log(srtContent); 
-    };
+    function countWords(str) {
+        if (str){
+            const words = str.split(' ').filter(word => word.length > 0);
+      
+            return words.length;
+        }
+        return 0;
+        
+    }
+
 
     const updateSubtitleText = (index, newText) => {
         const updatedSubtitles = subtitles.map((subtitle) => {
@@ -277,7 +316,7 @@ const QA = () => {
         <div>
         <Popup show={popupSubmit} onClose={() => setPopupSubmit(false)}>
             <div className="w-full h-full">
-                    <div className="w-[500px] bg-indigo-2 rounded-2xl p-s3">
+                    <div className="w-[500px] bg-indigo-2 rounded-lg p-s3">
                         <div className="flex flex-col justify-center items-center">
                             <h2 className="text-white text-2xl mb-s2">Submitted!</h2>
                             <p className="text-white">Please wait 1-2 business days for payment to process. Thank you.</p>
@@ -293,83 +332,115 @@ const QA = () => {
         {acceptedJob ? 
             <div className="flex overflow-y-auto">
                 <div className="w-1/2 max-h-screen">
-                    <div className="py-10 pl-10">
-                        <h2 className="text-white mb-5 text-xl">Transcription - {job ? job.languages : ""}</h2>
-                        {subtitles.map(subtitle => subtitle.index && (
-                            <QATranslationBubble
-                                key={subtitle.index}
-                                index={subtitle.index}
-                                time={subtitle.time}
-                                text={subtitle.text}
-                                width={windowWidth}
-                                height={windowHeight}
-                                updateText={(newText) => updateSubtitleText(subtitle.index, newText)}
-                            />
-                        ))}
-                        
+                    <div className="py-s5 pl-s5 pr-s1">
+                        <h2 className="text-white mb-s2 text-2xl">Transcription</h2>
+                        <div className="px-s2 py-[9px] text-indigo-2 bg-white w-fit text-xl rounded-lg h-[43px] mb-s2">
+                            {job ? job.languages : ""}
+                        </div>
+                        <div className="bg-white-transparent p-s2 rounded-2xl">
+                            {subtitles.map(subtitle => subtitle.index && (
+                                <QATranslationBubble
+                                    key={subtitle.index}
+                                    index={subtitle.index}
+                                    time={subtitle.time}
+                                    text={subtitle.text}
+                                    width={windowWidth}
+                                    height={windowHeight}
+                                    updateText={(newText) => updateSubtitleText(subtitle.index, newText)}
+                                />
+                            ))}
+                        </div>
                     </div>
                 </div>
 
-                {/* <div className="w-1/2 max-h-screen bg-transparent p-10 flex flex-col"> */}
-                <div className="w-1/2 fixed right-0 top-0 p-10 h-screen flex flex-col">
-                    <div className="bg-white-transparent flex-1 rounded-2xl p-6">
-                        <h2 className="text-white mb-2 text-xl">{job ? job.videoData.caption: ""}</h2>
-                        <h2 className="text-white mb-4 text-base">{creatorName ? creatorName : ""}</h2>
-                        <div className="relative w-full overflow-hidden mb-10" style={{paddingTop:"56.25%"}}>
-                            <iframe
-                            className="absolute top-0 left-0 w-full h-full rounded-2xl"
-                            width="100%"
-                            height="100%"
-                            src={job ? job.videoData.videoUrl : `https://www.youtube.com/embed/hz9Ek6fxX48`}
-                            title="YouTube video player"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            allowFullScreen
-                            ></iframe>
+                <div className={`w-1/2 ${content=="video" ? "fixed right-0 top-0 h-screen": "h-full"} py-s5 pr-s5 pl-s1 flex flex-col`}>
+                    <h2 className="text-white mb-s2 text-2xl">Content</h2>
+                    <div className="flex flex-row gap-s2">
+                        <div className={`px-s2 py-[9px] ${content=="video" ? "bg-white text-indigo-2" : "bg-white-transparent text-white"} w-fit text-xl rounded-lg h-[43px] mb-s2 cursor-pointer`} onClick={() => setContent("video")}>
+                            Video
                         </div>
-                        <div className="grid grid-cols-3 justify-center gap-s4">
-                            <Button
-                                theme="error"
-                                classes="flex justify-center items-center h-[48px]"
-                                onClick={() => handleResetSRT()}
-                                isLoading={loader === 'reset'}
-                            >
-                                <span className="mr-2">Reset</span>
-                            </Button>
-
-                            <Button
-                                theme="gray"
-                                classes="flex flex-row justify-center items-center h-[48px]"
-                                onClick={() => handleSave()}
-                                isLoading={loader === 'save'}
-                            >
-                                <Image src={Save} alt="" width={24} height={24} className="relative"/>
-                                <span className="ml-2">Save</span>
-                            </Button>
-
-                            <Button
-                                theme="success"
-                                classes="flex justify-center items-center h-[48px]"
-                                onClick={() => handleApprove()}
-                                isLoading={loader === 'approve'}
-                            >
-                                <span className="mr-2">Approve</span>
-                                <Image src={Check} alt="" width={24} height={24} />
-                            </Button>
+                        <div className={`px-s2 py-[9px] ${content=="english subtitles" ? "bg-white text-indigo-2" : "bg-white-transparent text-white"} w-fit text-xl rounded-lg h-[43px] mb-s2 cursor-pointer`} onClick={() => setContent("english subtitles")}>
+                            English Subtitles
                         </div>
                     </div>
+                    {content == "video" &&
+                        <div className="bg-white-transparent flex-1 rounded-2xl p-6 w-full h-full">
+                            <h2 className="text-white mb-2 text-xl">{job ? job.videoData.caption: ""}</h2>
+                            <h2 className="text-white mb-4 text-base">{creatorName ? creatorName : ""}</h2>
+                            <div className="relative w-full overflow-hidden mb-s5" style={{paddingTop:"56.25%"}}>
+                                <iframe
+                                className="absolute top-0 left-0 w-full h-full rounded-lg"
+                                width="100%"
+                                height="100%"
+                                src={job ? job.videoData.videoUrl : `https://www.youtube.com/embed/hz9Ek6fxX48`}
+                                title="YouTube video player"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                                ></iframe>
+                            </div>
+                            <div className="grid grid-cols-3 justify-center gap-s4">
+                                <Button
+                                    theme="error"
+                                    classes="flex justify-center items-center h-[48px]"
+                                    onClick={() => handleResetSRT()}
+                                    isLoading={loader === 'reset'}
+                                >
+                                    <span className="mr-2">Reset</span>
+                                </Button>
+
+                                <Button
+                                    theme="gray"
+                                    classes="flex flex-row justify-center items-center h-[48px]"
+                                    onClick={() => handleSave()}
+                                    isLoading={loader === 'save'}
+                                >
+                                    <Image src={Save} alt="" width={24} height={24} className="relative"/>
+                                    <span className="ml-2">Save</span>
+                                </Button>
+
+                                <Button
+                                    theme="success"
+                                    classes="flex justify-center items-center h-[48px]"
+                                    onClick={() => handleApprove()}
+                                    isLoading={loader === 'approve'}
+                                >
+                                    <span className="mr-2">Approve</span>
+                                    <Image src={Check} alt="" width={24} height={24} />
+                                </Button>
+                            </div>
+                        </div>
+                    }
+                    {content=="english subtitles" &&
+                        <div className="w-full">
+                                <div className="bg-white-transparent p-s2 rounded-2xl">
+                                    {englishSubtitles.map(subtitle => subtitle.index && (
+                                        <QATranslationBubble
+                                            key={subtitle.index}
+                                            index={subtitle.index}
+                                            time={subtitle.time}
+                                            text={subtitle.text}
+                                            width={windowWidth}
+                                            height={windowHeight}
+                                            editable={false}
+                                        />
+                                    ))} 
+                                </div>
+                            
+                        </div>
+                    }
                 </div>
             </div> 
 
             :
 
             <div className="flex justify-center items-center h-screen w-screen py-[40px]">
-                <div className="w-[1360px] bg-white-transparent h-full rounded-2xl flex justify-center overflow-y-auto overflow-x-hidden overflow-y-auto">
+                <div className="w-[1360px] bg-white-transparent h-full rounded-lg flex justify-center overflow-y-auto overflow-x-hidden overflow-y-auto">
                     <div>
                         <div className="w-[656px] flex justify-center flex-col">
                             <div className="flex-1 my-[40px]"> 
-                                <div className="relative overflow-hidden mb-10" style={{paddingTop:"56.25%"}}>
+                                <div className="relative overflow-hidden mb-s5" style={{paddingTop:"56.25%"}}>
                                     <iframe
-                                        className="absolute top-0 left-0 w-full h-full rounded-2xl"
+                                        className="absolute top-0 left-0 w-full h-full rounded-lg"
                                         src={job ? job.videoData.videoUrl : `https://www.youtube.com/embed/hz9Ek6fxX48`}
                                         title="YouTube video player"
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -381,8 +452,8 @@ const QA = () => {
                                     <GridItem label="CREATED BY" value={creatorName ? creatorName : ""}></GridItem>
                                     <GridItem label="ORIGINAL LANGUAGE" value="English"></GridItem>
                                     <GridItem label="TRANSLATED LANGUAGE" value={job ? job.languages : ""}></GridItem>
-                                    <GridItem label="WORD COUNT" value="387"></GridItem>
-                                    <GridItem label="PRICE" value="$387"></GridItem>
+                                    <GridItem label="WORD COUNT" value={totalWords}></GridItem>
+                                    <GridItem label="ESTIMATED PAY" value={`$${pay}`}></GridItem>
                                     <GridItem label="DATE POSTED" value="January 31, 2024"></GridItem>
                                 </div>
 

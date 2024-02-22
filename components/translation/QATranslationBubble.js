@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useEffect, useRef, } from 'react';
 
-const QATranslationBubble = ({ index, time, text, updateText, width, height }) => {
+const QATranslationBubble = ({ index, time, text, updateText, width, height, editable=true }) => {
   const textAreaRef = useRef(null);
   const [editedText, setEditedText] = useState(text);
 
@@ -27,11 +27,12 @@ const QATranslationBubble = ({ index, time, text, updateText, width, height }) =
         <span className="text-gray-2 text-sm">{times[0]} - {times[1]}</span>
       </div>
       <textarea 
-        className="w-full active:outline-none focus:outline-none rounded-lg p-3 bg-white-transparent text-white resize-none"  
+        className={`w-full active:outline-none focus:outline-none rounded-lg p-3 bg-indigo-2 text-white resize-none`}
         value={editedText} 
         onChange={handleTextChange} 
         ref={textAreaRef}
         rows="1"
+        disabled={!editable}
       />
     </div>
   );
