@@ -14,6 +14,7 @@ import FullScreenLoader from '../../../public/loaders/FullScreenLoader';
 import ErrorHandler from '../../../utils/errorHandler';
 import SuccessHandler from '../../../utils/successHandler';
 import Popup from '../../../components/UI/Popup';
+import warning from '/public/img/icons/warning.svg';
 
 
 const QA = () => {
@@ -334,8 +335,16 @@ const QA = () => {
                 <div className="w-1/2 max-h-screen">
                     <div className="py-s5 pl-s5 pr-s1">
                         <h2 className="text-white mb-s2 text-2xl">Transcription</h2>
-                        <div className="px-s2 py-[9px] text-indigo-2 bg-white w-fit text-xl rounded-lg h-[43px] mb-s2">
-                            {job ? job.languages : ""}
+                        <div className="flex flex-row items-center h-[43px] mb-s2">
+                            <div className="px-s2 py-[9px] text-indigo-2 bg-white w-fit text-xl rounded-lg h-[43px]">
+                                {job ? job.languages : ""}
+                            </div>
+                            <div className="ml-auto">
+                                <div className="flex flex-row items-center">
+                                    <Image src={warning}></Image>
+                                    <span className="text-white ml-[6px] text-lg mt-[4px]">May be potentially offensive</span>
+                                </div>
+                            </div>
                         </div>
                         <div className="bg-white-transparent p-s2 rounded-2xl">
                             {subtitles.map(subtitle => subtitle.index && (
@@ -360,11 +369,11 @@ const QA = () => {
                             Video
                         </div>
                         <div className={`px-s2 py-[9px] ${content=="english subtitles" ? "bg-white text-indigo-2" : "bg-white-transparent text-white"} w-fit text-xl rounded-lg h-[43px] mb-s2 cursor-pointer`} onClick={() => setContent("english subtitles")}>
-                            English Subtitles
+                            English subtitles
                         </div>
                     </div>
                     {content == "video" &&
-                        <div className="bg-white-transparent flex-1 rounded-2xl p-6 w-full h-full">
+                        <div className="bg-white-transparent flex-1 rounded-2xl p-s2 w-full h-full relative">
                             <h2 className="text-white mb-2 text-xl">{job ? job.videoData.caption: ""}</h2>
                             <h2 className="text-white mb-4 text-base">{creatorName ? creatorName : ""}</h2>
                             <div className="relative w-full overflow-hidden mb-s5" style={{paddingTop:"56.25%"}}>
@@ -378,15 +387,7 @@ const QA = () => {
                                 allowFullScreen
                                 ></iframe>
                             </div>
-                            <div className="grid grid-cols-3 justify-center gap-s4">
-                                <Button
-                                    theme="error"
-                                    classes="flex justify-center items-center h-[48px]"
-                                    onClick={() => handleResetSRT()}
-                                    isLoading={loader === 'reset'}
-                                >
-                                    <span className="mr-2">Reset</span>
-                                </Button>
+                            <div className="grid grid-cols-2 justify-center gap-s2">
 
                                 <Button
                                     theme="gray"
@@ -406,6 +407,17 @@ const QA = () => {
                                 >
                                     <span className="mr-2">Approve</span>
                                     <Image src={Check} alt="" width={24} height={24} />
+                                </Button>
+                            </div>
+                            
+                            <div className="absolute bottom-[23px] h-[45px] w-1/3 flex flex-grow">
+                                <Button
+                                        theme="gray"
+                                        classes="flex justify-center items-center h-[45px]"
+                                        onClick={() => handleResetSRT()}
+                                        isLoading={loader === 'reset'}
+                                    >
+                                        <span className="mr-2">Reset</span>
                                 </Button>
                             </div>
                         </div>

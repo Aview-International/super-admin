@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useEffect, useRef, } from 'react';
+import warning from '/public/img/icons/warning.svg';
+import Image from 'next/image';
 
-const QATranslationBubble = ({ index, time, text, updateText, width, height, editable=true }) => {
+const QATranslationBubble = ({ index, time, text, updateText, width, height, editable=true, offensive=true }) => {
   const textAreaRef = useRef(null);
   const [editedText, setEditedText] = useState(text);
 
@@ -26,14 +28,20 @@ const QATranslationBubble = ({ index, time, text, updateText, width, height, edi
         <span className="text-white mr-3">{index}</span>
         <span className="text-gray-2 text-sm">{times[0]} - {times[1]}</span>
       </div>
-      <textarea 
-        className={`w-full active:outline-none focus:outline-none rounded-lg p-3 bg-indigo-2 text-white resize-none`}
-        value={editedText} 
-        onChange={handleTextChange} 
-        ref={textAreaRef}
-        rows="1"
-        disabled={!editable}
-      />
+      <div className="flex flex-row items-center mb-s1 bg-indigo-2 rounded-lg">
+        <textarea 
+          className={`w-full active:outline-none focus:outline-none rounded-lg p-3 bg-transparent text-white resize-none`}
+          value={editedText} 
+          onChange={handleTextChange} 
+          ref={textAreaRef}
+          rows="1"
+          disabled={!editable}
+        />
+        {offensive && 
+        <div className="relative mr-s2 top-[3px]">
+          <Image src={warning}></Image>
+        </div>}
+      </div>
     </div>
   );
 };
