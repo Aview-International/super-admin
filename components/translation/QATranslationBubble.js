@@ -3,7 +3,7 @@ import { useEffect, useRef, } from 'react';
 import warning from '/public/img/icons/warning.svg';
 import Image from 'next/image';
 
-const QATranslationBubble = ({ index, time, text, updateText, width, height, editable=true, offensive=true }) => {
+const QATranslationBubble = ({ index, time, text, updateText, width, height, editable=true, offensive=false }) => {
   const textAreaRef = useRef(null);
   const [editedText, setEditedText] = useState(text);
 
