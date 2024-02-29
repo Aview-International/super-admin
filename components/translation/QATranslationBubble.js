@@ -34,7 +34,6 @@ const QATranslationBubble = ({ index, time, text, updateText, width, height, edi
           value={editedText} 
           onChange={handleTextChange} 
           ref={textAreaRef}
-          rows="1"
           disabled={!editable}
         />
         {offensive && 

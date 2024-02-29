@@ -41,8 +41,6 @@ const QA = () => {
 
     const {width: windowWidth, height: windowHeight} = useWindowSize();
 
-    
-
     const callback = (data) => {
         setJob(data);
     };
@@ -50,15 +48,13 @@ const QA = () => {
     useEffect(() => {
         if(jobId){
             getJob(jobId);
-            
-            
         }
     },[jobId]);
 
     useEffect(() => {
         if (job){
             console.log(job);
-            setLang((SupportedLanguages.find(language => language.languageName === job.translatedLanguage)["translateCode"]));
+            setLang((SupportedLanguages.find(language => language.languageName === job.translatedLanguage).translateCode));
             getProfile();
             const date = new Date(parseInt(job.timestamp));
             setUploadDate(date.toLocaleDateString('en-US',{year: 'numeric', month: 'long', day: 'numeric'}));
@@ -80,16 +76,19 @@ const QA = () => {
 
     useEffect(() => {
         //check to see if the current translator is the translator that took the job
-        if (progress && progress['translatorId'] == translatorId){
+        if (progress && progress.translatorId == translatorId){
             setAcceptedJob(true);
 
-            if (progress["progress"]){
-                console.log(progress["progress"].length, subtitles.length);
-                updateSubtitles(progress["progress"]);
+            if (progress.progress){
+                console.log(progress.progress.length, subtitles.length);
+                updateSubtitles(progress.progress);
+            }
+
+            if (progress.endTimestamp != null){
+                setPopupSubmit(true);
             }
         }
     },[progress])
-
 
     const handleAccept = async () => {
         try{
@@ -103,14 +102,12 @@ const QA = () => {
                     ErrorHandler(error);
                 }
                 
-                
             }else{
                 throw new Error("Job has already been taken. Please select an available job.");
             }
         }catch(error){
             ErrorHandler(error);
         }
-        
         
     }
 
@@ -142,8 +139,6 @@ const QA = () => {
         }catch(error){
             ErrorHandler(error);
         }
-       
-        
         
     }
 
@@ -172,7 +167,6 @@ const QA = () => {
             setLoader('');
             ErrorHandler("Failed to discard changes", error);
         });
-
 
     }
 
@@ -203,13 +197,11 @@ const QA = () => {
         });
     }
 
-
     const getProfile = async () => {
         const res = await getUserProfile(job.creatorId);
         setCreatorName(res?.firstName + ' ' + res?.lastName);
-      };
+    };
       
-
     const getJob = async (jobId) => {
         await getPendingTranslation(jobId, callback); 
     }
@@ -314,9 +306,9 @@ const QA = () => {
             }
             `}
             </style>
-            <Popup show={popupSubmit} onClose={() => setPopupSubmit(false)}>
+            <Popup show={popupSubmit} disableClose={true}>
                 <div className="w-full h-full">
-                        <div className="w-[500px] bg-indigo-2 rounded-lg p-s3">
+                        <div className="w-[500px] bg-indigo-2 rounded-2xl p-s3">
                             <div className="flex flex-col justify-center items-center">
                                 <h2 className="text-white text-2xl mb-s2">Submitted!</h2>
                                 <p className="text-white">Please wait 1-2 business days for payment to process. Thank you.</p>
@@ -397,13 +389,13 @@ const QA = () => {
                                 <div className="grid grid-cols-2 justify-center gap-s2">
 
                                     <Button
-                                        theme="gray"
+                                        
                                         classes="flex flex-row justify-center items-center h-[48px]"
                                         onClick={() => handleSave()}
                                         isLoading={loader === 'save'}
                                     >
-                                        <Image src={Save} alt="" width={24} height={24} className="relative"/>
-                                        <span className="ml-2">Save</span>
+                                        {/* <Image src={Save} alt="" width={24} height={24} className="relative"/> */}
+                                        <span>Save</span>
                                     </Button>
 
                                     <Button

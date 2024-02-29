@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Border from './Border';
 
-const Popup = ({ show, children, onClose }) => {
+const Popup = ({ show, children, onClose, disableClose=false }) => {
   const [display, setDisplay] = useState(false); // Controls the display of the entire component
   const [animationState, setAnimationState] = useState('hidden'); // New state to manage animation states: 'hidden', 'showing', 'visible', 'hiding'
 
@@ -25,13 +25,15 @@ const Popup = ({ show, children, onClose }) => {
   }, [show]);
 
   const handleBackgroundClick = (e) => {
-    if (e.currentTarget === e.target) {
-      setAnimationState('hiding'); // Begin content slide-out and background fade-out animations
-      setTimeout(() => {
-        onClose(); // Delay onClose to allow animations to complete
-        setDisplay(false); // Hide the entire component after animations
-        setAnimationState('hidden'); // Reset animation state
-      }, 500); // Ensure this matches the transition duration
+    if (!disableClose){
+      if (e.currentTarget === e.target) {
+        setAnimationState('hiding'); // Begin content slide-out and background fade-out animations
+        setTimeout(() => {
+          onClose(); // Delay onClose to allow animations to complete
+          setDisplay(false); // Hide the entire component after animations
+          setAnimationState('hidden'); // Reset animation state
+        }, 500); // Ensure this matches the transition duration
+      }
     }
   };
 
