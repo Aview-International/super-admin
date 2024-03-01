@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { useEffect, useRef, } from 'react';
+import { useState, useEffect, useRef,  } from 'react';
 import warning from '/public/img/icons/warning.svg';
 import Image from 'next/image';
 
 const QATranslationBubble = ({ index, time, text, updateText, width, height, editable=true, offensive=false }) => {
   const textAreaRef = useRef(null);
   const [editedText, setEditedText] = useState(text);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const times = time.split(' --> ');
   index = index.split(' ')[0];
@@ -20,7 +20,7 @@ const QATranslationBubble = ({ index, time, text, updateText, width, height, edi
     textAreaRef.current.style.height = "auto";
     textAreaRef.current.style.height = textAreaRef.current.scrollHeight + "px";
     setEditedText(text);
-  }, [editedText, width, height, text]);
+  }, [editedText, width, height, text, imageLoaded]);
   
   return (
     <div className="qa-translation-bubble">
@@ -35,10 +35,11 @@ const QATranslationBubble = ({ index, time, text, updateText, width, height, edi
           onChange={handleTextChange} 
           ref={textAreaRef}
           disabled={!editable}
+          rows="1"
         />
         {offensive && 
         <div className="relative mr-s2 top-[3px]">
-          <Image src={warning}></Image>
+          <Image src={warning} onLoad={() => setImageLoaded(true)}></Image>
         </div>}
       </div>
     </div>

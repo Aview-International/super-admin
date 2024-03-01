@@ -5,7 +5,6 @@ import QATranslationBubble from '../../../components/translation/QATranslationBu
 import { useRouter } from 'next/router';
 import Button from '/components/UI/Button';
 import Check from '/public/img/icons/check-circle-green.svg';
-import Save from '/public/img/icons/download.svg';
 import Image from 'next/image';
 import useWindowSize from '../../../hooks/useWindowSize';
 import ExpandableText from '../../../components/translation/ExpandableDescription';
@@ -53,13 +52,11 @@ const QA = () => {
 
     useEffect(() => {
         if (job){
-            console.log(job);
             setLang((SupportedLanguages.find(language => language.languageName === job.translatedLanguage).translateCode));
             getProfile();
             const date = new Date(parseInt(job.timestamp));
             setUploadDate(date.toLocaleDateString('en-US',{year: 'numeric', month: 'long', day: 'numeric'}));
             setFlags(job.flags);
-            console.log(job.flags);
         }
     },[job]);
 
@@ -80,7 +77,6 @@ const QA = () => {
             setAcceptedJob(true);
 
             if (progress.progress){
-                console.log(progress.progress.length, subtitles.length);
                 updateSubtitles(progress.progress);
             }
 
@@ -93,11 +89,9 @@ const QA = () => {
     const handleAccept = async () => {
         try{
             if (available){
-                console.log(lang)
                 try{
                     let res = await createTranslatorProgress(jobId, job.creatorId, lang, translatorId, null,null,null);
                     setAcceptedJob(true);
-                    console.log(res);
                 }catch(error){
                     ErrorHandler(error);
                 }
@@ -112,8 +106,6 @@ const QA = () => {
     }
 
     const getTranslator = async (jobId) => {
-        console.log(jobId);
-        console.log(translatorId);
         try{
             await getTranslatorById(translatorId)
             .then((res) => {
@@ -128,7 +120,6 @@ const QA = () => {
             });
             await getTranslatorProgress(jobId)
             .then( (res) => {
-                console.log(res);
                 setAvailable(res.data == "");
     
                 if (res.data != ""){
@@ -208,7 +199,6 @@ const QA = () => {
 
     const getSrt = async (creatorId, jobId, key) => {
         const data  = await getRawSRT(`dubbing-tasks/${creatorId}/${jobId}/${key}.srt`);
-        console.log(data);
         let processedSubtitles = [];
         let numWords = 0;
         let estimatedPay = 0;
@@ -259,7 +249,6 @@ const QA = () => {
         subtitles.forEach(subtitle => {
             srtContent.push(subtitle.text);
         });
-        console.log(srtContent);
         return srtContent;
 
     };
