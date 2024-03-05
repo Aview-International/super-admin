@@ -58,7 +58,7 @@ export const getPendingTranslation = async (jobId, callback) => {
   try {
   onValue(translationRef, (snapshot) => {
     const jobData = snapshot.val();
-    if (jobData && jobData.status == "transcription") {
+    if (jobData) {
       callback(snapshot.val());
     }
 

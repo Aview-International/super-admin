@@ -144,7 +144,7 @@ const Onboarding = () => {
                 <FullScreenLoader />
             ) : (
                 <>  
-                    <Popup show={popupSubmit} onClose={() => setPopupSubmit(false)}>
+                    <Popup show={popupSubmit} disableClose={true}>
                     <div className="w-full h-full">
                             <div className="w-[500px] bg-indigo-2 rounded-2xl p-s3">
                                 <div className="flex flex-col justify-center items-center">

@@ -14,6 +14,7 @@ import ErrorHandler from '../../../utils/errorHandler';
 import SuccessHandler from '../../../utils/successHandler';
 import Popup from '../../../components/UI/Popup';
 import warning from '/public/img/icons/warning.svg';
+import PageTitle from '../../../components/SEO/PageTitle';
 
 
 const QA = () => {
@@ -287,6 +288,7 @@ const QA = () => {
 
     return (
         <div>
+            <PageTitle title="Review" />
             <style>
             {`
             ::-webkit-scrollbar-track {
