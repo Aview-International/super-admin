@@ -235,3 +235,14 @@ export const getElevenLabsVoices = async () =>
 
 export const transcribeSocialLink = async (body) =>
   await axiosInstance.post('transcription/social', body);
+
+export const getS3DownloadLink = async (s3FilePath) => {
+  await axiosInstance.post('admin/getS3DownloadLink', s3FilePath);
+}
+
+export const completeJob = async (creatorId, timestamp) => {
+  await axiosInstance.post('admin/complete-job',{
+    creatorId,
+    timestamp
+  })
+}

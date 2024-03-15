@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { getUserProfile } from '../../pages/api/firebase';
 import { useEffect, useState } from 'react';
 
-const AllVideos = ({ job, setSelectedJob, selectedJob }) => {
+const AllVideos = ({ job, setSelectedJob, selectedJob, setVideoDownloadLink }) => {
   const [creatorData, setCreatorData] = useState({
     name: '',
     picture: '',
@@ -25,22 +25,28 @@ const AllVideos = ({ job, setSelectedJob, selectedJob }) => {
       className={`cursor-pointer p-s2 hover:bg-white-transparent ${
         selectedJob?.jobId === job?.jobId ? 'bg-white-transparent' : ''
       }`}
-      onClick={() => setSelectedJob(job)}
+      onClick={() => {
+        setSelectedJob(job);
+        setVideoDownloadLink(job.videoDownloadLink);
+        console.log(job.videoDownloadLink);
+      }}
     >
-      <div>
-        {creatorData.picture && (
-          <Image
-            src={creatorData.picture}
-            alt=""
-            width={56}
-            height={56}
-            className="rounded-full"
-          />
-        )}
+      <div className="flex flex-row items-center">
         <div>
-          <p className="text-xl font-semibold">{job.caption}</p>
-          <p className="text-lg">{creatorData.name}</p>
-        </div>
+          {creatorData.picture && (
+            <Image
+              src={creatorData.picture}
+              alt=""
+              width={56}
+              height={56}
+              className="rounded-full"
+            />
+          )}
+          </div>
+          <div className="ml-s2">
+            <p className="text-lg font-semibold">{job.videoData.caption}</p>
+            <p className="text-base">{creatorData.name}</p>
+          </div>
       </div>
     </div>
   );
