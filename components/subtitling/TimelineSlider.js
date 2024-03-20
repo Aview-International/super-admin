@@ -66,6 +66,9 @@ const TimelineSlider = ({ videoRef }) => {
 
   return (
     <div className={styles.timeline_container}>
+      <div className={styles.time_indicator}>
+        {formatTime(value)} | {formatTime(3600)}
+      </div>
       <input
         type="range"
         min="0"
@@ -74,9 +77,6 @@ const TimelineSlider = ({ videoRef }) => {
         className={styles.timeline_slider}
         onChange={(e) => setValue(e.target.value)}
       />
-      <div className={styles.time_indicator}>
-        {formatTime(value)} / {formatTime(3600)}
-      </div>
       <div className={styles.thumbnail_container}>
         {canvases.map((_, index) => (
           <div key={index} ref={canvasRefs.current[index]} className={styles.canvas_thumbnail} style={{ width: '5%', height: 'auto' }}>

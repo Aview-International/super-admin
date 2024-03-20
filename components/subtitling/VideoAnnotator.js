@@ -258,7 +258,7 @@ const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef }) 
   };
 
   return (
-    <div>
+    <div className="relative">
       <video ref={videoRef} style={{ height: 'calc(100vh - 300px)' }}>
         <source src={videoUrl} type="video/mp4" />
       </video>

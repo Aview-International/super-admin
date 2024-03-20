@@ -45,4 +45,5 @@
     justify-content: space-around;
     overflow-x: hidden;
     white-space: nowrap;
+    padding-top:16px;
   }
