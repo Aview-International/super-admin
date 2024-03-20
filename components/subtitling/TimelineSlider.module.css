@@ -3,7 +3,7 @@
 .timeline_container {
     position: relative;
     width: 100%;
-    padding: 20px;
+    padding-top:16px;
   }
   
   .timeline_slider {
@@ -20,14 +20,14 @@
   .timeline_slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 20px;
+    width: 12px;
     height: 20px;
     background: #fff;
     cursor: pointer;
   }
   
   .timeline_slider::-moz-range-thumb {
-    width: 20px;
+    width: 12px;
     height: 20px;
     background: #fff;
     cursor: pointer;
@@ -36,7 +36,8 @@
   .time_indicator {
     text-align: center;
     color: #fff;
-    margin-top: 10px;
+    font-size:12px;
+    margin-left: 8px;
   }
   
   .thumbnail_container {
@@ -45,5 +46,16 @@
     justify-content: space-around;
     overflow-x: hidden;
     white-space: nowrap;
-    padding-top:16px;
+    margin-top:16px;
+    border-radius:7px;
+  }
+
+  .vertical_bar {
+    position: absolute;
+    top: -15px; /* Adjust as needed to intersect the frames */
+    left: 50%; /* Adjust dynamically based on the slider value */
+    height: calc(100% + 40px); /* Adjust as needed */
+    width: 2px; /* Width of the bar */
+    background-color: #FFF; /* Color of the bar */
+    z-index: 10;
   }
