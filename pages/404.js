@@ -1,8 +1,11 @@
 import Image from 'next/image';
+import Button from '../components/UI/Button';
 import aviewLogo from '../public/img/aview/logo.svg';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 const Page404 = () => {
+  const router = useRouter();
+
   return (
     <div className="h-screen-trick grid w-screen place-content-center text-center">
       <h1 className="-mt-s6 -mb-s2 flex items-center gap-s3 sm:-mb-s5 md:-mb-s8 md:gap-s4">
@@ -26,13 +29,10 @@ const Page404 = () => {
       <p className="pb-s4 text-lg text-white md:text-xl">
         Sorry, we were unable to find that page!
       </p>
-      <div>
-        <Link
-          className={`gradient-1 transition-300 relative block w-max cursor-pointer rounded-full px-s5 pt-s1.5 pb-s1 text-lg text-black`}
-          href="/"
-        >
+      <div className="mx-auto w-40">
+        <Button theme="light" onClick={() => router.push('/')}>
           Home
-        </Link>
+        </Button>
       </div>
     </div>
   );

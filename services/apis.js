@@ -212,10 +212,14 @@ export const uploadManualSrtTranslation = async (
   return response.data;
 };
 
-export const uploadManualSrtDubbing = async (srt, voiceId) => {
+export const uploadManualSrtDubbing = async ({ srt, voiceId, multiVoice }) => {
   let formData = new FormData();
   formData.append('srt', srt);
-  formData.append('voiceId', voiceId);
+  if (multiVoice) {
+    formData.append('multipleVoices', multiVoice);
+  } else {
+    formData.append('voiceId', voiceId);
+  }
   const response = await axiosInstance({
     method: 'POST',
     url: baseUrl + 'admin/manual-dubbing',
@@ -226,9 +230,6 @@ export const uploadManualSrtDubbing = async (srt, voiceId) => {
   });
   return response.data;
 };
-
-export const getPlayHtVoices = async () =>
-  (await axiosInstance.get('dubbing/get-play-ht-voices')).data;
 
 export const getElevenLabsVoices = async () =>
   (await axiosInstance.get('dubbing/get-elevenlabs-voices')).data;
