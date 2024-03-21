@@ -31,10 +31,13 @@ const FormInput = ({
   bgColor,
   textBlack,
   type,
+  labelClasses,
+  valueClasses,
+  classes
 }) => {
   return (
-    <div className="relative mb-s5 w-full text-xl text-white">
-      <label htmlFor={_id} className={`mb-s1 block w-full`}>
+    <div className={`relative mb-s5 w-full text-xl text-white ${classes}`}>
+      <label htmlFor={_id} className={`mb-s1 block w-full ${labelClasses}`}>
         {label}
       </label>
       <div>
@@ -46,7 +49,7 @@ const FormInput = ({
             placeholder={placeholder}
             className={`peer w-full rounded-[5px] px-s2 py-2 text-white focus:outline-none ${
               bgColor ? bgColor : 'bg-black'
-            } ${textBlack ? 'text-black' : 'text-white'}`}
+            } ${textBlack ? 'text-black' : 'text-white'} ${valueClasses}`}
             onChange={onChange}
             value={value}
           />

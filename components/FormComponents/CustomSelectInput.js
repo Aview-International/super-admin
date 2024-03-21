@@ -14,6 +14,9 @@ const CustomSelectInput = ({
   isValid,
   hideCheckmark,
   value,
+  labelClasses,
+  valueClasses,
+  classes
 }) => {
   const elementRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -29,14 +32,14 @@ const CustomSelectInput = ({
 
   return (
     <OutsideClickHandler onOutsideClick={() => setIsOpen(false)}>
-      <div className="relative mb-s4 text-xl text-white" ref={elementRef}>
-        <p className="mb-s1">{text}</p>
+      <div className={`relative mb-s4 text-xl text-white ${classes}`} ref={elementRef}>
+        <p className={`mb-s1 ${labelClasses}`}>{text}</p>
         <Border borderRadius="[5px] w-full">
           <div
             className="flex w-full cursor-pointer items-center justify-between rounded-md bg-black p-s1"
             onClick={() => setIsOpen(!isOpen)}
           >
-            <p className="text-white/70">{value || 'Your response'}</p>
+            <p className={`text-white/70 ${valueClasses}`}>{value || 'Your response'}</p>
             <span className={`transition-300  ${isOpen && 'rotate-180'}`}>
               <Image src={Arrow} alt="arrow" />
             </span>
