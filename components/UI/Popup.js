@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Border from './Border';
 
-const Popup = ({ show, children, onClose, disableClose=false }) => {
+const Popup = ({ show, children, onClose, disableClose = false }) => {
   const [display, setDisplay] = useState(false); // Controls the display of the entire component
   const [animationState, setAnimationState] = useState('hidden'); // New state to manage animation states: 'hidden', 'showing', 'visible', 'hiding'
 
@@ -25,7 +25,7 @@ const Popup = ({ show, children, onClose, disableClose=false }) => {
   }, [show]);
 
   const handleBackgroundClick = (e) => {
-    if (!disableClose){
+    if (!disableClose) {
       if (e.currentTarget === e.target) {
         setAnimationState('hiding'); // Begin content slide-out and background fade-out animations
         setTimeout(() => {
@@ -39,7 +39,8 @@ const Popup = ({ show, children, onClose, disableClose=false }) => {
 
   // Apply styles based on the animation state
   const backgroundStyle = {
-    opacity: animationState === 'showing' || animationState === 'visible' ? 1 : 0,
+    opacity:
+      animationState === 'showing' || animationState === 'visible' ? 1 : 0,
     transition: 'opacity 0.5s ease-out',
     backdropFilter: 'blur(8px)',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -56,7 +57,10 @@ const Popup = ({ show, children, onClose, disableClose=false }) => {
 
   const contentStyle = {
     transition: 'transform 0.5s ease-out',
-    transform: animationState === 'showing' || animationState === 'visible' ? 'translateY(0)' : 'translateY(-100%)',
+    transform:
+      animationState === 'showing' || animationState === 'visible'
+        ? 'translateY(0)'
+        : 'translateY(-100%)',
   };
 
   // Update the animation state to 'visible' after the showing transition is started
@@ -72,11 +76,13 @@ const Popup = ({ show, children, onClose, disableClose=false }) => {
   if (!display) return null; // Do not render the component if it should not be displayed
 
   return (
-    <div style={backgroundStyle} onClick={handleBackgroundClick} aria-hidden={!show}>
+    <div
+      style={backgroundStyle}
+      onClick={handleBackgroundClick}
+      aria-hidden={!show}
+    >
       <div style={contentStyle} onClick={(e) => e.stopPropagation()}>
-        <Border classes="w-full h-full relative rounded-2xl">
-          {children}
-        </Border>
+        <Border classes="w-full h-full relative rounded-2xl">{children}</Border>
       </div>
     </div>
   );
