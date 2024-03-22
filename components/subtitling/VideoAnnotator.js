@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 
 const cornerSize = 10; // Size of the draggable corner area for resizing
 
-const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef }) => {
+const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef, rectIndex, setRectIndex, rectangles, setRectangles }) => {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [isMoving, setIsMoving] = useState(false);
@@ -10,7 +10,7 @@ const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef }) 
   const [selectedRectIndex, setSelectedRectIndex] = useState(null);
   const [dragStartPoint, setDragStartPoint] = useState(null);
   const [resizeCorner, setResizeCorner] = useState(null);
-  const [rectangles, setRectangles] = useState([]);
+  //const [rectangles, setRectangles] = useState([]);
   const [currentRect, setCurrentRect] = useState(null);
   const [width, setWidth] = useState(null);
   const [height, setHeight] = useState(null);
@@ -100,6 +100,9 @@ const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef }) 
       const drawRectangles = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
         rectangles.forEach((rect, index) => {
+          if (index != rectIndex){
+            return;
+          }
           // Scale the rectangle dimensions and position
           const startX = rect.start.x * scaleX;
           const startY = rect.start.y * scaleY;
@@ -133,7 +136,7 @@ const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef }) 
       };
   
       drawRectangles();
-    }, [rectangles, selectedRectIndex, scaleX, scaleY, width, height]);
+    }, [rectangles, selectedRectIndex, scaleX, scaleY, width, height, rectIndex]);
 
   const checkForResizeCorner = (x, y, rect) => {
     if (!rect) return null;
