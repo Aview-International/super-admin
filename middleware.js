@@ -17,6 +17,7 @@ export const config = {
   matcher: [
     '/transcription',
     '/translation',
+    '/translation/QA',
     '/dubbing-edits',
     '/creator',
     '/distribution/:path*',
