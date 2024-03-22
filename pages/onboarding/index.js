@@ -149,7 +149,12 @@ const Onboarding = () => {
 
   return (
     <>
-      <PageTitle title="Onboarding" />
+      <PageTitle
+        title="Onboarding"
+        description={
+          'Join the league of reviewers servicing and distributing contents globally'
+        }
+      />
       {isLoading ? (
         <FullScreenLoader />
       ) : (
