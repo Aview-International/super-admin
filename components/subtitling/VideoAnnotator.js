@@ -160,6 +160,7 @@ const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef, re
     // Use scaledX and scaledY for hit detection
     for (let i = 0; i < rectangles.length; i++) {
       const corner = checkForResizeCorner(scaledX, scaledY, rectangles[i]);
+      console.log(corner);
       if (corner) {
         setIsResizing(true);
         setResizeCorner(corner);

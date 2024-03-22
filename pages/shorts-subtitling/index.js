@@ -9,10 +9,15 @@ import FormInput from '../../components/FormComponents/FormInput';
 import Textarea from '../../components/FormComponents/Textarea';
 import CustomSelectInput from '../../components/FormComponents/CustomSelectInput';
 import Caption from '../../components/subtitling/Caption';
+import Button from '../../components/UI/Button';
+import Check from '/public/img/icons/check-circle-green.svg';
+import Loader from '../../components/UI/Loader';
+import trash from '/public/img/icons/trash.svg'
 
 
 const shorts_subtitling = () => {
     const videoRef = useRef(null);
+    const hiddenVideoRef = useRef(null);
     const [addRectangle, setAddRectangle] = useState(false);
     const [rectangles, setRectangles] = useState([]);
     const [selectedRectIndex, setSelectedRectIndex] = useState(null);
@@ -35,7 +40,10 @@ const shorts_subtitling = () => {
       if (subtitle){
         return;
       }
-      let index = captionsArray.length;
+
+      setSubtitle(true);
+
+      let index = rectangles.length;
 
       if (!index){
         index = 0
@@ -44,20 +52,33 @@ const shorts_subtitling = () => {
       handleAddRectangle();
 
       let subtitleDetails = {
+        index:index,
         start: "",
         font: "Arial",
         fontColor: "white",
         outline:"black",
         background: "blurred",
       }
+
+      setSubtitleDetails(subtitleDetails);
+      setRectIndex(index);
       
 
     }
+
+    const handleClickSubtitle = () => {
+      if (!subtitle){
+        return;
+      }else{
+        setRectIndex(subtitleDetails.index);
+      }
+    }
+
     
 
 
     const handleCreateCaption = () => {
-      let index = captionsArray.length;
+      let index = rectangles.length;
 
       if (!index){
         index = 0
@@ -83,17 +104,22 @@ const shorts_subtitling = () => {
 
     useEffect(() =>{
       console.log(rectIndex);
-    },[rectIndex])
+      console.log(subtitle);
+    },[rectIndex,subtitle])
   
     return (
       <>
+      <PageTitle title="Captioning & Subtitling" />
   <div className="flex flex-col h-screen">
     {/* First two sections with calculated height */}
+    <video ref={hiddenVideoRef} style={{ height: 'calc(100vh - 280px)',display:'none' }}>
+        <source src="https://www.pexels.com/download/video/4832723/" type="video/mp4" />
+    </video>
     <div className="flex flex-row px-s5" style={{ height: 'calc(100vh - 200px)' }}>
       <div className="w-2/3 flex justify-center">
         <div className="flex items-center">
           <VideoAnnotator 
-            videoUrl="https://www.pexels.com/download/video/8859849/" 
+            videoUrl="https://www.pexels.com/download/video/4832723/" 
             videoRef={videoRef} 
             addRectangle={addRectangle} 
             onRectangleAdded={() => setAddRectangle(false)}
@@ -107,25 +133,47 @@ const shorts_subtitling = () => {
       <div className="w-1/3 overflow-y-auto">
         <div className="ml-s5 mt-s5">
           <div className="p-s2 bg-white-transparent rounded-2xl mb-s2">
-            <div className="flex flex-row items-center">
-              <div className="flex-shrink-0 flex-grow-0">
-              <Image src={play} alt="" width={40} height={40} />
+            <div className="flex flex-col justify-center">
+              <div className="flex flex-row items-center">
+                <div className="flex-shrink-0 flex-grow-0">
+                <Image src={play} alt="" width={40} height={40} />
+                </div>
+
+                <div className= "ml-s2">
+                  <div className="text-white text-lg">
+                  Logan Paul and KSI Surprise Fans With Prime Energy 
+                  </div>
+
+                  <div className="text-white text-opacity-75 text-sm mt-[4px]">
+                  Logan Paul
+                  </div>
+                </div>
               </div>
+              <div className="grid grid-cols-2 justify-center gap-s2 mt-s2">
+              <Button
+                theme="error"
+                classes="flex justify-center items-center h-[48px]"
+                onClick={() => handleApprove()}
+                //isLoading={loader === 'approve'}
+              >
+                <span className="mr-2">Flag</span>
+              </Button>
 
-              <div className= "ml-s2">
-                <div className="text-white text-lg">
-                Logan Paul and KSI Surprise Fans With Prime Energy 
-                </div>
-
-                <div className="text-white text-opacity-75 text-sm mt-[4px]">
-                Logan Paul
-                </div>
+              <Button
+                  theme="success"
+                  classes="flex justify-center items-center h-[48px]"
+                  onClick={() => handleApprove()}
+                  //isLoading={loader === 'approve'}
+              >
+                  <span className="mr-2">Approve</span>
+                  <Image src={Check} alt="" width={24} height={24} />
+              </Button>
               </div>
             </div>
           </div>
 
           <div className="p-s2 bg-white-transparent rounded-2xl mb-s2 flex" onClick={handleCreateCaption}>
-            <div className='float-left text-white text-xl'>
+            <div className={`float-left text-white text-2xl font-bold`}>
               Captions
             </div>
           </div>
@@ -144,82 +192,89 @@ const shorts_subtitling = () => {
             </div>
           </div> */}
 
-          <div className="p-s2 bg-white-transparent rounded-2xl mb-s2 flex flex-col">
-            <div className='float-left text-white text-2xl font-bold'>
-              Subtitles
+          <div className="p-s2 bg-white-transparent rounded-2xl mb-s2 flex flex-col" onClick={()=>{handleClickSubtitle();handleCreateSubtitle();}}>
+            <div className="relative">
+              <div className='float-left text-white text-2xl font-bold'>
+                Subtitles
+              </div>
+
+              {subtitle &&
+              <div className="float-right">
+                <Image src={trash} alt="" width={30} height={30} className=""/>
+              </div>}
             </div>
+            {subtitle &&
+            <div>
+              <div className="text-white text-lg mt-s2 font-bold">Time</div>
 
-            <div className="text-white text-lg mt-s2 font-bold">Time</div>
+              <div className="flex flex-row items-center mt-s2">
+                <FormInput
+                  label="Start time"
+                  placeholder="00:00:00"
+                  value=""
+                  onChange={(e) => setName(e.target.value)}      
+                  name="title"
+                  labelClasses="text-lg text-white !mb-s1"
+                  valueClasses="placeholder-white text-lg font-light"
+                  classes="!mb-s2 !mr-s1"
+                />
+              </div>
 
-            <div className="flex flex-row items-center mt-s2">
-              <FormInput
-                label="Start time"
-                placeholder="00:00:00"
-                value=""
-                onChange={(e) => setName(e.target.value)}      
-                name="title"
+              <div className="w-full h-[1px] bg-white-transparent"/>
+
+              <div className="text-white text-lg mt-s2 font-bold">Text style</div>
+
+              <CustomSelectInput
+                text="Font"
+                value="Arial"
+                options={['Normal caption','Comment caption']}
+                onChange={(selectedOption) => setCountry(selectedOption)}
                 labelClasses="text-lg text-white !mb-s1"
-                valueClasses="placeholder-white text-lg font-light"
-                classes="!mb-s2 !mr-s1"
+                valueClasses="text-lg !text-white ml-s1 font-light"
+                classes="!mb-s2 !mt-s2"
               />
-            </div>
 
-            <div className="w-full h-[1px] bg-white-transparent"/>
+              <CustomSelectInput
+                text="Font color"
+                value="Red"
+                options={['Normal caption','Comment caption']}
+                onChange={(selectedOption) => setCountry(selectedOption)}
+                labelClasses="text-lg text-white !mb-s1"
+                valueClasses="text-lg !text-white ml-s1 font-light"
+                classes="!mb-s2"
+              />  
 
-            <div className="text-white text-lg mt-s2 font-bold">Text style</div>
+              <CustomSelectInput
+                text="Text Outline"
+                value="Red"
+                options={['Normal caption','Comment caption']}
+                onChange={(selectedOption) => setCountry(selectedOption)}
+                labelClasses="text-lg text-white !mb-s1"
+                valueClasses="text-lg !text-white ml-s1 font-light"
+                classes="!mb-s2"
+              />  
 
-            <CustomSelectInput
-              text="Font"
-              value="Arial"
-              options={['Normal caption','Comment caption']}
-              onChange={(selectedOption) => setCountry(selectedOption)}
-              labelClasses="text-lg text-white !mb-s1"
-              valueClasses="text-lg !text-white ml-s1 font-light"
-              classes="!mb-s2 !mt-s2"
-            />
-
-            <CustomSelectInput
-              text="Font color"
-              value="Red"
-              options={['Normal caption','Comment caption']}
-              onChange={(selectedOption) => setCountry(selectedOption)}
-              labelClasses="text-lg text-white !mb-s1"
-              valueClasses="text-lg !text-white ml-s1 font-light"
-              classes="!mb-s2"
-            />  
-
-            <CustomSelectInput
-              text="Text Outline"
-              value="Red"
-              options={['Normal caption','Comment caption']}
-              onChange={(selectedOption) => setCountry(selectedOption)}
-              labelClasses="text-lg text-white !mb-s1"
-              valueClasses="text-lg !text-white ml-s1 font-light"
-              classes="!mb-s2"
-            />  
-
-            <CustomSelectInput
-              text="Background"
-              value="Red"
-              options={['Normal caption','Comment caption']}
-              onChange={(selectedOption) => setCountry(selectedOption)}
-              labelClasses="text-lg text-white !mb-s1"
-              valueClasses="text-lg !text-white ml-s1 font-light"
-              classes="!mb-0"
-            />
+              <CustomSelectInput
+                text="Background"
+                value="Red"
+                options={['Normal caption','Comment caption']}
+                onChange={(selectedOption) => setCountry(selectedOption)}
+                labelClasses="text-lg text-white !mb-s1"
+                valueClasses="text-lg !text-white ml-s1 font-light"
+                classes="!mb-0"
+              />
+            </div>}
           </div>
 
 
 
-
         </div>
-        <button className='bg-white' onClick={handleAddRectangle}>Add Rectangle</button>
       </div>
     </div>
 
     {/* Third section */}
     <div className="w-full h-[200px] bg-white-transparent">
-      <TimelineSlider videoRef={videoRef}/>
+      <TimelineSlider videoRef={videoRef} hiddenVideoRef={hiddenVideoRef}/>
     </div>
   </div>
 </>

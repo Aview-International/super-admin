@@ -2,6 +2,8 @@ import React from 'react';
 import FormInput from '../FormComponents/FormInput';
 import Textarea from '../FormComponents/Textarea';
 import CustomSelectInput from '../FormComponents/CustomSelectInput';
+import trash from '/public/img/icons/trash.svg'
+import Image from 'next/image'
 
 const Caption = ({ captionKey, index, captionsArray, setCaptionsArray, rectIndex, setRectIndex }) => {
   const caption = captionsArray.find(caption => caption.index === index);
@@ -27,11 +29,17 @@ const Caption = ({ captionKey, index, captionsArray, setCaptionsArray, rectIndex
   return (
     <>
       <div className="p-s2 bg-white-transparent rounded-2xl mb-s2 flex flex-col" onClick={() => setRectIndex(index)}>
-        <div className='float-left text-white text-lg font-bold'>
-          {captionKey+1}
+        <div className="relative">
+          <div className='float-left text-white text-lg font-bold'>
+            Caption #{captionKey+1}
+          </div>
+
+          <div className="float-right">
+          <Image src={trash} alt="" width={30} height={30} className=""/>
+          </div>
         </div>
 
-        <div className="text-white text-lg mt-s2 font-bold">Time</div>
+        <div className="text-white text-lg mt-s1 font-bold">Time</div>
 
         <div className="flex flex-row items-center mt-s2">
           <FormInput
