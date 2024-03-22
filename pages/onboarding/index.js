@@ -39,10 +39,15 @@ const Onboarding = () => {
   const [popupSubmit, setPopupSubmit] = useState(false);
   const [supportEmail, setSupportEmail] = useState('');
   const [supportInquiry, setSupportInquiry] = useState('');
+  const [editor, setEditor] = useState(false);
 
   const handleCheckBox = (name) => {
     setCheckedState(name);
   };
+
+  const handleEditor = () => {
+    setEditor(!editor);
+  }
 
   const handleSubmit = async () => {
     setLoader('submit');
@@ -75,7 +80,8 @@ const Onboarding = () => {
             nativeLanguage,
             country,
             checkedState,
-            paymentDetails
+            paymentDetails,
+            editor
           );
           setPopupSubmit(true);
         } catch (error) {
@@ -272,9 +278,19 @@ const Onboarding = () => {
               value={country}
               options={countriesAndCodes}
               onChange={(selectedOption) => setCountry(selectedOption)}
-              labelClasses="text-lg text-white !mb-[4px]"
+              labelClasses="text-lg text-white !mb-[px]"
               valueClasses="text-lg !text-white ml-s1 font-light"
             />
+
+            <div className="mt-s0">
+              <CheckBox
+                label="I would also like to review and process videos"
+                onChange={() => handleEditor()}
+                name="checkbox"
+                labelClasses="text-lg mt-[4px]"
+                isChecked={editor}
+              />
+            </div>
 
             <div className="mt-s5 text-4xl font-bold text-white">
               Payment method
