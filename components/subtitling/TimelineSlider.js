@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import styles from './TimelineSlider.module.css';
 import play from '../../public/img/icons/play-white.svg';
 import Image from 'next/image';
+import play_black from '../../public/img/icons/play-black.svg';
+import pause_black from '../../public/img/icons/pause-black.svg';
 
 const TimelineSlider = ({ videoRef, hiddenVideoRef }) => {
   const [canvases, setCanvases] = useState([]);
@@ -120,25 +122,33 @@ const TimelineSlider = ({ videoRef, hiddenVideoRef }) => {
   };
 
     return ( 
-    <div className="w-full px-[20px]">
+    <div className="w-full pl-[20px] pr-[20px]">
     <div className={styles.timeline_container}>
       <div className="flex justify-center">
         <div className="flex flex-row items-center">
-          <Image src={play} onClick={togglePlayPause} alt="" width={24} height={24} />
+          <div className={`h-[24px] w-[24px] bg-white rounded-full ${isPlaying ? "": "pl-[2px] pt-[1px]"}`}><Image src={isPlaying ? pause_black:play_black} alt="" width={24} height={24} onClick={togglePlayPause}/></div>
           <div className={styles.time_indicator}>
             <span>{formatTime(currentTime)}</span> | <span className="text-white text-opacity-75">{formatTime(duration)}</span>
           </div>
         </div>
       </div>
-      <input
-        type="range"
-        min="0"
-        max={duration}
-        value={currentTime}
-        className={styles.timeline_slider}
-        onInput={handleTimeChange}
-        step="0.01"
-      />
+      <div className="relative w-full">
+        <input
+          type="range"
+          min="0"
+          max={duration}
+          value={currentTime}
+          className={styles.timeline_slider}
+          onInput={handleTimeChange}
+          step="0.001"
+        />
+
+        <div className={styles.ticks}>
+          {[...Array(80)].map((_, i) => (
+            <span key={i} className={styles.tick}></span>
+          ))}
+        </div>
+      </div>
         <div className="w-full pl-[5px] pr-[7px]">
           <div className="relative">
           <div

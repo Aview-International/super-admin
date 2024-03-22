@@ -12,7 +12,8 @@ import Caption from '../../components/subtitling/Caption';
 import Button from '../../components/UI/Button';
 import Check from '/public/img/icons/check-circle-green.svg';
 import Loader from '../../components/UI/Loader';
-import trash from '/public/img/icons/trash.svg'
+import trash from '/public/img/icons/trash.svg';
+import plus from '/public/img/icons/plus.svg';
 
 
 const shorts_subtitling = () => {
@@ -25,6 +26,8 @@ const shorts_subtitling = () => {
     const [rectIndex, setRectIndex] = useState(null);
     const [subtitle, setSubtitle] = useState(false);
     const [subtitleDetails, setSubtitleDetails] = useState(null);
+    const [focused, setFocused] = useState(null);
+
 
 
   
@@ -62,6 +65,7 @@ const shorts_subtitling = () => {
 
       setSubtitleDetails(subtitleDetails);
       setRectIndex(index);
+      setFocused(index);
       
 
     }
@@ -74,7 +78,22 @@ const shorts_subtitling = () => {
       }
     }
 
-    
+    const handleDeleteSubtitle = () => {
+      let index = subtitleDetails.index;
+      const updatedRectanglesArray = rectangles.map((item, currentIndex) => {
+        if (index === currentIndex) {
+          return null;
+        }
+        return item;
+      });
+      setRectangles(updatedRectanglesArray);
+      setRectIndex(null);
+
+      setSubtitleDetails(null);
+      setSubtitle(false);
+
+
+    }
 
 
     const handleCreateCaption = () => {
@@ -99,6 +118,7 @@ const shorts_subtitling = () => {
       setCaptionsArray([...captionsArray, {index: index, captionDetails: captionDetails}]);
 
       setRectIndex(index);
+      setFocused(index);
 
     }
 
@@ -112,10 +132,10 @@ const shorts_subtitling = () => {
       <PageTitle title="Captioning & Subtitling" />
   <div className="flex flex-col h-screen">
     {/* First two sections with calculated height */}
-    <video ref={hiddenVideoRef} style={{ height: 'calc(100vh - 280px)',display:'none' }}>
+    <video ref={hiddenVideoRef} style={{ height: 'calc(100vh - 260px)',display:'none' }}>
         <source src="https://www.pexels.com/download/video/4832723/" type="video/mp4" />
     </video>
-    <div className="flex flex-row px-s5" style={{ height: 'calc(100vh - 200px)' }}>
+    <div className="flex flex-row px-s5" style={{ height: 'calc(100vh - 180px)' }}>
       <div className="w-2/3 flex justify-center">
         <div className="flex items-center">
           <VideoAnnotator 
@@ -130,8 +150,8 @@ const shorts_subtitling = () => {
           />
         </div>
       </div>
-      <div className="w-1/3 overflow-y-auto">
-        <div className="ml-s5 mt-s5">
+      <div className="w-1/3 pr-s2" style={{ height: 'calc(100vh - 220px)' }}>
+        <div className="ml-s5 mt-s5 overflow-y-auto h-full w-full">
           <div className="p-s2 bg-white-transparent rounded-2xl mb-s2">
             <div className="flex flex-col justify-center">
               <div className="flex flex-row items-center">
@@ -172,36 +192,43 @@ const shorts_subtitling = () => {
             </div>
           </div>
 
-          <div className="p-s2 bg-white-transparent rounded-2xl mb-s2 flex" onClick={handleCreateCaption}>
-            <div className={`float-left text-white text-2xl font-bold`}>
-              Captions
+          <div className="px-s2 pt-s2 pb-s1 bg-white-transparent rounded-2xl mb-s2 flex flex-col justify-center cursor-pointer" onClick={handleCreateCaption}>
+            <div className="relative">
+              <div className={`float-left text-white text-2xl font-bold mt-[2px]`}>
+                Captions
+              </div>
+
+              <div className="float-right">
+                <Image src={plus} alt="" width={30} height={30}/>
+              </div>
             </div>
           </div>
 
           <div>
             {captionsArray.map((caption,i) => (
 
-              <Caption key={i} captionKey={i} captionsArray={captionsArray} setCaptionsArray={setCaptionsArray} index={caption.index} setRectIndex={setRectIndex} rectIndex={rectIndex}/>
+              <Caption key={i} captionKey={i} captionsArray={captionsArray} setCaptionsArray={setCaptionsArray} index={caption.index} setRectIndex={setRectIndex} rectIndex={rectIndex} rectangles={rectangles} setRectangles={setRectangles} focused={focused} setFocused={setFocused}/>
 
             ))}
           </div>
 
-          {/* <div className="p-s2 bg-white-transparent rounded-2xl mb-s2 flex">
-            <div className='float-left text-white text-xl'>
-              Subtitles
-            </div>
-          </div> */}
-
-          <div className="p-s2 bg-white-transparent rounded-2xl mb-s2 flex flex-col" onClick={()=>{handleClickSubtitle();handleCreateSubtitle();}}>
+          <div className={`px-s2 pt-s2 pb-s1 bg-white-transparent rounded-2xl mb-s2 flex flex-col justify-center cursor-pointer ${(subtitleDetails && focused==subtitleDetails.index) ? "border-solid border-white border-2" : ""}`} onClick={()=>{handleClickSubtitle();handleCreateSubtitle();if(subtitleDetails){setFocused(subtitleDetails.index)};console.log(focused)}}>
             <div className="relative">
-              <div className='float-left text-white text-2xl font-bold'>
+              <div className='float-left text-white text-2xl font-bold mt-[2px]'>
                 Subtitles
               </div>
 
               {subtitle &&
               <div className="float-right">
-                <Image src={trash} alt="" width={30} height={30} className=""/>
-              </div>}
+                <Image src={trash} alt="" width={30} height={30} onClick={handleDeleteSubtitle}/>
+              </div>
+              }
+
+              {!subtitle &&
+              <div className="float-right">
+                <Image src={plus} alt="" width={30} height={30}/>
+              </div>
+              }
             </div>
             {subtitle &&
             <div>
@@ -269,11 +296,11 @@ const shorts_subtitling = () => {
 
 
         </div>
-      </div>
+    </div>
     </div>
 
     {/* Third section */}
-    <div className="w-full h-[200px] bg-white-transparent">
+    <div className="w-full h-[180px] bg-white-transparent">
       <TimelineSlider videoRef={videoRef} hiddenVideoRef={hiddenVideoRef}/>
     </div>
   </div>

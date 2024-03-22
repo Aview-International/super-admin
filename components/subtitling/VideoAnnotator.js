@@ -100,7 +100,7 @@ const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef, re
       const drawRectangles = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
         rectangles.forEach((rect, index) => {
-          if (index != rectIndex){
+          if (index != rectIndex || !rect){
             return;
           }
           // Scale the rectangle dimensions and position
@@ -159,6 +159,9 @@ const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef, re
   
     // Use scaledX and scaledY for hit detection
     for (let i = 0; i < rectangles.length; i++) {
+      if (!rectangles[i]){
+        continue;
+      }
       const corner = checkForResizeCorner(scaledX, scaledY, rectangles[i]);
       console.log(corner);
       if (corner) {
@@ -263,7 +266,7 @@ const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef, re
 
   return (
     <div className="relative">
-      <video ref={videoRef} style={{ height: 'calc(100vh - 280px)' }}>
+      <video ref={videoRef} style={{ height: 'calc(100vh - 260px)' }}>
         <source src={videoUrl} type="video/mp4" />
       </video>
       <canvas

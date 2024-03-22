@@ -9,12 +9,13 @@
   .timeline_slider {
     -webkit-appearance: none;
     width: 100%;
-    height: 2px;
-    background: #333;
+    height: 1px;
+    background: #99999C;
     outline: none;
     opacity: 0.7;
     -webkit-transition: .2s;
     transition: opacity .2s;
+    z-index:20;
   }
   
   .timeline_slider::-webkit-slider-thumb {
@@ -24,6 +25,7 @@
     height: 20px;
     background: #fff;
     cursor: pointer;
+    z-index:20;
   }
   
   .timeline_slider::-moz-range-thumb {
@@ -31,6 +33,7 @@
     height: 20px;
     background: #fff;
     cursor: pointer;
+    z-index:20;
   }
   
   .time_indicator {
@@ -38,6 +41,7 @@
     color: #fff;
     font-size:12px;
     margin-left: 8px;
+    margin-top: 3px;
   }
   
   .thumbnail_container {
@@ -54,8 +58,26 @@
     position: absolute;
     top: -15px; /* Adjust as needed to intersect the frames */
     left: 50%; /* Adjust dynamically based on the slider value */
-    height: calc(100% + 40px); /* Adjust as needed */
+    height: calc(100% + 60px); /* Adjust as needed */
     width: 2px; /* Width of the bar */
-    background-color: #FFF; /* Color of the bar */
+    background-color: #99999C; /* Color of the bar */
     z-index: 10;
+  }
+
+  .ticks {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    width: 100%;
+    top: 15px; /* Adjust based on your design */
+    pointer-events: none;
+    z-index: -999;
+  }
+  
+  .tick {
+    height: 7px;
+    width: 1px;
+    background-color: #99999C;
+    z-index: -999;
+    pointer-events: none;
   }

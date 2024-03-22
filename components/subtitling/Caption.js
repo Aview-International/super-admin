@@ -5,7 +5,7 @@ import CustomSelectInput from '../FormComponents/CustomSelectInput';
 import trash from '/public/img/icons/trash.svg'
 import Image from 'next/image'
 
-const Caption = ({ captionKey, index, captionsArray, setCaptionsArray, rectIndex, setRectIndex }) => {
+const Caption = ({ captionKey, index, captionsArray, setCaptionsArray, rectIndex, setRectIndex, rectangles, setRectangles, focused, setFocused }) => {
   const caption = captionsArray.find(caption => caption.index === index);
   if (!caption) return null; // Handle the case where the caption is not found
 
@@ -26,16 +26,32 @@ const Caption = ({ captionKey, index, captionsArray, setCaptionsArray, rectIndex
     setCaptionsArray(updatedCaptionsArray);
   };
 
+  const handleDeleteCaption = () => {
+    const updatedCaptionsArray = captionsArray.filter(caption => caption.index!== index);
+    setCaptionsArray(updatedCaptionsArray);
+
+    const updatedRectanglesArray = rectangles.map((item, currentIndex) => {
+      if (index === currentIndex) {
+        return null;
+      }
+      return item;
+    });
+    setRectangles(updatedRectanglesArray);
+    setRectIndex(null);
+
+
+  };
+
   return (
     <>
-      <div className="p-s2 bg-white-transparent rounded-2xl mb-s2 flex flex-col" onClick={() => setRectIndex(index)}>
+      <div className={`p-s2 bg-white-transparent rounded-2xl mb-s2 flex flex-col ${(focused==index) ? "border-solid border-white border-2" : ""}`} onClick={() => {setRectIndex(index);setFocused(index)}}>
         <div className="relative">
           <div className='float-left text-white text-lg font-bold'>
             Caption #{captionKey+1}
           </div>
 
           <div className="float-right">
-          <Image src={trash} alt="" width={30} height={30} className=""/>
+          <Image src={trash} alt="" width={30} height={30} className="cursor-pointer" onClick={handleDeleteCaption}/>
           </div>
         </div>
 
@@ -67,7 +83,7 @@ const Caption = ({ captionKey, index, captionsArray, setCaptionsArray, rectIndex
 
         <div className="w-full h-[1px] bg-white-transparent"/>
 
-        <div className="text-white text-lg mt-s2 font-bold">Text</div>
+        <div className="text-white text-lg mt-s2">Text</div>
         <Textarea
           placeholder="Caption text"
           classes="!mb-s2"
