@@ -36,9 +36,8 @@ const Button = ({
     <Shadow classes="w-full">
       <Border borderRadius="full" classes="w-full">
         <button
-          className={`transition-300 w-full cursor-pointer rounded-full px-s5 pt-s1.5 pb-s1 ${
-            theme === 'light' && 'text-black'
-          } ${theme === 'dark' && 'bg-black text-white'} ${classes}`}
+          className={`transition-300 w-full cursor-pointer rounded-full px-s5 pt-s1.5 pb-s1 
+          ${theme === 'light' && 'text-black'} ${theme === 'dark' && 'bg-black text-white'} ${theme === 'gray' && 'bg-gradient-to-t from-gray-4 from-7% to-gray-3 text-white'} ${classes}`}
           onClick={isLoading ? () => null : onClick}
         >
           {isLoading ? <Loader /> : children}

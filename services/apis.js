@@ -22,10 +22,19 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-export const downloadS3Object = async (s3Path) =>
+export const downloadS3Object = async (s3Path) => {
   await axiosInstance.post(baseUrl + 'admin/download-object', {
     s3Path,
   });
+};
+
+export const getRawSRT = async (s3Path) => {
+  const response = await axiosInstance.post(baseUrl + 'admin/get-raw-srt', {
+    s3Path,
+  });
+
+  return response.data;
+};
 
 export const approveSrt = async (
   jobId,
@@ -127,6 +136,14 @@ export const getSupportedLanguages = async () => {
   );
   return response.data;
 };
+
+export const getCountriesAndCodes = async () => {
+  const response = await axiosInstance.get(
+    baseUrl + 'admin/countries-and-codes'
+  );
+
+  return response.data;
+}
 
 export const getRegionCategory = async (language) => {
   const response = await axiosInstance.post(
@@ -236,3 +253,82 @@ export const getElevenLabsVoices = async () =>
 
 export const transcribeSocialLink = async (body) =>
   await axiosInstance.post('transcription/social', body);
+
+
+export const createTranslator = async (
+  name,
+  email,
+  nativeLanguage,
+  country,
+  paymentMethod,
+  paymentDetails,
+) => {
+  return axiosInstance.post(baseUrl + 'admin/create-translator', {
+    name,
+    email,
+    nativeLanguage,
+    country,
+    paymentMethod,
+    paymentDetails,
+  });
+};
+
+export const sendSupportMessage = async (email, message) => {
+
+  return axiosInstance.post(baseUrl + 'admin/create-translator-inquiry', {
+    email,
+    message,
+  });
+};
+
+export const getTranslatorById = async (id) => {
+  return axiosInstance.post(baseUrl + 'admin/get-translator-by-id', {
+    id
+  });
+}
+
+export const createTranslatorProgress = async (
+  jobId,
+  creatorId,
+  lang, 
+  translatorId,
+  progress,
+  startTimestamp,
+  endTimestamp
+) => {
+  return axiosInstance.post(baseUrl + 'admin/create-translator-progress', {
+    jobId,
+    creatorId,
+    lang,
+    translatorId,
+    progress,
+    startTimestamp,
+    endTimestamp,
+  });
+};
+
+export const updateTranslatorProgress = async (
+  jobId,
+  progress,
+) => {
+  return axiosInstance.post(baseUrl + 'admin/update-translator-progress', {
+    jobId,
+    progress,
+  });
+};
+
+export const finishTranslation = async (
+  jobId
+) => {
+  return axiosInstance.post(baseUrl + 'admin/finish-translation', {
+    jobId
+  });
+}
+
+export const getTranslatorProgress = async (
+  jobId
+) => {
+  return axiosInstance.post(baseUrl + 'admin/get-translator-progress', {
+    jobId
+  });
+}
