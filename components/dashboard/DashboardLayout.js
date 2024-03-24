@@ -1,11 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
-
 import { UserContext } from '../../store/user-profile';
 import FullScreenLoader from '../../public/loaders/FullScreenLoader';
 import DashBoardHeader from './Header';
 import DashboardSidebar from './Sidebar';
-import { hasPermisions, PermissionSet, Roles } from '../../hooks/permissions';
 import { getUserProfile } from '../../pages/api/firebase';
+import ErrorHandler from '../../utils/errorHandler';
 
 const DashboardStructure = ({ children }) => {
   const { user, updateUser } = useContext(UserContext);
@@ -26,7 +25,7 @@ const DashboardStructure = ({ children }) => {
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
-      console.log(error);
+      ErrorHandler(error);
     }
   };
   useEffect(() => {
@@ -38,7 +37,7 @@ const DashboardStructure = ({ children }) => {
       {isLoading ? (
         <FullScreenLoader />
       ) : (
-        <main className="gradient-dark flex min-h-screen h-screen w-full">
+        <main className="gradient-dark flex h-screen min-h-screen w-full">
           <DashboardSidebar user={user} />
           <div className="ml-auto w-[calc(100%-170px)]">
             <DashBoardHeader user={user} />

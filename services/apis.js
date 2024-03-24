@@ -1,31 +1,29 @@
 import axios from 'axios';
 import { baseUrl } from './baseUrl';
 import FormData from 'form-data';
-import Cookies from 'js-cookie';
 
 // Create an Axios instance without default headers
 const axiosInstance = axios.create({
   baseURL: baseUrl,
+  withCredentials: true,
 });
 
-// Add an interceptor to set the Authorization header before each request
-axiosInstance.interceptors.request.use(
-  async (config) => {
-    // get the token before making the request
-    const token = Cookies.get('token');
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-    return config;
-  },
-  (error) => {
-    // Handle request errors
-    return Promise.reject(error);
-  }
-);
+export const signInWithGoogleAcc = async (token) =>
+  await axiosInstance.post(baseUrl + 'auth/login', { token });
 
-export const downloadS3Object = async (s3Path) =>
+export const downloadS3Object = async (s3Path) => {
   await axiosInstance.post(baseUrl + 'admin/download-object', {
     s3Path,
   });
+};
+
+export const getRawSRT = async (s3Path) => {
+  const response = await axiosInstance.post(baseUrl + 'admin/get-raw-srt', {
+    s3Path,
+  });
+
+  return response.data;
+};
 
 export const approveSrt = async (
   jobId,
@@ -128,6 +126,14 @@ export const getSupportedLanguages = async () => {
   return response.data;
 };
 
+export const getCountriesAndCodes = async () => {
+  const response = await axiosInstance.get(
+    baseUrl + 'admin/countries-and-codes'
+  );
+
+  return response.data;
+};
+
 export const getRegionCategory = async (language) => {
   const response = await axiosInstance.post(
     baseUrl + 'admin/youtube-categories',
@@ -212,10 +218,14 @@ export const uploadManualSrtTranslation = async (
   return response.data;
 };
 
-export const uploadManualSrtDubbing = async (srt, voiceId) => {
+export const uploadManualSrtDubbing = async ({ srt, voiceId, multiVoice }) => {
   let formData = new FormData();
   formData.append('srt', srt);
-  formData.append('voiceId', voiceId);
+  if (multiVoice) {
+    formData.append('multipleVoices', multiVoice);
+  } else {
+    formData.append('voiceId', voiceId);
+  }
   const response = await axiosInstance({
     method: 'POST',
     url: baseUrl + 'admin/manual-dubbing',
@@ -227,22 +237,84 @@ export const uploadManualSrtDubbing = async (srt, voiceId) => {
   return response.data;
 };
 
-export const getPlayHtVoices = async () =>
-  (await axiosInstance.get('dubbing/get-play-ht-voices')).data;
-
 export const getElevenLabsVoices = async () =>
   (await axiosInstance.get('dubbing/get-elevenlabs-voices')).data;
 
 export const transcribeSocialLink = async (body) =>
   await axiosInstance.post('transcription/social', body);
 
-export const getS3DownloadLink = async (s3FilePath) => {
-  await axiosInstance.post('admin/getS3DownloadLink', s3FilePath);
-}
-
 export const completeJob = async (creatorId, timestamp) => {
-  await axiosInstance.post('admin/complete-job',{
+  await axiosInstance.post('admin/complete-job', {
     creatorId,
-    timestamp
-  })
-}
+    timestamp,
+  });
+};
+export const createTranslator = async (
+  name,
+  email,
+  nativeLanguage,
+  country,
+  paymentMethod,
+  paymentDetails
+) => {
+  return axiosInstance.post(baseUrl + 'admin/create-translator', {
+    name,
+    email,
+    nativeLanguage,
+    country,
+    paymentMethod,
+    paymentDetails,
+  });
+};
+
+export const sendSupportMessage = async (email, message) => {
+  return axiosInstance.post(baseUrl + 'admin/create-translator-inquiry', {
+    email,
+    message,
+  });
+};
+
+export const getTranslatorById = async (id) => {
+  return axiosInstance.post(baseUrl + 'admin/get-translator-by-id', {
+    id,
+  });
+};
+
+export const createTranslatorProgress = async (
+  jobId,
+  creatorId,
+  lang,
+  translatorId,
+  progress,
+  startTimestamp,
+  endTimestamp
+) => {
+  return axiosInstance.post(baseUrl + 'admin/create-translator-progress', {
+    jobId,
+    creatorId,
+    lang,
+    translatorId,
+    progress,
+    startTimestamp,
+    endTimestamp,
+  });
+};
+
+export const updateTranslatorProgress = async (jobId, progress) => {
+  return axiosInstance.post(baseUrl + 'admin/update-translator-progress', {
+    jobId,
+    progress,
+  });
+};
+
+export const finishTranslation = async (jobId) => {
+  return axiosInstance.post(baseUrl + 'admin/finish-translation', {
+    jobId,
+  });
+};
+
+export const getTranslatorProgress = async (jobId) => {
+  return axiosInstance.post(baseUrl + 'admin/get-translator-progress', {
+    jobId,
+  });
+};
