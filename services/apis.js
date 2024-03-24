@@ -1,26 +1,15 @@
 import axios from 'axios';
 import { baseUrl } from './baseUrl';
 import FormData from 'form-data';
-import Cookies from 'js-cookie';
 
 // Create an Axios instance without default headers
 const axiosInstance = axios.create({
   baseURL: baseUrl,
+  withCredentials: true,
 });
 
-// Add an interceptor to set the Authorization header before each request
-axiosInstance.interceptors.request.use(
-  async (config) => {
-    // get the token before making the request
-    const token = Cookies.get('token');
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-    return config;
-  },
-  (error) => {
-    // Handle request errors
-    return Promise.reject(error);
-  }
-);
+export const signInWithGoogleAcc = async (token) =>
+  await axiosInstance.post(baseUrl + 'auth/login', { token });
 
 export const downloadS3Object = async (s3Path) => {
   await axiosInstance.post(baseUrl + 'admin/download-object', {
@@ -143,7 +132,7 @@ export const getCountriesAndCodes = async () => {
   );
 
   return response.data;
-}
+};
 
 export const getRegionCategory = async (language) => {
   const response = await axiosInstance.post(
@@ -254,14 +243,13 @@ export const getElevenLabsVoices = async () =>
 export const transcribeSocialLink = async (body) =>
   await axiosInstance.post('transcription/social', body);
 
-
 export const createTranslator = async (
   name,
   email,
   nativeLanguage,
   country,
   paymentMethod,
-  paymentDetails,
+  paymentDetails
 ) => {
   return axiosInstance.post(baseUrl + 'admin/create-translator', {
     name,
@@ -274,7 +262,6 @@ export const createTranslator = async (
 };
 
 export const sendSupportMessage = async (email, message) => {
-
   return axiosInstance.post(baseUrl + 'admin/create-translator-inquiry', {
     email,
     message,
@@ -283,14 +270,14 @@ export const sendSupportMessage = async (email, message) => {
 
 export const getTranslatorById = async (id) => {
   return axiosInstance.post(baseUrl + 'admin/get-translator-by-id', {
-    id
+    id,
   });
-}
+};
 
 export const createTranslatorProgress = async (
   jobId,
   creatorId,
-  lang, 
+  lang,
   translatorId,
   progress,
   startTimestamp,
@@ -307,28 +294,21 @@ export const createTranslatorProgress = async (
   });
 };
 
-export const updateTranslatorProgress = async (
-  jobId,
-  progress,
-) => {
+export const updateTranslatorProgress = async (jobId, progress) => {
   return axiosInstance.post(baseUrl + 'admin/update-translator-progress', {
     jobId,
     progress,
   });
 };
 
-export const finishTranslation = async (
-  jobId
-) => {
+export const finishTranslation = async (jobId) => {
   return axiosInstance.post(baseUrl + 'admin/finish-translation', {
-    jobId
+    jobId,
   });
-}
+};
 
-export const getTranslatorProgress = async (
-  jobId
-) => {
+export const getTranslatorProgress = async (jobId) => {
   return axiosInstance.post(baseUrl + 'admin/get-translator-progress', {
-    jobId
+    jobId,
   });
-}
+};

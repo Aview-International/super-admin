@@ -21,7 +21,6 @@ const ManualDubbing = () => {
   const [voiceId, setVoiceId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [voices, setVoices] = useState({
-    playHt: [],
     elevenLabs: [],
   });
 
