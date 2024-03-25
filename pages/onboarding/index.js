@@ -242,7 +242,7 @@ const Onboarding = () => {
               placeholder="First and last Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              name="title"
+              name="name"
               labelClasses="text-lg text-white mt-s2 !mb-[4px]"
               valueClasses="text-lg font-light"
               classes="!mb-s2"
@@ -253,7 +253,7 @@ const Onboarding = () => {
               value={email}
               placeholder="Your email"
               onChange={(e) => setEmail(e.target.value)}
-              name="title"
+              name="email"
               labelClasses="text-lg text-white !mb-[4px]"
               valueClasses="text-lg font-light"
               classes="!mb-s2"
@@ -370,7 +370,7 @@ const Onboarding = () => {
             <div className="float-right my-s2 h-[47px] w-[134px]">
               <Button
                 theme="light"
-                onClick={() => handleSubmit()}
+                onClick={handleSubmit}
                 isLoading={loader === 'submit'}
               >
                 Submit
