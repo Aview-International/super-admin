@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import PageTitle from '../../components/SEO/PageTitle';
-import { getAllPendingTranscriptions } from '../api/firebase';
-import SelectedVideo from '../../components/pending/SelectedVideo-Transcription';
+import { getAllJobsUnderReview } from '../api/firebase';
+import SelectedVideo from '../../components/pending/SelectedVideo-Pending';
 import AllVideos from '../../components/admin/AllVideos';
 import Image from 'next/image';
 import Logo from '../../public/img/aview/logo.svg';
@@ -10,6 +10,8 @@ import Logo from '../../public/img/aview/logo.svg';
 const Transcription = () => {
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(undefined);
+  const [videoDownloadLink, setVideoDownloadLink] = useState("");
+  const [updateTrigger, setUpdateTrigger] = useState(false);
 
   const callback = (data) => {
     const pending = data
@@ -19,15 +21,16 @@ const Transcription = () => {
         }))
       : [];
     setJobs(pending);
+    console.log(pending);
   };
 
   const getPendingJobs = async () => {
-    await getAllPendingTranscriptions(callback);
+    await getAllJobsUnderReview(callback);
   };
 
   useEffect(() => {
     getPendingJobs();
-  }, []);
+  }, [updateTrigger]);
 
   console.log(jobs);
 
@@ -36,7 +39,7 @@ const Transcription = () => {
       <PageTitle title="Transcription" />
       <div className="flex text-white">
         <div className="w-1/2 rounded-md bg-white-transparent">
-          <h2 className="p-s2">Videos Selection</h2>
+          <h2 className="p-s2">Pending Videos</h2>
           {jobs.length > 0 ? (
             jobs.map((job, i) => (
               <AllVideos
@@ -44,6 +47,7 @@ const Transcription = () => {
                 key={i}
                 selectedJob={selectedJob}
                 setSelectedJob={setSelectedJob}
+                setVideoDownloadLink={setVideoDownloadLink}
               />
             ))
           ) : (
@@ -57,6 +61,8 @@ const Transcription = () => {
             <SelectedVideo
               selectedJob={selectedJob}
               setSelectedJob={setSelectedJob}
+              videoDownloadLink={videoDownloadLink}
+              triggerUpdate={() => setUpdateTrigger(prev => !prev)}
             />
           </div>
         ) : (
