@@ -9,7 +9,7 @@ const axiosInstance = axios.create({
 });
 
 export const signInWithGoogleAcc = async (token) =>
-  await axiosInstance.post(baseUrl + 'auth/login', { token });
+  (await axiosInstance.post(baseUrl + 'auth/login', { token })).data;
 
 export const downloadS3Object = async (s3Path) => {
   await axiosInstance.post(baseUrl + 'admin/download-object', {
@@ -242,6 +242,13 @@ export const getElevenLabsVoices = async () =>
 
 export const transcribeSocialLink = async (body) =>
   await axiosInstance.post('transcription/social', body);
+
+export const completeJob = async (creatorId, timestamp) => {
+  await axiosInstance.post('admin/complete-job', {
+    creatorId,
+    timestamp,
+  });
+};
 
 export const createTranslator = async (
   name,
