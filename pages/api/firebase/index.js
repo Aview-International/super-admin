@@ -103,3 +103,22 @@ export const getUserProfile = async (_id) => {
   });
   return res;
 };
+
+export const getSubtitledAndCaptionedJobs = async () => {
+  const res = await get(ref(database, `admin-jobs/pending`)).then(
+    (snapshot) => {
+      if (snapshot.exists()) {
+        const allJobs = snapshot.val();
+        const filteredJobs = Object.keys(allJobs).reduce((acc, key) => {
+          const job = allJobs[key];
+          if (job['subtitle&caption'] === true) {
+            acc[key] = job;
+          }
+          return acc;
+        }, {});
+        return filteredJobs;
+      } else return null;
+    }
+  );
+  return res;
+};

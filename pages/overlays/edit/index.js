@@ -1,17 +1,17 @@
 import { useEffect, useState, useRef } from 'react';
-import PageTitle from '../../components/SEO/PageTitle';
-import VideoAnnotator from '../../components/subtitling/VideoAnnotator'; 
-import VideoControls from '../../components/subtitling/VideoControls';
-import TimelineSlider from '../../components/subtitling/timelineSlider';
-import play from '../../public/img/icons/play-white.svg';
+import PageTitle from '../../../components/SEO/PageTitle';
+import VideoAnnotator from '../../../components/subtitling/VideoAnnotator'; 
+import VideoControls from '../../../components/subtitling/VideoControls';
+import TimelineSlider from '../../../components/subtitling/timelineSlider';
+import play from '../../../public/img/icons/play-white.svg';
 import Image from 'next/image';
-import FormInput from '../../components/FormComponents/FormInput';
-import Textarea from '../../components/FormComponents/Textarea';
-import CustomSelectInput from '../../components/FormComponents/CustomSelectInput';
-import Caption from '../../components/subtitling/Caption';
-import Button from '../../components/UI/Button';
+import FormInput from '../../../components/FormComponents/FormInput';
+import Textarea from '../../../components/FormComponents/Textarea';
+import CustomSelectInput from '../../../components/FormComponents/CustomSelectInput';
+import Caption from '../../../components/subtitling/Caption';
+import Button from '../../../components/UI/Button';
 import Check from '/public/img/icons/check-circle-green.svg';
-import Loader from '../../components/UI/Loader';
+import Loader from '../../../components/UI/Loader';
 import trash from '/public/img/icons/trash.svg';
 import plus from '/public/img/icons/plus.svg';
 
@@ -212,7 +212,7 @@ const shorts_subtitling = () => {
             ))}
           </div>
 
-          <div className={`px-s2 pt-s2 pb-s1 bg-white-transparent rounded-2xl mb-s2 flex flex-col justify-center cursor-pointer ${(subtitleDetails && focused==subtitleDetails.index) ? "border-solid border-white border-2" : ""}`} onClick={()=>{handleClickSubtitle();handleCreateSubtitle();if(subtitleDetails){setFocused(subtitleDetails.index)};console.log(focused)}}>
+          <div className={`px-s2 pt-s2 pb-s1 bg-white-transparent rounded-2xl mb-s2 flex flex-col justify-center ${subtitle ? "" : "cursor-pointer"} ${(subtitleDetails && focused==subtitleDetails.index) ? "border-solid border-white border-2" : ""}`} onClick={()=>{handleClickSubtitle();handleCreateSubtitle();if(subtitleDetails){setFocused(subtitleDetails.index)};console.log(focused)}}>
             <div className="relative">
               <div className='float-left text-white text-2xl font-bold mt-[2px]'>
                 Subtitles

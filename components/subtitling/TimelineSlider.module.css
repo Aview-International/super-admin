@@ -69,13 +69,13 @@
     justify-content: space-between;
     position: absolute;
     width: 100%;
-    top: 15px; /* Adjust based on your design */
+    top: 20px; /* Adjust based on your design */
     pointer-events: none;
     z-index: -999;
   }
   
   .tick {
-    height: 7px;
+    height: 5px;
     width: 1px;
     background-color: #99999C;
     z-index: -999;

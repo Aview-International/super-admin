@@ -43,10 +43,16 @@ export const DASHBOARD_NAVLINKS = [
     route: '/distribution',
   },
   {
+    text: 'Overlays',
+    image: transcription,
+    route: '/overlays',
+  },
+  {
     text: 'Manual',
     image: dubbing,
     route: '/manual',
   },
+  
 ];
 
 export const SupportedLanguages = [
