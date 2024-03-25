@@ -9,7 +9,7 @@ const axiosInstance = axios.create({
 });
 
 export const signInWithGoogleAcc = async (token) =>
-  await axiosInstance.post(baseUrl + 'auth/login', { token });
+  (await axiosInstance.post(baseUrl + 'auth/login', { token })).data;
 
 export const downloadS3Object = async (s3Path) => {
   await axiosInstance.post(baseUrl + 'admin/download-object', {
@@ -249,6 +249,7 @@ export const completeJob = async (creatorId, timestamp) => {
     timestamp,
   });
 };
+
 export const createTranslator = async (
   name,
   email,

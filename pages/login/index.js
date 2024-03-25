@@ -33,7 +33,7 @@ const Login = () => {
     if (prevRoute) {
       Cookies.remove('redirectUrl');
       router.push(decodeURIComponent(prevRoute));
-    } else router.push('/transcription');
+    } else router.push('/pending');
   };
 
   return (
