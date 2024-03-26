@@ -166,54 +166,6 @@
       transform: translateZ(0);
     }
   }
-}
 
-@font-face {
-  font-family: "coolvetica";
-  src: url('../public/fonts/coolvetica.ttf') format('truetype');
-}
 
-@font-face {
-  font-family: 'Komika';
-  src: url('../public/fonts/Komika.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'LEMONMILK';
-  src: url('../public/fonts/LEMONMILK.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Merriweather';
-  src: url('../public/fonts/Merriweather.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Montserrat';
-  src: url('../public/fonts/Montserrat.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'NotoSans';
-  src: url('../public/fonts/NotoSans.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'NotoSans-SemiBold';
-  src: url('../public/fonts/NotoSans-SemiBold.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Proxima';
-  src: url('../public/fonts/Proxima.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Roboto';
-  src: url('../public/fonts/Roboto.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Rubik';
-  src: url('../public/fonts/Rubik.ttf') format('truetype');
 }

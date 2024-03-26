@@ -68,7 +68,7 @@ const TimelineSlider = ({ videoRef, hiddenVideoRef }) => {
     const capture = () => {
       if (currentTime <= duration && captures.length < 20) {
         const canvas = document.createElement('canvas');
-        canvas.width = 160;
+        canvas.width =  100;
         canvas.height = 90;
         const context = canvas.getContext('2d');
         context.drawImage(hiddenVideoRef.current, 0, 0, canvas.width, canvas.height);
@@ -126,7 +126,7 @@ const TimelineSlider = ({ videoRef, hiddenVideoRef }) => {
     <div className={styles.timeline_container}>
       <div className="flex justify-center">
         <div className="flex flex-row items-center">
-          <div className={`h-[24px] w-[24px] bg-white rounded-full ${isPlaying ? "": "pl-[2px] pt-[1px]"}`}><Image src={isPlaying ? pause_black:play_black} alt="" width={24} height={24} onClick={togglePlayPause}/></div>
+          <div className={`h-[24px] w-[24px] bg-white rounded-full mr-s1 ${isPlaying ? "": "pl-[2px] pt-[1px]"}`}><Image src={isPlaying ? pause_black:play_black} alt="" width={24} height={24} onClick={togglePlayPause}/></div>
           <div className={styles.time_indicator}>
             <span>{formatTime(currentTime)}</span> | <span className="text-white text-opacity-75">{formatTime(duration)}</span>
           </div>

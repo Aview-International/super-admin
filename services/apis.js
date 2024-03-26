@@ -327,5 +327,5 @@ export const getDownloadLink = async (s3Path) => {
     s3Path,
   });
 
-  return response.data;
+  return response;
 }
