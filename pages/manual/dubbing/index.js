@@ -7,30 +7,33 @@ import { useEffect, useRef, useState } from 'react';
 import PageTitle from '../../../components/SEO/PageTitle';
 import {
   getElevenLabsVoices,
-  getPlayHtVoices,
   uploadManualSrtDubbing,
 } from '../../../services/apis';
 import ErrorHandler from '../../../utils/errorHandler';
 import RadioInput from '../../../components/FormComponents/RadioContent';
 import PlayIcon from '../../../public/img/icons/play.svg';
+import ToggleButton from '../../../components/FormComponents/ToggleButton';
 
 const ManualDubbing = () => {
   const audioRef = useRef(null);
-
+  const [multiVoice, setMultiVoice] = useState(false);
   const [file, setFile] = useState(null);
   const [voiceId, setVoiceId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [voices, setVoices] = useState({
-    playHt: [],
     elevenLabs: [],
   });
 
   const handleUpload = async () => {
     try {
       setIsLoading(true);
-      const res = await uploadManualSrtDubbing(file, voiceId);
+      const res = await uploadManualSrtDubbing({
+        srt: file,
+        voiceId,
+        multiVoice,
+      });
       setIsLoading(false);
-      window.open(res, '_blank');
+      // window.open(res, '_blank');
     } catch (error) {
       console.log(error);
     }
@@ -39,20 +42,7 @@ const ManualDubbing = () => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await getPlayHtVoices();
-        console.log(res);
-        setVoices((prev) => ({
-          ...prev,
-          playHt: res,
-        }));
-      } catch (error) {
-        ErrorHandler(error);
-      }
-    })();
-    (async () => {
-      try {
         const { voices } = await getElevenLabsVoices();
-        console.log(voices);
         setVoices((prev) => ({
           ...prev,
           elevenLabs: voices,
@@ -114,18 +104,28 @@ const ManualDubbing = () => {
             {file && <p className="my-s5">{file.name}</p>}
           </div>
         </DottedBorder>
+
         <br />
-        <h3 className="my-s2 text-center text-2xl">Select Voice</h3>
+        <div className="my-s3 flex">
+          <p className="pr-2">Multiple Voice Dubbing</p>
+          <ToggleButton
+            handleChange={() => setMultiVoice(!multiVoice)}
+            isChecked={multiVoice}
+          />
+        </div>
+        {!multiVoice && (
+          <h3 className="my-s2 text-center text-2xl">Select Voice</h3>
+        )}
         <audio hidden={true} ref={audioRef} controls></audio>
 
-        <div className="flex">
+        {!multiVoice && (
           <div className="text-lg">
             <p>Eleven Labs Voices</p>
             {voices.elevenLabs.map((voice, i) => (
               <div className="my-2 flex items-center" key={i}>
                 <button
                   onClick={() => handlePreviewVoice(voice.preview_url)}
-                  className="flex items-center justify-center mr-s2"
+                  className="mr-s2 flex items-center justify-center"
                 >
                   <Image src={PlayIcon} alt="" width={30} height={30} />
                 </button>
@@ -140,23 +140,9 @@ const ManualDubbing = () => {
               </div>
             ))}
           </div>
-          <div>
-            <p>Play HT Voices</p>
-            {voices.playHt.map((voice, i) => (
-              <div className="my-2" key={i}>
-                <RadioInput
-                  chosenValue={voiceId}
-                  name={'voices'}
-                  text={voice.name}
-                  value={voice.id}
-                  onChange={() => handleVoiceSelection(voice.id)}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
+        )}
 
-        {file && voiceId && (
+        {file && (multiVoice || voiceId) && (
           <button
             onClick={handleUpload}
             className={`gradient-2 z-50 mx-auto block w-[140px] cursor-pointer rounded-full pt-s1.5 pb-s1 text-center`}

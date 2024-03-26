@@ -9,6 +9,7 @@ import ButtonLoader from '../../public/loaders/ButtonLoader';
 import Cookies from 'js-cookie';
 import { signInWithGoogle } from '../api/firebase';
 import PageTitle from '../../components/SEO/PageTitle';
+import { signInWithGoogleAcc } from '../../services/apis';
 
 const Login = () => {
   const router = useRouter();
@@ -18,8 +19,9 @@ const Login = () => {
   const handleSubmit = async () => {
     setIsLoading(true);
     const { _tokenResponse } = await signInWithGoogle();
-    Cookies.set('token', _tokenResponse.idToken, { expires: 3 });
+    await signInWithGoogleAcc(_tokenResponse.idToken);
     localStorage.setItem('uid', _tokenResponse.localId);
+    Cookies.set('uid', _tokenResponse.localId);
     updateUser({
       ...user,
       email: _tokenResponse.email,
@@ -31,7 +33,7 @@ const Login = () => {
     if (prevRoute) {
       Cookies.remove('redirectUrl');
       router.push(decodeURIComponent(prevRoute));
-    } else router.push('/transcription');
+    } else router.push('/pending');
   };
 
   return (

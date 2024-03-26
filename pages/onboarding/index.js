@@ -41,10 +41,15 @@ const Onboarding = () => {
   const [popupSubmit, setPopupSubmit] = useState(false);
   const [supportEmail, setSupportEmail] = useState('');
   const [supportInquiry, setSupportInquiry] = useState('');
+  const [editor, setEditor] = useState(false);
 
   const handleCheckBox = (name) => {
     setCheckedState(name);
   };
+
+  const handleEditor = () => {
+    setEditor(!editor);
+  }
 
   const handleSubmit = async () => {
     setLoader('submit');
@@ -77,7 +82,8 @@ const Onboarding = () => {
             nativeLanguage,
             country,
             checkedState,
-            paymentDetails
+            paymentDetails,
+            editor
           );
 
           const userId = localStorage.getItem('uid');
@@ -156,7 +162,12 @@ const Onboarding = () => {
 
   return (
     <>
-      <PageTitle title="Onboarding" />
+      <PageTitle
+        title="Onboarding"
+        description={
+          'Join the league of reviewers servicing and distributing contents globally'
+        }
+      />
       {isLoading ? (
         <FullScreenLoader />
       ) : (
@@ -238,7 +249,7 @@ const Onboarding = () => {
               placeholder="First and last Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              name="title"
+              name="name"
               labelClasses="text-lg text-white mt-s2 !mb-[4px]"
               valueClasses="text-lg font-light"
               classes="!mb-s2"
@@ -249,7 +260,7 @@ const Onboarding = () => {
               value={email}
               placeholder="Your email"
               onChange={(e) => setEmail(e.target.value)}
-              name="title"
+              name="email"
               labelClasses="text-lg text-white !mb-[4px]"
               valueClasses="text-lg font-light"
               classes="!mb-s2"
@@ -274,9 +285,19 @@ const Onboarding = () => {
               value={country}
               options={countriesAndCodes}
               onChange={(selectedOption) => setCountry(selectedOption)}
-              labelClasses="text-lg text-white !mb-[4px]"
+              labelClasses="text-lg text-white !mb-[px]"
               valueClasses="text-lg !text-white ml-s1 font-light"
             />
+
+            <div className="mt-s0">
+              <CheckBox
+                label="I would also like to review and process videos"
+                onChange={() => handleEditor()}
+                name="checkbox"
+                labelClasses="text-lg mt-[4px]"
+                isChecked={editor}
+              />
+            </div>
 
             <div className="mt-s5 text-4xl font-bold text-white">
               Payment method
@@ -356,7 +377,7 @@ const Onboarding = () => {
             <div className="float-right my-s2 h-[47px] w-[134px]">
               <Button
                 theme="light"
-                onClick={() => handleSubmit()}
+                onClick={handleSubmit}
                 isLoading={loader === 'submit'}
               >
                 Submit

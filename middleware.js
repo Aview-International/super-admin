@@ -2,12 +2,18 @@ import { NextResponse } from 'next/server';
 import { authStatus } from './utils/authStatus';
 
 export function middleware(request) {
-  const token = request.cookies.get('token');
-  const status = authStatus(token);
+  const sessionCookie = request.cookies.get('session');
   const currentUrl = request.url;
-  if (!status) {
-    request.cookies.delete('token');
-    const response = NextResponse.redirect(new URL('/login?rdr=true', currentUrl));
+  const response = NextResponse.redirect(
+    new URL('/login?rdr=true', currentUrl)
+  );
+
+  try {
+    if (!authStatus(sessionCookie)) {
+      response.cookies.set('redirectUrl', currentUrl);
+      return response;
+    }
+  } catch (error) {
     response.cookies.set('redirectUrl', currentUrl);
     return response;
   }

@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
-import { getDatabase, ref, get, onValue, update } from 'firebase/database';
+import { getDatabase, ref, get, onValue, query, orderByChild, equalTo, update } from 'firebase/database';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -37,6 +37,28 @@ export const getAllPendingTranscriptions = async (callback) => {
   });
 };
 
+export const getAllJobsUnderReview = async (callback) => {
+  const database = getDatabase();
+  const jobsRef = ref(database, 'user-jobs/pending');
+
+  get(jobsRef).then((usersSnapshot) => {
+      let allUnderReviewJobs = {};
+
+      usersSnapshot.forEach((userSnapshot) => {
+          userSnapshot.forEach((jobSnapshot) => {
+              const job = jobSnapshot.val();
+              const jobId = jobSnapshot.key;
+              if (job.status === 'under review') {
+                  allUnderReviewJobs[jobId] = job;
+              }
+          });
+      });
+
+      callback(allUnderReviewJobs);
+  }).catch((error) => {
+      console.error("Firebase read failed: ", error);
+  });
+};
 export const getAllPendingTranscriptionsApproval = async (callback) => {
   const transcriptionRef = ref(database, `admin-jobs/pending/transcription-approve`);
   onValue(transcriptionRef, (snapshot) => {
