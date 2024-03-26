@@ -1,0 +1,49 @@
+@font-face {
+font-family: "Coolvetica";
+src: url('/fonts/Coolvetica.ttf') format('truetype');
+}
+
+@font-face {
+font-family: 'Komika';
+src: url('/fonts/Komika.ttf') format('truetype');
+}
+
+@font-face {
+font-family: 'LEMONMILK';
+src: url('/fonts/LEMONMILK.ttf') format('truetype');
+}
+
+@font-face {
+font-family: 'Merriweather';
+src: url('/fonts/Merriweather.ttf') format('truetype');
+}
+
+@font-face {
+font-family: 'Montserrat';
+src: url('/fonts/Montserrat.ttf') format('truetype');
+}
+
+@font-face {
+font-family: 'NotoSans';
+src: url('/fonts/NotoSans.ttf') format('truetype');
+}
+
+@font-face {
+font-family: 'NotoSans-SemiBold';
+src: url('/fonts/NotoSans-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+font-family: 'Proxima';
+src: url('/fonts/Proxima.ttf') format('truetype');
+}
+
+@font-face {
+font-family: 'Roboto';
+src: url('/fonts/Roboto.ttf') format('truetype');
+}
+
+@font-face {
+font-family: 'Rubik';
+src: url('/fonts/Rubik.ttf') format('truetype');
+}
