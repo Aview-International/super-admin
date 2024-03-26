@@ -331,3 +331,11 @@ export const getTranslatorProgress = async (
     jobId
   });
 }
+
+export const getDownloadLink = async (s3Path) => {
+  const response =  axiosInstance.post(baseUrl + 'admin/download-object', {
+    s3Path,
+  });
+
+  return response.data;
+}

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import PageTitle from '../../components/SEO/PageTitle';
-import { getSubtitledAndCaptionedJobs } from '../api/firebase';
+import { getSubtitledAndCaptionedJobs, getTranslatorId, acceptOverlayJob } from '../api/firebase';
+import ErrorHandler from '../../utils/errorHandler';
 
 const Subtitling = () => {
   const [jobs, setJobs] = useState([]);
@@ -17,6 +18,22 @@ const Subtitling = () => {
       : [];
     setJobs(pending);
   };
+
+  const handleAccept = async (jobId, creatorId) => {
+    try{
+      const userId = localStorage.getItem('uid');
+      const translatorId = await getTranslatorId(userId);
+
+      if (translatorId==null){
+        throw new Error("Invalid translatorId.");
+      }
+      await acceptOverlayJob(translatorId, jobId);
+
+      window.open(`/overlays/edit?translatorId=${translatorId}&jobId=${jobId}&creatorId=${creatorId}`, '_blank');
+    }catch(error){
+      ErrorHandler(error);
+    }
+  }
 
   useEffect(() => {
     getPendingJobs();
@@ -48,7 +65,7 @@ const Subtitling = () => {
                                 <div className="text-white text-left">{job.jobId}</div>
                                 <div className="text-white text-left">{job.videoData.caption}</div>
                                 <div className="text-white text-left">{job.originalLanguage}</div>
-                                <div className="text-white underline cursor-pointer">Accept job</div>
+                                <div className="text-white underline cursor-pointer" onClick={()=>{handleAccept(job.jobId, job.creatorId)}}>Accept job</div>
                             </div>
                             <div className="w-full bg-white h-[1px] bg-opacity-25"></div>
                         </div>

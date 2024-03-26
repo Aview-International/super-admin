@@ -22,5 +22,6 @@ export const config = {
     '/creator',
     '/distribution/:path*',
     '/manual/:path*',
+    '/onboarding',
   ],
 };

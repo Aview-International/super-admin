@@ -6,7 +6,6 @@ import TimelineSlider from '../../../components/subtitling/timelineSlider';
 import play from '../../../public/img/icons/play-white.svg';
 import Image from 'next/image';
 import FormInput from '../../../components/FormComponents/FormInput';
-import Textarea from '../../../components/FormComponents/Textarea';
 import CustomSelectInput from '../../../components/FormComponents/CustomSelectInput';
 import Caption from '../../../components/subtitling/Caption';
 import Button from '../../../components/UI/Button';
@@ -14,6 +13,10 @@ import Check from '/public/img/icons/check-circle-green.svg';
 import Loader from '../../../components/UI/Loader';
 import trash from '/public/img/icons/trash.svg';
 import plus from '/public/img/icons/plus.svg';
+import ErrorHandler from '../../../utils/errorHandler';
+import { verifyTranslator } from '../../api/firebase/index';
+import { useRouter } from 'next/router';
+import { getDownloadLink } from '../../../services/apis'
 
 
 const shorts_subtitling = () => {
@@ -28,8 +31,37 @@ const shorts_subtitling = () => {
     const [subtitleDetails, setSubtitleDetails] = useState(null);
     const [focused, setFocused] = useState(null);
 
+    const router = useRouter();
+    const { jobId } = router.query;
+    const { translatorId } = router.query;
+    const { creatorId } = router.query;
 
+    const handleVerifyTranslator = async () => {
+      try{
+        // const verify = await verifyTranslator(translatorId, jobId);
+        // console.log(verify);
+        // if (!verify){
+        //   throw new Error("invalid translatorId or JobId");
+        // }
+      
+        const videoPath  = `dubbing-tasks/${creatorId}/${jobId}/video.mp4`;
 
+        const downloadLink = await getDownloadLink(videoPath);
+
+        console.log(downloadLink);
+      }catch(error){
+        ErrorHandler(error);
+      }
+    }
+
+    const handleLoadVideo = async () => {
+
+    }
+
+    useEffect(() => {
+      handleVerifyTranslator();
+
+    })
   
     const handleAddRectangle = () => {
       setAddRectangle(true);

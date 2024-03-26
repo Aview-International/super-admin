@@ -4,15 +4,17 @@ import FormInput from '../../components/FormComponents/FormInput';
 import CustomSelectInput from '../../components/FormComponents/CustomSelectInput';
 import Button from '../../components/UI/Button';
 import Blobs from '../../components/UI/blobs';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useSelector } from 'react';
 import ErrorHandler from '../../utils/errorHandler';
 import SuccessHandler from '../../utils/successHandler';
+import Cookies from 'js-cookie';
 import {
   getSupportedLanguages,
   getCountriesAndCodes,
   createTranslator,
   sendSupportMessage,
 } from '../../services/apis';
+import { addTranslatorIdToUser } from '../api/firebase/index'
 import FullScreenLoader from '../../public/loaders/FullScreenLoader';
 import CheckBox from '../../components/FormComponents/CheckBox';
 import Popup from '../../components/UI/Popup';
@@ -69,7 +71,7 @@ const Onboarding = () => {
         throw new Error('Please enter payment details');
       } else {
         try {
-          await createTranslator(
+          const translator = await createTranslator(
             name,
             email,
             nativeLanguage,
@@ -77,6 +79,11 @@ const Onboarding = () => {
             checkedState,
             paymentDetails
           );
+
+          const userId = localStorage.getItem('uid');
+          const translatorId = translator.data._id;
+
+          await addTranslatorIdToUser(translatorId, userId);
           setPopupSubmit(true);
         } catch (error) {
           ErrorHandler(error);

@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
-import { getDatabase, ref, get, onValue } from 'firebase/database';
+import { getDatabase, ref, get, onValue, update } from 'firebase/database';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -111,7 +111,7 @@ export const getSubtitledAndCaptionedJobs = async () => {
         const allJobs = snapshot.val();
         const filteredJobs = Object.keys(allJobs).reduce((acc, key) => {
           const job = allJobs[key];
-          if (job['subtitle&caption'] === true) {
+          if (job['overlays'] === true) {
             acc[key] = job;
           }
           return acc;
@@ -122,3 +122,75 @@ export const getSubtitledAndCaptionedJobs = async () => {
   );
   return res;
 };
+
+export const getTranslatorId = async (userId) => {
+  const userRef = ref(database, `users/${userId}/translatorId`);
+
+  const snapshot = await get(userRef);
+  
+  if (snapshot.exists()) {
+    return snapshot.val(); 
+  } else {
+    console.log('No translatorId found for this user.');
+    return null;
+  }
+}
+
+export const acceptOverlayJob = async (translatorId, jobId) => {
+  const db = database;
+  const jobRef = ref(db, `admin-jobs/pending/${jobId}`);
+  const pendingJobsRef = ref(db, 'admin-jobs/pending');
+
+  const jobSnapshot = await get(jobRef);
+  // Check if the job is already taken by a different translator.
+  if (jobSnapshot.exists() && jobSnapshot.child('translatorId').val() && jobSnapshot.child('translatorId').val() !== translatorId) {
+    console.log('This job is already taken by another translator.');
+    throw new Error('This job is already taken by another translator.');
+  }
+
+  // Check if the translator is assigned to any other pending job.
+  const pendingJobsSnapshot = await get(pendingJobsRef);
+  if (pendingJobsSnapshot.exists()) {
+    let hasOtherJobs = false;
+    pendingJobsSnapshot.forEach((childSnapshot) => {
+      if (childSnapshot.key !== jobId && childSnapshot.child('translatorId').val() === translatorId) {
+        hasOtherJobs = true;
+      }
+    });
+
+    if (hasOtherJobs) {
+      throw new Error('Translator already has a pending job.');
+    }
+  }
+
+  // If all checks pass, assign the translator to the job.
+  if (!jobSnapshot.exists() || jobSnapshot.child('translatorId').val() === null || jobSnapshot.child('translatorId').val() === translatorId) {
+    await update(jobRef, { translatorId: translatorId });
+    console.log('Job accepted successfully.');
+  } else {
+    // This case should theoretically never be reached due to earlier checks.
+    throw new Error('Job cannot be accepted.');
+  }
+};
+
+
+export const addTranslatorIdToUser = async (translatorId, userId) => {
+  const userRef = ref(database, 'users/' + userId);
+  
+  await update(userRef, {
+    translatorId: translatorId
+  });
+
+};
+
+export const verifyTranslator = async (translatorId, jobId) => {
+  const translatorRef = ref(database, `admin-jobs/pending/${jobId}/translatorId`);
+  const snapshot = await get(translatorRef);
+
+  if (!snapshot.exists()) {
+    return false;
+  }
+
+  const fetchedTranslatorId = snapshot.val();
+  return fetchedTranslatorId === translatorId;
+}
