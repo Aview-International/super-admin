@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
-import { getDatabase, ref, get, onValue, query, orderByChild, equalTo, update } from 'firebase/database';
+import { getDatabase, ref, get, onValue, query, orderByChild, equalTo, update, serverTimestamp  } from 'firebase/database';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -133,7 +133,26 @@ export const getSubtitledAndCaptionedJobs = async () => {
         const allJobs = snapshot.val();
         const filteredJobs = Object.keys(allJobs).reduce((acc, key) => {
           const job = allJobs[key];
-          if (job['overlays'] === true) {
+          if (job['overlays'] === true && job['overlaysStatus'] == null) {
+            acc[key] = job;
+          }
+          return acc;
+        }, {});
+        return filteredJobs;
+      } else return null;
+    }
+  );
+  return res;
+};
+
+export const getFlaggedSubtitledAndCaptionedJobs = async () => {
+  const res = await get(ref(database, `admin-jobs/pending`)).then(
+    (snapshot) => {
+      if (snapshot.exists()) {
+        const allJobs = snapshot.val();
+        const filteredJobs = Object.keys(allJobs).reduce((acc, key) => {
+          const job = allJobs[key];
+          if (job['overlays'] === true && job['overlaysStatus'] == "flagged") {
             acc[key] = job;
           }
           return acc;
@@ -187,7 +206,7 @@ export const acceptOverlayJob = async (translatorId, jobId) => {
 
   // If all checks pass, assign the translator to the job.
   if (!jobSnapshot.exists() || jobSnapshot.child('translatorId').val() === null || jobSnapshot.child('translatorId').val() === translatorId) {
-    await update(jobRef, { translatorId: translatorId });
+    await update(jobRef, { translatorId: translatorId, overlaysStatus: serverTimestamp() });
     console.log('Job accepted successfully.');
   } else {
     // This case should theoretically never be reached due to earlier checks.

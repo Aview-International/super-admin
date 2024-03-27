@@ -23,29 +23,14 @@ export const DASHBOARD_NAVLINKS = [
     route: '/pending',
   },
   {
-    text: 'Transcription',
-    image: transcription,
-    route: '/transcription',
-  },
-  {
-    text: 'Translation',
-    image: translation,
-    route: '/translation',
-  },
-  {
-    text: 'Dubbing & Edits',
-    image: videoedit,
-    route: '/dubbing-edits',
-  },
-  {
-    text: 'Distribution',
-    image: creator,
-    route: '/distribution',
-  },
-  {
     text: 'Overlays',
     image: transcription,
     route: '/overlays',
+  },
+  {
+    text: 'Overlay Flags',
+    image: videoedit,
+    route: '/overlay-flags',
   },
   {
     text: 'Manual',
