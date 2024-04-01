@@ -15,9 +15,11 @@ import Loader from '../../../components/UI/Loader';
 import trash from '/public/img/icons/trash.svg';
 import plus from '/public/img/icons/plus.svg';
 import ErrorHandler from '../../../utils/errorHandler';
-import { verifyTranslator, getUserProfile, getPendingTranslation } from '../../api/firebase/index';
+import { verifyTranslator, getUserProfile, getPendingTranslation, flagOverlayJob } from '../../api/firebase/index';
 import { useRouter } from 'next/router';
-import { getDownloadLink } from '../../../services/apis'
+import { getDownloadLink, submitOverlayJob } from '../../../services/apis';
+import Popup from '../../../components/UI/Popup';
+
 
 
 
@@ -36,6 +38,9 @@ const shorts_subtitling = () => {
     const [creatorName, setCreatorName] = useState(null);
     const [creatorPfp, setCreatorPfp] = useState(null);
     const [job, setJob] = useState(null);
+    const [loader, setLoader] = useState('');
+    const [popupSubmit, setPopupSubmit] = useState(false);
+    const [popupText, setPopupText] = useState('');
     
 
     const router = useRouter();
@@ -74,6 +79,15 @@ const shorts_subtitling = () => {
       
     }
 
+    const handleFlag = async (jobId) => {
+      setLoader('flag');
+      await flagOverlayJob(jobId).then(() => {
+        setLoader('');
+        setPopupSubmit(true);
+        setPopupText('Flagged!');
+      });
+    }
+
     const getJob = async (jobId) => {
       await getPendingTranslation(jobId, callback); 
     }
@@ -82,13 +96,71 @@ const shorts_subtitling = () => {
       setJob(data);
     };
 
-    const handleSubmit = async () =>{
+    function timeStringToSeconds(timeString) {
+      if (typeof timeString !== 'string' || !timeString.includes(':')) {
+        throw new Error("Invalid time string format");
+      }
+    
+      let parts = timeString.split(':');
+      if (parts.length < 3 || !parts[2].includes('.')) {
+        throw new Error("Time string must be in HH:MM:SS.sss format");
+      }
+    
+      let secondsParts = parts[2].split('.');
+    
+      let hours = parseInt(parts[0], 10);
+      let minutes = parseInt(parts[1], 10);
+      let seconds = parseInt(secondsParts[0], 10);
+      let milliseconds = secondsParts[1] ? parseInt(secondsParts[1], 10) : 0;
+    
+      let totalSeconds = (hours * 3600) + (minutes * 60) + seconds + (milliseconds / 100);
+    
+      return totalSeconds;
+    }
+
+    const handleSubmit = async (jobId) =>{
+      setLoader('submit');
       console.log(captionsArray, subtitleDetails);
+      console.log(rectangles);
 
-      let operationsArray = captionsArray;
-      operationsArray.push(subtitleDetails);
 
-      console.log(operationsArray);
+      let operationsArray = [];
+      if (subtitleDetails){
+        operationsArray.push(subtitleDetails);
+      }
+      
+
+      for (const caption of captionsArray){
+        operationsArray.push(caption.captionDetails);
+      }
+
+      console.log(operationsArray.entries());
+      try{
+
+        
+        for (const operations of operationsArray) {
+          const rectangle = rectangles[operations.index];
+          console.log(rectangle);
+
+          operations.top_left = rectangle.start;
+          operations.top_right = rectangle.end;
+          if (operations.start_time == "" || validateTimeString(operations.start_time) || operations.end_time == "" || validateTimeString(operations.end_time)){
+            throw new Error("invalid time");
+          }
+          operations.start_time = timeStringToSeconds(operations.start_time);
+          operations.end_time = timeStringToSeconds(operations.end_time);
+
+
+        }
+      }catch(error){
+        ErrorHandler(error);
+      }
+
+      await submitOverlayJob(jobId).then(() => {
+        setLoader('');
+        setPopupSubmit(true);
+        setPopupText('Submitted!');
+      });
     }
 
     const validateTimeString = (time) => {
@@ -113,9 +185,6 @@ const shorts_subtitling = () => {
       setAddRectangle(true);
     };
 
-    const getCaptionByIndex = (index) => {
-      return captionsArray[index];
-    }
 
     const handleCreateSubtitle = () => {
       if (subtitle){
@@ -138,11 +207,11 @@ const shorts_subtitling = () => {
         start: "",
         end: "",
         font: "Coolvetica",
-        fontColor: "white",
-        outline:"black",
+        font_color: "white",
+        outline_color:"black",
         background: "blurred",
-        topLeft: "",
-        bottomRight: "",
+        top_left: "",
+        bottom_Right: "",
       }
 
       setSubtitleDetails(subtitleDetails);
@@ -189,15 +258,15 @@ const shorts_subtitling = () => {
 
       let captionDetails = {
         task:"caption",
-        start: "",
-        end: "",
-        text: "",
-        type: "Normal Caption",
+        start_time: "",
+        end_time: "",
+        caption_text: "",
+        type: "normal caption",
         font: "Coolvetica",
-        fontColor: "black",
-        background: "white",
-        topLeft: "",
-        bottomRight: "",
+        font_color: "black",
+        background_color: "white",
+        top_left: "",
+        bottom_Right: "",
       }
 
       setCaptionsArray([...captionsArray, {index: index, captionDetails: captionDetails}]);
@@ -215,6 +284,20 @@ const shorts_subtitling = () => {
     return (
       <>
       <PageTitle title="Captioning & Subtitling" />
+      <Popup show={popupSubmit} disableClose={true}>
+          <div className="w-full h-full">
+                  <div className="w-[500px] bg-indigo-2 rounded-2xl p-s3">
+                      <div className="flex flex-col justify-center items-center">
+                          <h2 className="text-white text-2xl mb-s2">{popupText}</h2>
+                          <p className="text-white">Please wait 1-2 business days for payment to process. Thank you.</p>
+
+
+                      </div>
+                      
+
+                  </div>
+          </div>
+      </Popup>
       <div className="flex flex-col h-screen">
         {/* First two sections with calculated height */}
         {videoLink &&
@@ -260,8 +343,8 @@ const shorts_subtitling = () => {
                   <Button
                     theme="error"
                     classes="flex justify-center items-center h-[48px]"
-                    onClick={() => handleApprove()}
-                    //isLoading={loader === 'approve'}
+                    onClick={() => handleFlag(jobId)}
+                    isLoading={loader === 'flag'}
                   >
                     <span className="mr-2">Flag</span>
                   </Button>
@@ -269,8 +352,8 @@ const shorts_subtitling = () => {
                   <Button
                       theme="success"
                       classes="flex justify-center items-center h-[48px]"
-                      onClick={() => handleSubmit()}
-                      //isLoading={loader === 'approve'}
+                      onClick={() => handleSubmit(jobId)}
+                      isLoading={loader === 'submit'}
                   >
                       <span className="mr-2">Submit</span>
                       <Image src={Check} alt="" width={24} height={24} />
@@ -357,7 +440,6 @@ const shorts_subtitling = () => {
                     classes="!mb-s2 !mt-s2"
                   >
                     
-                    <p className="my-[2px] bg-black p-s1" style={{ fontFamily: "Coolvetica" }} onClick={() => updateSubtitleDetails('font', 'Coolvetica')}>Coolvetica</p>
                     <p className="my-[2px] bg-black p-s1" style={{ fontFamily: "Komika" }} onClick={() => updateSubtitleDetails('font', 'Komika')}>Komika</p>
                     <p className="my-[2px] bg-black p-s1" style={{ fontFamily: "LEMONMILK" }} onClick={() => updateSubtitleDetails('font', 'LEMONMILK')}>LEMONMILK</p>
                     <p className="my-[2px] bg-black p-s1" style={{ fontFamily: "Merriweather" }} onClick={() => updateSubtitleDetails('font', 'Merriweather')}>Merriweather</p>
@@ -371,66 +453,66 @@ const shorts_subtitling = () => {
 
                   <CustomSelectInputChildren
                     text="Font color"
-                    value={subtitleDetails.fontColor}
+                    value={subtitleDetails.font_color}
                     labelClasses="text-lg text-white !mb-s1"
                     valueClasses="text-lg !text-white ml-s1 font-light"
                     classes="!mb-s2"
                   >  
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 255, 255)' }} onClick={() => updateSubtitleDetails('fontColor', 'Black')}>Black</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 255, 255)' }} onClick={() => updateSubtitleDetails('fontColor', 'White')}>White</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(254, 44, 85)' }} onClick={() => updateSubtitleDetails('fontColor', 'Razzmatazz')}>Razzmatazz</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(238, 29, 82)' }} onClick={() => updateSubtitleDetails('fontColor', "Crayola's Red")}>Crayola's Red</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(191, 148, 228)' }} onClick={() => updateSubtitleDetails('fontColor', 'Lavender')}>Lavender</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(169, 223, 191)' }} onClick={() => updateSubtitleDetails('fontColor', 'Mint Green')}>Mint Green</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 229, 180)' }} onClick={() => updateSubtitleDetails('fontColor', 'Peach')}>Peach</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 182, 193)' }} onClick={() => updateSubtitleDetails('fontColor', 'Baby Pink')}>Baby Pink</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(211, 211, 211)' }} onClick={() => updateSubtitleDetails('fontColor', 'Light Grey')}>Light Grey</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(135, 206, 235)' }} onClick={() => updateSubtitleDetails('fontColor', 'Sky Blue')}>Sky Blue</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 253, 208)' }} onClick={() => updateSubtitleDetails('fontColor', 'Cream')}>Cream</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(0, 128, 128)' }} onClick={() => updateSubtitleDetails('fontColor', 'Teal')}>Teal</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 127, 80)' }} onClick={() => updateSubtitleDetails('fontColor', 'Coral')}>Coral</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(75, 0, 130)' }} onClick={() => updateSubtitleDetails('fontColor', 'Indigo')}>Indigo</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(64, 224, 208)' }} onClick={() => updateSubtitleDetails('fontColor', 'Turquoise')}>Turquoise</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 191, 0)' }} onClick={() => updateSubtitleDetails('fontColor', 'Amber')}>Amber</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(142, 69, 133)' }} onClick={() => updateSubtitleDetails('fontColor', 'Plum')}>Plum</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(244, 196, 48)' }} onClick={() => updateSubtitleDetails('fontColor', 'Saffron')}>Saffron</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(107, 142, 35)' }} onClick={() => updateSubtitleDetails('fontColor', 'Olive Green')}>Olive Green</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(224, 176, 255)' }} onClick={() => updateSubtitleDetails('fontColor', 'Mauve')}>Mauve</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(204, 85, 0)' }} onClick={() => updateSubtitleDetails('fontColor', 'Burnt Orange')}>Burnt Orange</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(48, 172, 228)' }} onClick={() => updateSubtitleDetails('fontColor', 'Ocean Blue')}>Ocean Blue</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 255, 255)' }} onClick={() => updateSubtitleDetails('font_color', 'Black')}>Black</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 255, 255)' }} onClick={() => updateSubtitleDetails('font_color', 'White')}>White</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(254, 44, 85)' }} onClick={() => updateSubtitleDetails('font_color', 'Razzmatazz')}>Razzmatazz</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(238, 29, 82)' }} onClick={() => updateSubtitleDetails('font_color', "Crayola's Red")}>Crayola's Red</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(191, 148, 228)' }} onClick={() => updateSubtitleDetails('font_color', 'Lavender')}>Lavender</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(169, 223, 191)' }} onClick={() => updateSubtitleDetails('font_color', 'Mint Green')}>Mint Green</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 229, 180)' }} onClick={() => updateSubtitleDetails('font_color', 'Peach')}>Peach</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 182, 193)' }} onClick={() => updateSubtitleDetails('font_color', 'Baby Pink')}>Baby Pink</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(211, 211, 211)' }} onClick={() => updateSubtitleDetails('font_color', 'Light Grey')}>Light Grey</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(135, 206, 235)' }} onClick={() => updateSubtitleDetails('font_color', 'Sky Blue')}>Sky Blue</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 253, 208)' }} onClick={() => updateSubtitleDetails('font_color', 'Cream')}>Cream</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(0, 128, 128)' }} onClick={() => updateSubtitleDetails('font_color', 'Teal')}>Teal</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 127, 80)' }} onClick={() => updateSubtitleDetails('font_color', 'Coral')}>Coral</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(75, 0, 130)' }} onClick={() => updateSubtitleDetails('font_color', 'Indigo')}>Indigo</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(64, 224, 208)' }} onClick={() => updateSubtitleDetails('font_color', 'Turquoise')}>Turquoise</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 191, 0)' }} onClick={() => updateSubtitleDetails('font_color', 'Amber')}>Amber</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(142, 69, 133)' }} onClick={() => updateSubtitleDetails('font_color', 'Plum')}>Plum</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(244, 196, 48)' }} onClick={() => updateSubtitleDetails('font_color', 'Saffron')}>Saffron</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(107, 142, 35)' }} onClick={() => updateSubtitleDetails('font_color', 'Olive Green')}>Olive Green</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(224, 176, 255)' }} onClick={() => updateSubtitleDetails('font_color', 'Mauve')}>Mauve</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(204, 85, 0)' }} onClick={() => updateSubtitleDetails('font_color', 'Burnt Orange')}>Burnt Orange</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(48, 172, 228)' }} onClick={() => updateSubtitleDetails('font_color', 'Ocean Blue')}>Ocean Blue</p>
 
                   </CustomSelectInputChildren>
 
                   <CustomSelectInputChildren
-                    text="Text Outline"
-                    value={subtitleDetails.outline}
+                    text="Text outline"
+                    value={subtitleDetails.outline_color}
                     labelClasses="text-lg text-white !mb-s1"
                     valueClasses="text-lg !text-white ml-s1 font-light"
                     classes="!mb-s2"
                   >
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 255, 255)' }} onClick={() => updateSubtitleDetails('outline', 'None')}>None</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 255, 255)' }} onClick={() => updateSubtitleDetails('outline', 'Black')}>Black</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 255, 255)' }} onClick={() => updateSubtitleDetails('outline', 'White')}>White</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(254, 44, 85)' }} onClick={() => updateSubtitleDetails('outline', 'Razzmatazz')}>Razzmatazz</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(238, 29, 82)' }} onClick={() => updateSubtitleDetails('outline', "Crayola's Red")}>Crayola's Red</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(191, 148, 228)' }} onClick={() => updateSubtitleDetails('outline', 'Lavender')}>Lavender</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(169, 223, 191)' }} onClick={() => updateSubtitleDetails('outline', 'Mint Green')}>Mint Green</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 229, 180)' }} onClick={() => updateSubtitleDetails('outline', 'Peach')}>Peach</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 182, 193)' }} onClick={() => updateSubtitleDetails('outline', 'Baby Pink')}>Baby Pink</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(211, 211, 211)' }} onClick={() => updateSubtitleDetails('outline', 'Light Grey')}>Light Grey</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(135, 206, 235)' }} onClick={() => updateSubtitleDetails('outline', 'Sky Blue')}>Sky Blue</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 253, 208)' }} onClick={() => updateSubtitleDetails('outline', 'Cream')}>Cream</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(0, 128, 128)' }} onClick={() => updateSubtitleDetails('outline', 'Teal')}>Teal</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 127, 80)' }} onClick={() => updateSubtitleDetails('outline', 'Coral')}>Coral</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(75, 0, 130)' }} onClick={() => updateSubtitleDetails('outline', 'Indigo')}>Indigo</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(64, 224, 208)' }} onClick={() => updateSubtitleDetails('outline', 'Turquoise')}>Turquoise</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 191, 0)' }} onClick={() => updateSubtitleDetails('outline', 'Amber')}>Amber</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(142, 69, 133)' }} onClick={() => updateSubtitleDetails('outline', 'Plum')}>Plum</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(244, 196, 48)' }} onClick={() => updateSubtitleDetails('outline', 'Saffron')}>Saffron</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(107, 142, 35)' }} onClick={() => updateSubtitleDetails('outline', 'Olive Green')}>Olive Green</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(224, 176, 255)' }} onClick={() => updateSubtitleDetails('outline', 'Mauve')}>Mauve</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(204, 85, 0)' }} onClick={() => updateSubtitleDetails('outline', 'Burnt Orange')}>Burnt Orange</p>
-                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(48, 172, 228)' }} onClick={() => updateSubtitleDetails('outline', 'Ocean Blue')}>Ocean Blue</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 255, 255)' }} onClick={() => updateSubtitleDetails('outline_color', 'None')}>None</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 255, 255)' }} onClick={() => updateSubtitleDetails('outline_color', 'Black')}>Black</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 255, 255)' }} onClick={() => updateSubtitleDetails('outline_color', 'White')}>White</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(254, 44, 85)' }} onClick={() => updateSubtitleDetails('outline_color', 'Razzmatazz')}>Razzmatazz</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(238, 29, 82)' }} onClick={() => updateSubtitleDetails('outline_color', "Crayola's Red")}>Crayola's Red</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(191, 148, 228)' }} onClick={() => updateSubtitleDetails('outline_color', 'Lavender')}>Lavender</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(169, 223, 191)' }} onClick={() => updateSubtitleDetails('outline_color', 'Mint Green')}>Mint Green</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 229, 180)' }} onClick={() => updateSubtitleDetails('outline_color', 'Peach')}>Peach</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 182, 193)' }} onClick={() => updateSubtitleDetails('outline_color', 'Baby Pink')}>Baby Pink</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(211, 211, 211)' }} onClick={() => updateSubtitleDetails('outline_color', 'Light Grey')}>Light Grey</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(135, 206, 235)' }} onClick={() => updateSubtitleDetails('outline_color', 'Sky Blue')}>Sky Blue</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 253, 208)' }} onClick={() => updateSubtitleDetails('outline_color', 'Cream')}>Cream</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(0, 128, 128)' }} onClick={() => updateSubtitleDetails('outline_color', 'Teal')}>Teal</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 127, 80)' }} onClick={() => updateSubtitleDetails('outline_color', 'Coral')}>Coral</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(75, 0, 130)' }} onClick={() => updateSubtitleDetails('outline_color', 'Indigo')}>Indigo</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(64, 224, 208)' }} onClick={() => updateSubtitleDetails('outline_color', 'Turquoise')}>Turquoise</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 191, 0)' }} onClick={() => updateSubtitleDetails('outline_color', 'Amber')}>Amber</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(142, 69, 133)' }} onClick={() => updateSubtitleDetails('outline_color', 'Plum')}>Plum</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(244, 196, 48)' }} onClick={() => updateSubtitleDetails('outline_color', 'Saffron')}>Saffron</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(107, 142, 35)' }} onClick={() => updateSubtitleDetails('outline_color', 'Olive Green')}>Olive Green</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(224, 176, 255)' }} onClick={() => updateSubtitleDetails('outline_color', 'Mauve')}>Mauve</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(204, 85, 0)' }} onClick={() => updateSubtitleDetails('outline_color', 'Burnt Orange')}>Burnt Orange</p>
+                    <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(48, 172, 228)' }} onClick={() => updateSubtitleDetails('outline_color', 'Ocean Blue')}>Ocean Blue</p>
                   </CustomSelectInputChildren>  
 
                   <CustomSelectInputChildren
@@ -438,7 +520,7 @@ const shorts_subtitling = () => {
                     value={subtitleDetails.background}
                     labelClasses="text-lg text-white !mb-s1"
                     valueClasses="text-lg !text-white ml-s1 font-light"
-                    classes="!mb-0"
+                    classes="!mb-s2"
                   >
                     <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 255, 255)' }} onClick={() => updateSubtitleDetails('background', 'None')}>Blurred</p>
                     <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 255, 255)' }} onClick={() => updateSubtitleDetails('background', 'None')}>None</p>

@@ -329,3 +329,9 @@ export const getDownloadLink = async (s3Path) => {
 
   return response;
 }
+
+export const submitOverlayJob = async (jobId) => {
+  return axiosInstance.post(baseUrl + 'admin/submit-overlay-job', {jobId});
+
+  
+}

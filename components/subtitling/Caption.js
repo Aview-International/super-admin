@@ -62,8 +62,8 @@ const Caption = ({ captionKey, index, captionsArray, setCaptionsArray, rectIndex
           <FormInput
             label="Start time"
             placeholder="00:00:00"
-            value={caption.captionDetails.start}
-            onChange={(e) => updateCaptionDetails('start', e.target.value)}
+            value={caption.captionDetails.start_time}
+            onChange={(e) => updateCaptionDetails('start_time', e.target.value)}
             name="startTime"
             labelClasses="text-lg text-white !mb-s1"
             valueClasses="placeholder-white text-lg font-light"
@@ -73,8 +73,8 @@ const Caption = ({ captionKey, index, captionsArray, setCaptionsArray, rectIndex
           <FormInput
             label="End time"
             placeholder="00:00:00"
-            value={caption.captionDetails.end}
-            onChange={(e) => updateCaptionDetails('end', e.target.value)}
+            value={caption.captionDetails.end_time}
+            onChange={(e) => updateCaptionDetails('end_time', e.target.value)}
             name="endTime"
             labelClasses="text-lg text-white !mb-s1"
             valueClasses="placeholder-white text-lg font-light"
@@ -112,7 +112,6 @@ const Caption = ({ captionKey, index, captionsArray, setCaptionsArray, rectIndex
           classes="!mb-s2 !mt-s2"
         >
           
-          <p className="my-[2px] bg-black p-s1" style={{ fontFamily: "Coolvetica" }} onClick={() => updateCaptionDetails('font', 'Coolvetica')}>Coolvetica</p>
           <p className="my-[2px] bg-black p-s1" style={{ fontFamily: "Komika" }} onClick={() => updateCaptionDetails('font', 'Komika')}>Komika</p>
           <p className="my-[2px] bg-black p-s1" style={{ fontFamily: "LEMONMILK" }} onClick={() => updateCaptionDetails('font', 'LEMONMILK')}>LEMONMILK</p>
           <p className="my-[2px] bg-black p-s1" style={{ fontFamily: "Merriweather" }} onClick={() => updateCaptionDetails('font', 'Merriweather')}>Merriweather</p>
@@ -126,64 +125,64 @@ const Caption = ({ captionKey, index, captionsArray, setCaptionsArray, rectIndex
 
         <CustomSelectInputChildren
           text="Font color"
-          value={caption.captionDetails.fontColor}
+          value={caption.captionDetails.font_color}
           labelClasses="text-lg text-white !mb-s1"
           valueClasses="text-lg !text-white ml-s1 font-light"
           classes="!mb-s2"
         >
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 255, 255)' }} onClick={() => updateCaptionDetails('fontColor', 'Black')}>Black</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 255, 255)' }} onClick={() => updateCaptionDetails('fontColor', 'White')}>White</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(254, 44, 85)' }} onClick={() => updateCaptionDetails('fontColor', 'Razzmatazz')}>Razzmatazz</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(238, 29, 82)' }} onClick={() => updateCaptionDetails('fontColor', "Crayola's Red")}>Crayola's Red</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(191, 148, 228)' }} onClick={() => updateCaptionDetails('fontColor', 'Lavender')}>Lavender</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(169, 223, 191)' }} onClick={() => updateCaptionDetails('fontColor', 'Mint Green')}>Mint Green</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 229, 180)' }} onClick={() => updateCaptionDetails('fontColor', 'Peach')}>Peach</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 182, 193)' }} onClick={() => updateCaptionDetails('fontColor', 'Baby Pink')}>Baby Pink</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(211, 211, 211)' }} onClick={() => updateCaptionDetails('fontColor', 'Light Grey')}>Light Grey</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(135, 206, 235)' }} onClick={() => updateCaptionDetails('fontColor', 'Sky Blue')}>Sky Blue</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 253, 208)' }} onClick={() => updateCaptionDetails('fontColor', 'Cream')}>Cream</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(0, 128, 128)' }} onClick={() => updateCaptionDetails('fontColor', 'Teal')}>Teal</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 127, 80)' }} onClick={() => updateCaptionDetails('fontColor', 'Coral')}>Coral</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(75, 0, 130)' }} onClick={() => updateCaptionDetails('fontColor', 'Indigo')}>Indigo</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(64, 224, 208)' }} onClick={() => updateCaptionDetails('fontColor', 'Turquoise')}>Turquoise</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 191, 0)' }} onClick={() => updateCaptionDetails('fontColor', 'Amber')}>Amber</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(142, 69, 133)' }} onClick={() => updateCaptionDetails('fontColor', 'Plum')}>Plum</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(244, 196, 48)' }} onClick={() => updateCaptionDetails('fontColor', 'Saffron')}>Saffron</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(107, 142, 35)' }} onClick={() => updateCaptionDetails('fontColor', 'Olive Green')}>Olive Green</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(224, 176, 255)' }} onClick={() => updateCaptionDetails('fontColor', 'Mauve')}>Mauve</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(204, 85, 0)' }} onClick={() => updateCaptionDetails('fontColor', 'Burnt Orange')}>Burnt Orange</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(48, 172, 228)' }} onClick={() => updateCaptionDetails('fontColor', 'Ocean Blue')}>Ocean Blue</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 255, 255)' }} onClick={() => updateCaptionDetails('font_color', 'Black')}>Black</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 255, 255)' }} onClick={() => updateCaptionDetails('font_color', 'White')}>White</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(254, 44, 85)' }} onClick={() => updateCaptionDetails('font_color', 'Razzmatazz')}>Razzmatazz</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(238, 29, 82)' }} onClick={() => updateCaptionDetails('font_color', "Crayola's Red")}>Crayola's Red</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(191, 148, 228)' }} onClick={() => updateCaptionDetails('font_color', 'Lavender')}>Lavender</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(169, 223, 191)' }} onClick={() => updateCaptionDetails('font_color', 'Mint Green')}>Mint Green</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 229, 180)' }} onClick={() => updateCaptionDetails('font_color', 'Peach')}>Peach</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 182, 193)' }} onClick={() => updateCaptionDetails('font_color', 'Baby Pink')}>Baby Pink</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(211, 211, 211)' }} onClick={() => updateCaptionDetails('font_color', 'Light Grey')}>Light Grey</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(135, 206, 235)' }} onClick={() => updateCaptionDetails('font_color', 'Sky Blue')}>Sky Blue</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 253, 208)' }} onClick={() => updateCaptionDetails('font_color', 'Cream')}>Cream</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(0, 128, 128)' }} onClick={() => updateCaptionDetails('font_color', 'Teal')}>Teal</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 127, 80)' }} onClick={() => updateCaptionDetails('font_color', 'Coral')}>Coral</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(75, 0, 130)' }} onClick={() => updateCaptionDetails('font_color', 'Indigo')}>Indigo</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(64, 224, 208)' }} onClick={() => updateCaptionDetails('font_color', 'Turquoise')}>Turquoise</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 191, 0)' }} onClick={() => updateCaptionDetails('font_color', 'Amber')}>Amber</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(142, 69, 133)' }} onClick={() => updateCaptionDetails('font_color', 'Plum')}>Plum</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(244, 196, 48)' }} onClick={() => updateCaptionDetails('font_color', 'Saffron')}>Saffron</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(107, 142, 35)' }} onClick={() => updateCaptionDetails('font_color', 'Olive Green')}>Olive Green</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(224, 176, 255)' }} onClick={() => updateCaptionDetails('font_color', 'Mauve')}>Mauve</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(204, 85, 0)' }} onClick={() => updateCaptionDetails('font_color', 'Burnt Orange')}>Burnt Orange</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(48, 172, 228)' }} onClick={() => updateCaptionDetails('font_color', 'Ocean Blue')}>Ocean Blue</p>
         </CustomSelectInputChildren>
 
         <CustomSelectInputChildren
-          text="Background color"
-          value={caption.captionDetails.background}
+          text="background color"
+          value={caption.captionDetails.background_color}
           labelClasses="text-lg text-white !mb-s1"
           valueClasses="text-lg !text-white ml-s1 font-light"
           classes="!mb-0"
         >
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 255, 255)' }} onClick={() => updateCaptionDetails('background', 'Black')}>Black</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 255, 255)' }} onClick={() => updateCaptionDetails('background', 'White')}>White</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(254, 44, 85)' }} onClick={() => updateCaptionDetails('background', 'Razzmatazz')}>Razzmatazz</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(238, 29, 82)' }} onClick={() => updateCaptionDetails('background', "Crayola's Red")}>Crayola's Red</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(191, 148, 228)' }} onClick={() => updateCaptionDetails('background', 'Lavender')}>Lavender</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(169, 223, 191)' }} onClick={() => updateCaptionDetails('background', 'Mint Green')}>Mint Green</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 229, 180)' }} onClick={() => updateCaptionDetails('background', 'Peach')}>Peach</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 182, 193)' }} onClick={() => updateCaptionDetails('background', 'Baby Pink')}>Baby Pink</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(211, 211, 211)' }} onClick={() => updateCaptionDetails('background', 'Light Grey')}>Light Grey</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(135, 206, 235)' }} onClick={() => updateCaptionDetails('background', 'Sky Blue')}>Sky Blue</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 253, 208)' }} onClick={() => updateCaptionDetails('background', 'Cream')}>Cream</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(0, 128, 128)' }} onClick={() => updateCaptionDetails('background', 'Teal')}>Teal</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 127, 80)' }} onClick={() => updateCaptionDetails('background', 'Coral')}>Coral</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(75, 0, 130)' }} onClick={() => updateCaptionDetails('background', 'Indigo')}>Indigo</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(64, 224, 208)' }} onClick={() => updateCaptionDetails('background', 'Turquoise')}>Turquoise</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 191, 0)' }} onClick={() => updateCaptionDetails('background', 'Amber')}>Amber</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(142, 69, 133)' }} onClick={() => updateCaptionDetails('background', 'Plum')}>Plum</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(244, 196, 48)' }} onClick={() => updateCaptionDetails('background', 'Saffron')}>Saffron</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(107, 142, 35)' }} onClick={() => updateCaptionDetails('background', 'Olive Green')}>Olive Green</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(224, 176, 255)' }} onClick={() => updateCaptionDetails('background', 'Mauve')}>Mauve</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(204, 85, 0)' }} onClick={() => updateCaptionDetails('background', 'Burnt Orange')}>Burnt Orange</p>
-          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(48, 172, 228)' }} onClick={() => updateCaptionDetails('background', 'Ocean Blue')}>Ocean Blue</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 255, 255)' }} onClick={() => updateCaptionDetails('background_color', 'Black')}>Black</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 255, 255)' }} onClick={() => updateCaptionDetails('background_color', 'White')}>White</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(254, 44, 85)' }} onClick={() => updateCaptionDetails('background_color', 'Razzmatazz')}>Razzmatazz</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(238, 29, 82)' }} onClick={() => updateCaptionDetails('background_color', "Crayola's Red")}>Crayola's Red</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(191, 148, 228)' }} onClick={() => updateCaptionDetails('background_color', 'Lavender')}>Lavender</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(169, 223, 191)' }} onClick={() => updateCaptionDetails('background_color', 'Mint Green')}>Mint Green</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 229, 180)' }} onClick={() => updateCaptionDetails('background_color', 'Peach')}>Peach</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 182, 193)' }} onClick={() => updateCaptionDetails('background_color', 'Baby Pink')}>Baby Pink</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(211, 211, 211)' }} onClick={() => updateCaptionDetails('background_color', 'Light Grey')}>Light Grey</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(135, 206, 235)' }} onClick={() => updateCaptionDetails('background_color', 'Sky Blue')}>Sky Blue</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 253, 208)' }} onClick={() => updateCaptionDetails('background_color', 'Cream')}>Cream</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(0, 128, 128)' }} onClick={() => updateCaptionDetails('background_color', 'Teal')}>Teal</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 127, 80)' }} onClick={() => updateCaptionDetails('background_color', 'Coral')}>Coral</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(75, 0, 130)' }} onClick={() => updateCaptionDetails('background_color', 'Indigo')}>Indigo</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(64, 224, 208)' }} onClick={() => updateCaptionDetails('background_color', 'Turquoise')}>Turquoise</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(255, 191, 0)' }} onClick={() => updateCaptionDetails('background_color', 'Amber')}>Amber</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(142, 69, 133)' }} onClick={() => updateCaptionDetails('background_color', 'Plum')}>Plum</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(244, 196, 48)' }} onClick={() => updateCaptionDetails('background_color', 'Saffron')}>Saffron</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(107, 142, 35)' }} onClick={() => updateCaptionDetails('background_color', 'Olive Green')}>Olive Green</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(224, 176, 255)' }} onClick={() => updateCaptionDetails('background_color', 'Mauve')}>Mauve</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(204, 85, 0)' }} onClick={() => updateCaptionDetails('background_color', 'Burnt Orange')}>Burnt Orange</p>
+          <p className="my-[2px] bg-black p-s1" style={{ color: 'rgb(48, 172, 228)' }} onClick={() => updateCaptionDetails('background_color', 'Ocean Blue')}>Ocean Blue</p>
         </CustomSelectInputChildren>
       </div>
     </>

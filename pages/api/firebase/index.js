@@ -133,7 +133,7 @@ export const getSubtitledAndCaptionedJobs = async () => {
         const allJobs = snapshot.val();
         const filteredJobs = Object.keys(allJobs).reduce((acc, key) => {
           const job = allJobs[key];
-          if (job['overlays'] === true && job['overlaysStatus'] == null) {
+          if (job['status'] == "subtitling" && job['overlaysStatus'] == null) {
             acc[key] = job;
           }
           return acc;
@@ -152,7 +152,7 @@ export const getFlaggedSubtitledAndCaptionedJobs = async () => {
         const allJobs = snapshot.val();
         const filteredJobs = Object.keys(allJobs).reduce((acc, key) => {
           const job = allJobs[key];
-          if (job['overlays'] === true && job['overlaysStatus'] == "flagged") {
+          if (job['status'] == "subtitling" && job['overlaysStatus'] == "flagged") {
             acc[key] = job;
           }
           return acc;
@@ -213,6 +213,11 @@ export const acceptOverlayJob = async (translatorId, jobId) => {
     throw new Error('Job cannot be accepted.');
   }
 };
+
+export const flagOverlayJob = async (jobId) => {
+  const jobRef = ref(database, `admin-jobs/pending/${jobId}`);
+  await update(jobRef, { overlaysStatus: 'flagged' });
+}
 
 
 export const addTranslatorIdToUser = async (translatorId, userId) => {

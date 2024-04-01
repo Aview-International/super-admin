@@ -1,9 +1,4 @@
 @font-face {
-font-family: "Coolvetica";
-src: url('/fonts/Coolvetica.ttf') format('truetype');
-}
-
-@font-face {
 font-family: 'Komika';
 src: url('/fonts/Komika.ttf') format('truetype');
 }
