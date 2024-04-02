@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
 import Border from '../../components/UI/Border';
 import Shadow from '../../components/UI/Shadow';
@@ -9,19 +8,17 @@ import ButtonLoader from '../../public/loaders/ButtonLoader';
 import Cookies from 'js-cookie';
 import { signInWithGoogle } from '../api/firebase';
 import PageTitle from '../../components/SEO/PageTitle';
-import { signInWithGoogleAcc } from '../../services/apis';
 
 const Login = () => {
-  const router = useRouter();
   const { user, updateUser } = useContext(UserContext);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async () => {
     setIsLoading(true);
     const { _tokenResponse } = await signInWithGoogle();
-    await signInWithGoogleAcc(_tokenResponse.idToken);
     localStorage.setItem('uid', _tokenResponse.localId);
     Cookies.set('uid', _tokenResponse.localId);
+    Cookies.set('session', _tokenResponse.idToken);
     updateUser({
       ...user,
       email: _tokenResponse.email,
@@ -32,8 +29,8 @@ const Login = () => {
     const prevRoute = Cookies.get('redirectUrl');
     if (prevRoute) {
       Cookies.remove('redirectUrl');
-      router.push(decodeURIComponent(prevRoute));
-    } else router.push('/pending');
+      window.location.href = decodeURIComponent(prevRoute);
+    } else window.location.href = '/dashboard';
   };
 
   return (

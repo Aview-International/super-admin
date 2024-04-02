@@ -26,7 +26,7 @@ export const config = {
     '/translation/QA',
     '/dubbing-edits',
     '/creator',
-    '/distribution/:path*',
+    // '/distribution/:path*',
     '/manual/:path*',
   ],
 };

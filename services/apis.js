@@ -8,9 +8,6 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-export const signInWithGoogleAcc = async (token) =>
-  (await axiosInstance.post(baseUrl + 'auth/login', { token })).data;
-
 export const downloadS3Object = async (s3Path) => {
   await axiosInstance.post(baseUrl + 'admin/download-object', {
     s3Path,
@@ -238,7 +235,7 @@ export const uploadManualSrtDubbing = async ({ srt, voiceId, multiVoice }) => {
 };
 
 export const getElevenLabsVoices = async () =>
-  (await axiosInstance.get('dubbing/get-elevenlabs-voices')).data;
+  (await axiosInstance.get('dubbing/get-voices')).data;
 
 export const transcribeSocialLink = async (body) =>
   await axiosInstance.post('transcription/social', body);
@@ -257,7 +254,7 @@ export const createTranslator = async (
   country,
   paymentMethod,
   paymentDetails,
-  editor,
+  editor
 ) => {
   return axiosInstance.post(baseUrl + 'admin/create-translator', {
     name,
