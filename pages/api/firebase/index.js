@@ -145,6 +145,25 @@ export const getSubtitledAndCaptionedJobs = async () => {
   return res;
 };
 
+export const getModerationJobs = async (userLanguages) => {
+  const res = await get(ref(database, `admin-jobs/pending`)).then(
+    (snapshot) => {
+      if (snapshot.exists()) {
+        const allJobs = snapshot.val();
+        const filteredJobs = Object.keys(allJobs).reduce((acc, key) => {
+          const job = allJobs[key];
+          if (userLanguages.includes(job['translatedLanguage']) && userLanguages.includes(job['originalLanguage']) && job['status']=="moderation") {
+            acc[key] = job;
+          }
+          return acc;
+        }, {});
+        return filteredJobs;
+      } else return null;
+    }
+  );
+  return res;
+};
+
 export const getFlaggedSubtitledAndCaptionedJobs = async () => {
   const res = await get(ref(database, `admin-jobs/pending`)).then(
     (snapshot) => {

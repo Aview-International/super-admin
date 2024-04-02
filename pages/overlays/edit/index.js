@@ -41,15 +41,32 @@ const shorts_subtitling = () => {
     const [loader, setLoader] = useState('');
     const [popupSubmit, setPopupSubmit] = useState(false);
     const [popupText, setPopupText] = useState('');
+    const [creatorId, setCreatorId] = useState(null);
     
 
     const router = useRouter();
     const { jobId } = router.query;
     const { translatorId } = router.query;
-    const { creatorId } = router.query;
+    //const { creatorId } = router.query;
+
+    const handleVideo = async () => {
+      if (jobId && translatorId && creatorId){
+        const res = await getUserProfile(creatorId);
+
+        setCreatorName(res?.firstName + ' ' + res?.lastName);
+        setCreatorPfp(res?.picture);
+
+        const videoPath  = `dubbing-tasks/${creatorId}/${jobId}/video.mp4`;
+  
+        const downloadLink = await getDownloadLink(videoPath);
+
+        console.log(downloadLink);
+        setVideoLink(downloadLink.data);
+      }
+    }
 
     const handleVerifyTranslator = async () => {
-      if (jobId && translatorId && creatorId){
+      if (jobId && translatorId){
         try{
           const verify = await verifyTranslator(translatorId, jobId);
           console.log(verify);
@@ -57,20 +74,10 @@ const shorts_subtitling = () => {
             throw new Error("invalid translatorId or JobId");
           }
 
-          const res = await getUserProfile(creatorId);
-
-          setCreatorName(res?.firstName + ' ' + res?.lastName);
-          setCreatorPfp(res?.picture);
+          
 
           getJob(jobId);
           
-        
-          const videoPath  = `dubbing-tasks/${creatorId}/${jobId}/video.mp4`;
-  
-          const downloadLink = await getDownloadLink(videoPath);
-  
-          console.log(downloadLink);
-          setVideoLink(downloadLink.data);
   
         }catch(error){
           ErrorHandler(error);
@@ -94,6 +101,7 @@ const shorts_subtitling = () => {
 
     const callback = (data) => {
       setJob(data);
+      setCreatorId(data.creatorId);
     };
 
     function timeStringToSeconds(timeString) {
@@ -172,6 +180,13 @@ const shorts_subtitling = () => {
 
       handleVerifyTranslator();
 
+    },[jobId, translatorId])
+
+    useEffect(() => {
+      if(jobId && creatorId && translatorId){
+        handleVideo();
+      }
+      
     },[jobId, translatorId, creatorId])
 
     const updateSubtitleDetails = (field, value) => {
@@ -206,7 +221,7 @@ const shorts_subtitling = () => {
         index:index,
         start: "",
         end: "",
-        font: "Coolvetica",
+        font: "Montserrat",
         font_color: "white",
         outline_color:"black",
         background: "blurred",
@@ -262,7 +277,7 @@ const shorts_subtitling = () => {
         end_time: "",
         caption_text: "",
         type: "normal caption",
-        font: "Coolvetica",
+        font: "Montserrat",
         font_color: "black",
         background_color: "white",
         top_left: "",

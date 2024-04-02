@@ -33,6 +33,11 @@ export const DASHBOARD_NAVLINKS = [
     route: '/overlay-flags',
   },
   {
+    text: 'Moderation',
+    image: creator,
+    route: '/moderation',
+  },
+  {
     text: 'Manual',
     image: dubbing,
     route: '/manual',

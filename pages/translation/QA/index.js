@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getRawSRT, createTranslatorProgress, updateTranslatorProgress, finishTranslation, getTranslatorProgress, getTranslatorById } from '../../../services/apis';
+import { getRawSRT, createTranslatorProgress, updateTranslatorProgress, finishTranslation, getTranslatorProgress, getTranslatorById, getDownloadLink } from '../../../services/apis';
 import { getPendingTranslation, getUserProfile } from '../../api/firebase'
 import QATranslationBubble from '../../../components/translation/QATranslationBubble';
 import { useRouter } from 'next/router';
@@ -34,6 +34,7 @@ const QA = () => {
     const [content, setContent] = useState("video");
     const [uploadDate, setUploadDate] = useState(null);
     const [flags, setFlags] = useState([]);
+    const [downloadLink, setDownloadLink] = useState(null);
 
     const router = useRouter();
     const { jobId } = router.query;
@@ -44,6 +45,13 @@ const QA = () => {
     const callback = (data) => {
         setJob(data);
     };
+
+    const handleVideo = async () => {
+        const videoPath  = `dubbing-tasks/${job.creatorId}/${jobId}/video.mp4`;
+        console.log(videoPath);
+        const downloadLink = await getDownloadLink(videoPath);
+        setDownloadLink(downloadLink.data);
+    }
 
     useEffect(() => {
         if(jobId){
@@ -58,6 +66,8 @@ const QA = () => {
             const date = new Date(parseInt(job.timestamp));
             setUploadDate(date.toLocaleDateString('en-US',{year: 'numeric', month: 'long', day: 'numeric'}));
             setFlags(job.flags);
+            handleVideo();
+            console.log(job);
         }
     },[job]);
 
@@ -288,7 +298,7 @@ const QA = () => {
 
     return (
         <div>
-            <PageTitle title="Review" />
+            <PageTitle title="Moderation" />
             <style>
             {`
             ::-webkit-scrollbar-track {
@@ -366,17 +376,12 @@ const QA = () => {
                             <div className="bg-white-transparent flex-1 rounded-2xl p-s2 w-full h-full relative">
                                 <h2 className="text-white mb-2 text-xl">{job ? job.videoData.caption: ""}</h2>
                                 <h2 className="text-white mb-4 text-base">{creatorName ? creatorName : ""}</h2>
+                                {downloadLink &&
                                 <div className="relative w-full overflow-hidden mb-s5" style={{paddingTop:"56.25%"}}>
-                                    <iframe
-                                    className="absolute top-0 left-0 w-full h-full rounded-lg"
-                                    width="100%"
-                                    height="100%"
-                                    src={job ? job.videoData.videoUrl : `https://www.youtube.com/embed/hz9Ek6fxX48`}
-                                    title="YouTube video player"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                    allowFullScreen
-                                    ></iframe>
-                                </div>
+                                    <video style={{ objectFit: 'contain', position: 'absolute', top: '0', left: '0', width: '100%', height: '100%', backgroundColor: '#000' }} controls>
+                                        <source src={downloadLink ? downloadLink : ""} type="video/mp4" />
+                                    </video>
+                                </div>}
                                 <div className="grid grid-cols-2 justify-center gap-s2">
 
                                     <Button
@@ -456,13 +461,10 @@ const QA = () => {
                             <div className="w-[656px] flex justify-center flex-col">
                                 <div className="flex-1 my-[40px]"> 
                                     <div className="relative overflow-hidden mb-s5" style={{paddingTop:"56.25%"}}>
-                                        <iframe
-                                            className="absolute top-0 left-0 w-full h-full rounded-lg"
-                                            src={job ? job.videoData.videoUrl : `https://www.youtube.com/embed/hz9Ek6fxX48`}
-                                            title="YouTube video player"
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                            allowFullScreen
-                                        ></iframe>
+                                        {downloadLink &&
+                                        <video style={{ objectFit: 'contain', position: 'absolute', top: '0', left: '0', width: '100%', height: '100%', backgroundColor: '#000' }} controls>
+                                            <source src={downloadLink ? downloadLink : ""} type="video/mp4" />
+                                        </video>}
                                     </div>
 
                                     <div className="grid grid-cols-3 gap-y-[40px] gap-x-[16px] grid-rows-2 justify-center mb-[36px]">

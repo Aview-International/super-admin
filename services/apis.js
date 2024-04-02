@@ -277,9 +277,9 @@ export const sendSupportMessage = async (email, message) => {
   });
 };
 
-export const getTranslatorById = async (id) => {
+export const getTranslatorById = async (translatorId) => {
   return axiosInstance.post(baseUrl + 'admin/get-translator-by-id', {
-    id,
+    translatorId,
   });
 };
 
@@ -335,3 +335,4 @@ export const submitOverlayJob = async (jobId) => {
 
   
 }
+
