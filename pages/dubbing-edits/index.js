@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import PageTitle from '../../components/SEO/PageTitle';
-import { getAllPendingVideoEdits } from '../api/firebase';
 import Logo from '../../public/img/aview/logo.svg';
 import Image from 'next/image';
 import AllVideos from '../../components/admin/AllVideos';
 import SelectedVideo from '../../components/video-edits/SelectedVideo-Edits';
+import { getAllPendingVideoEdits } from '../../services/firebase';
 
 const VideoEdits = () => {
   const [jobs, setJobs] = useState([]);

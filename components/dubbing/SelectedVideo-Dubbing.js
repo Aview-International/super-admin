@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { getUserProfile } from '../../pages/api/firebase';
 import Button from '../UI/Button';
 import { downloadS3Object, approveTranslation } from '../../services/apis';
 import Check from '../../public/img/icons/check-circle-green.svg';
 import Download from '../../public/img/icons/download.svg';
 import Upload from '../../public/img/icons/upload.svg';
 import Image from 'next/image';
+import { getUserProfile } from '../../services/firebase';
 
 const SelectedVideo = ({ selectedJob, setSelectedJob }) => {
   const [button, setButton] = useState('');

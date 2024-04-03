@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import PageTitle from '../../components/SEO/PageTitle';
-import { getAllJobsUnderReview } from '../api/firebase';
 import SelectedVideo from '../../components/pending/SelectedVideo-Pending';
 import AllVideos from '../../components/admin/AllVideos';
 import Image from 'next/image';
 import Logo from '../../public/img/aview/logo.svg';
+import { getAllJobsUnderReview } from '../../services/firebase';
 
 const Transcription = () => {
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(undefined);
-  const [videoDownloadLink, setVideoDownloadLink] = useState("");
+  const [videoDownloadLink, setVideoDownloadLink] = useState('');
   const [updateTrigger, setUpdateTrigger] = useState(false);
 
   const callback = (data) => {
@@ -62,7 +62,7 @@ const Transcription = () => {
               selectedJob={selectedJob}
               setSelectedJob={setSelectedJob}
               videoDownloadLink={videoDownloadLink}
-              triggerUpdate={() => setUpdateTrigger(prev => !prev)}
+              triggerUpdate={() => setUpdateTrigger((prev) => !prev)}
             />
           </div>
         ) : (

@@ -1,8 +1,13 @@
 import Image from 'next/image';
-import { getUserProfile } from '../../pages/api/firebase';
 import { useEffect, useState } from 'react';
+import { getUserProfile } from '../../services/firebase';
 
-const AllVideos = ({ job, setSelectedJob, selectedJob, setVideoDownloadLink }) => {
+const AllVideos = ({
+  job,
+  setSelectedJob,
+  selectedJob,
+  setVideoDownloadLink,
+}) => {
   const [creatorData, setCreatorData] = useState({
     name: '',
     picture: '',
@@ -42,11 +47,11 @@ const AllVideos = ({ job, setSelectedJob, selectedJob, setVideoDownloadLink }) =
               className="rounded-full"
             />
           )}
-          </div>
-          <div className="ml-s2">
-            <p className="text-lg font-semibold">{job.videoData.caption}</p>
-            <p className="text-base">{creatorData.name}</p>
-          </div>
+        </div>
+        <div className="ml-s2">
+          <p className="text-lg font-semibold">{job.videoData.caption}</p>
+          <p className="text-base">{creatorData.name}</p>
+        </div>
       </div>
     </div>
   );

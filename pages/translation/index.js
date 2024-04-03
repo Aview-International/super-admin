@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import PageTitle from '../../components/SEO/PageTitle';
-import { getAllPendingTranslations } from '../api/firebase';
 import SelectedVideo from '../../components/translation/SelectedVideo-Translation';
 import AllVideos from '../../components/admin/AllVideos';
 import Logo from '../../public/img/aview/logo.svg';
 import Image from 'next/image';
+import { getAllPendingTranslations } from '../../services/firebase';
 
 const Transcription = () => {
   const [jobs, setJobs] = useState([]);
