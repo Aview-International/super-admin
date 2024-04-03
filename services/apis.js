@@ -248,7 +248,7 @@ export const uploadManualSrtDubbing = async ({ srt, voiceId, multiVoice }) => {
 };
 
 export const getElevenLabsVoices = async () =>
-  (await axiosInstance.get('dubbing/get-elevenlabs-voices')).data;
+  (await axiosInstance.get('dubbing/get-voices')).data;
 
 export const transcribeSocialLink = async (body) =>
   await axiosInstance.post('transcription/social', body);
