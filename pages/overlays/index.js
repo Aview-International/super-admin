@@ -32,7 +32,7 @@ const Subtitling = () => {
       }
       await acceptOverlayJob(translatorId, jobId);
 
-      window.open(`/overlays/edit?translatorId=${translatorId}&jobId=${jobId}`, '_blank');
+      window.open(`/overlays/edit?jobId=${jobId}`, '_blank');
     }catch(error){
       ErrorHandler(error);
     }

@@ -42,7 +42,7 @@ const Subtitling = () => {
         throw new Error("Invalid translatorId.");
       }
 
-      window.open(`/translation/QA?translatorId=${translatorId}&jobId=${jobId}`, '_blank');
+      window.open(`/translation/QA?jobId=${jobId}`, '_blank');
     }catch(error){
       ErrorHandler(error);
     }

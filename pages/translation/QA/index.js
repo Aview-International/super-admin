@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getRawSRT, createTranslatorProgress, updateTranslatorProgress, finishTranslation, getTranslatorProgress, getTranslatorById, getDownloadLink } from '../../../services/apis';
-import { getPendingTranslation, getUserProfile, attachTranslatorToModerationJob, verifyTranslator } from '../../api/firebase'
+import { getPendingTranslation, getUserProfile, attachTranslatorToModerationJob, verifyTranslator, getTranslatorId } from '../../api/firebase'
 import QATranslationBubble from '../../../components/translation/QATranslationBubble';
 import { useRouter } from 'next/router';
 import Button from '/components/UI/Button';
@@ -35,16 +35,23 @@ const QA = () => {
     const [uploadDate, setUploadDate] = useState(null);
     const [flags, setFlags] = useState([]);
     const [downloadLink, setDownloadLink] = useState(null);
+    const [translatorId, setTranslatorId] = useState(null);
+    const [userId, setUserId] = useState(null);
 
     const router = useRouter();
     const { jobId } = router.query;
-    const { translatorId } = router.query;
+    //const { translatorId } = router.query;
 
     const {width: windowWidth, height: windowHeight} = useWindowSize();
 
     const callback = (data) => {
         setJob(data);
     };
+
+    const handleTranslator = async (userId) => {
+        const translatorId = await getTranslatorId(userId);
+        setTranslatorId(translatorId);
+    }
 
     const handleVideo = async () => {
         const videoPath  = `dubbing-tasks/${job.creatorId}/${jobId}/video.mp4`;
@@ -54,10 +61,27 @@ const QA = () => {
     }
 
     useEffect(() => {
-        if(jobId){
-            getJob(jobId);
-        }
-    },[jobId]);
+        const userId = localStorage.getItem('uid');
+        setUserId(userId);
+    }, []);
+
+    useEffect(() => {
+    if (userId){
+        handleTranslator(userId);
+    }
+    }, [userId]);
+
+    useEffect(() => {
+
+        handleVerifyTranslator();
+
+    },[jobId, translatorId])
+
+    // useEffect(() => {
+    //     if(jobId){
+    //         getJob(jobId);
+    //     }
+    // },[jobId]);
 
     useEffect(() => {
         if (job){
@@ -180,6 +204,25 @@ const QA = () => {
             ErrorHandler(error);
         }
 
+    }
+
+    const handleVerifyTranslator = async () => {
+        if (jobId && translatorId){
+          try{
+            const verify = await verifyTranslator(translatorId, jobId);
+            console.log(verify);
+            if (!verify){
+              throw new Error("invalid translatorId or JobId");
+            }
+            
+            getJob(jobId);
+
+            
+          }catch(error){
+            ErrorHandler(error);
+          }
+        }
+        
     }
 
     const handleApprove = async () => {

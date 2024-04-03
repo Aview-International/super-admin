@@ -257,7 +257,6 @@ export const createTranslator = async (
   country,
   paymentMethod,
   paymentDetails,
-  editor,
 ) => {
   return axiosInstance.post(baseUrl + 'admin/create-translator', {
     name,
@@ -266,7 +265,6 @@ export const createTranslator = async (
     country,
     paymentMethod,
     paymentDetails,
-    editor,
   });
 };
 

@@ -15,10 +15,11 @@ import Loader from '../../../components/UI/Loader';
 import trash from '/public/img/icons/trash.svg';
 import plus from '/public/img/icons/plus.svg';
 import ErrorHandler from '../../../utils/errorHandler';
-import { verifyTranslator, getUserProfile, getPendingTranslation, flagOverlayJob } from '../../api/firebase/index';
+import { verifyTranslator, getUserProfile, getPendingTranslation, flagOverlayJob, getTranslatorId } from '../../api/firebase/index';
 import { useRouter } from 'next/router';
 import { getDownloadLink, submitOverlayJob } from '../../../services/apis';
 import Popup from '../../../components/UI/Popup';
+import FullScreenLoader from '../../../public/loaders/FullScreenLoader';
 
 
 
@@ -42,12 +43,13 @@ const shorts_subtitling = () => {
     const [popupSubmit, setPopupSubmit] = useState(false);
     const [popupText, setPopupText] = useState('');
     const [creatorId, setCreatorId] = useState(null);
-    
+    const [translatorId, setTranslatorId] = useState(null);
+    const [userId, setUserId] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const router = useRouter();
     const { jobId } = router.query;
-    const { translatorId } = router.query;
-    //const { creatorId } = router.query;
+    //const { translatorId } = router.query;
 
     const handleVideo = async () => {
       if (jobId && translatorId && creatorId){
@@ -63,6 +65,11 @@ const shorts_subtitling = () => {
         console.log(downloadLink);
         setVideoLink(downloadLink.data);
       }
+    }
+
+    const handleTranslator = async (userId) => {
+      const translatorId = await getTranslatorId(userId);
+      setTranslatorId(translatorId);
     }
 
     const handleVerifyTranslator = async () => {
@@ -107,6 +114,7 @@ const shorts_subtitling = () => {
 
     const getJob = async (jobId) => {
       await getPendingTranslation(jobId, callback); 
+      setIsLoading(false);
     }
 
     const callback = (data) => {
@@ -192,6 +200,17 @@ const shorts_subtitling = () => {
       const pattern = /^\d{2}:\d{2}:\d{2}(\.\d{2})?$/;
       return pattern.test(time);
     }
+
+    useEffect(() => {
+      const userId = localStorage.getItem('uid');
+      setUserId(userId);
+    }, []);
+  
+    useEffect(() => {
+      if (userId){
+          handleTranslator(userId);
+      }
+    }, [userId]);
 
     useEffect(() => {
 
@@ -330,6 +349,7 @@ const shorts_subtitling = () => {
                   </div>
           </div>
       </Popup>
+      {isLoading && <FullScreenLoader/>}
       <div className="flex flex-col h-screen">
         {/* First two sections with calculated height */}
         {videoLink &&
