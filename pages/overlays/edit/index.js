@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import PageTitle from '../../../components/SEO/PageTitle';
 import VideoAnnotator from '../../../components/subtitling/VideoAnnotator';
-import TimelineSlider from '../../../components/subtitling/timelineSlider';
+import TimelineSlider from '../../../components/subtitling/TimelineSlider';
 import Image from 'next/image';
 import FormInput from '../../../components/FormComponents/FormInput';
 import CustomSelectInputChildren from '../../../components/FormComponents/CustomSelectInputChildren';
