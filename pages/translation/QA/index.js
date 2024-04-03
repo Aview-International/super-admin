@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getRawSRT, createTranslatorProgress, updateTranslatorProgress, finishTranslation, getTranslatorProgress, getTranslatorById, getDownloadLink } from '../../../services/apis';
-import { getPendingTranslation, getUserProfile } from '../../api/firebase'
+import { getPendingTranslation, getUserProfile, attachTranslatorToModerationJob, verifyTranslator } from '../../api/firebase'
 import QATranslationBubble from '../../../components/translation/QATranslationBubble';
 import { useRouter } from 'next/router';
 import Button from '/components/UI/Button';
@@ -103,6 +103,7 @@ const QA = () => {
                 try{
                     let res = await createTranslatorProgress(jobId, job.creatorId, lang, translatorId, null,null,null);
                     setAcceptedJob(true);
+                    attachTranslatorToModerationJob(translatorId, jobId);
                 }catch(error){
                     ErrorHandler(error);
                 }
@@ -156,47 +157,76 @@ const QA = () => {
     }
 
     const handleResetSRT = async () => {
-        setLoader('reset');
-        await getSrt(job.creatorId, jobId, lang);
-        await updateTranslatorProgress(jobId, null)
-        .then(() => {
-            // This code will run after the promise is successfully fulfilled
-            setLoader('');
-            SuccessHandler("Changes discarded.");
-        })
-        .catch((error) => {
-            // This code will run if there is an error during the promise execution
-            setLoader('');
-            ErrorHandler("Failed to discard changes", error);
-        });
+        try{
+            const verify = await verifyTranslator(translatorId, jobId);
+            console.log(verify);
+            if (!verify){
+                throw new Error("Job has expired");
+            }
+            setLoader('reset');
+            await getSrt(job.creatorId, jobId, lang);
+            await updateTranslatorProgress(jobId, null)
+            .then(() => {
+                // This code will run after the promise is successfully fulfilled
+                setLoader('');
+                SuccessHandler("Changes discarded.");
+            })
+            .catch((error) => {
+                // This code will run if there is an error during the promise execution
+                setLoader('');
+                ErrorHandler("Failed to discard changes", error);
+            });
+        }catch(error) {
+            ErrorHandler(error);
+        }
 
     }
 
     const handleApprove = async () => {
-        setLoader('approve');
-        await updateTranslatorProgress(jobId, getSrtText());
-        await finishTranslation(jobId, job.creatorId, translatorId)
-        .then(() => {
-            setLoader('');
-            setPopupSubmit(true);
-        }).catch((error) => {
-            ErrorHandler(error, "Failed to approve.");
-            setLoader('');
-        });
+        
+        try{
+            
+            const verify = await verifyTranslator(translatorId, jobId);
+            console.log(verify);
+            if (!verify){
+                throw new Error("Job has expired");
+            }
+            setLoader('approve');
+            await updateTranslatorProgress(jobId, getSrtText());
+            await finishTranslation(jobId, job.creatorId, translatorId)
+            .then(() => {
+                setLoader('');
+                setPopupSubmit(true);
+            }).catch((error) => {
+                ErrorHandler(error, "Failed to approve.");
+                setLoader('');
+            });
+        }catch(error) {
+            ErrorHandler(error);
+        }
         
     }
 
     const handleSave = async () => {
-        setLoader('save');
-        updateTranslatorProgress(jobId, getSrtText())
-        .then(() => {
-            setLoader('');
-            SuccessHandler("Progress saved.");
-        })
-        .catch((error) => {
-            setLoader('');
-            ErrorHandler("Failed to save progress.", error);
-        });
+        try{
+            const verify = await verifyTranslator(translatorId, jobId);
+            console.log(verify);
+            if (!verify){
+                throw new Error("Job has expired");
+            }
+            setLoader('save');
+            updateTranslatorProgress(jobId, getSrtText())
+            .then(() => {
+                setLoader('');
+                SuccessHandler("Progress saved.");
+            })
+            .catch((error) => {
+                setLoader('');
+                ErrorHandler("Failed to save progress.", error);
+            });
+        }catch(error){
+            ErrorHandler(error);
+        }
     }
 
     const getProfile = async () => {

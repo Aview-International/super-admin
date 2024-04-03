@@ -126,14 +126,15 @@ export const getUserProfile = async (_id) => {
   return res;
 };
 
-export const getSubtitledAndCaptionedJobs = async () => {
+export const getSubtitledAndCaptionedJobs = async (translatorId) => {
+
   const res = await get(ref(database, `admin-jobs/pending`)).then(
     (snapshot) => {
       if (snapshot.exists()) {
         const allJobs = snapshot.val();
         const filteredJobs = Object.keys(allJobs).reduce((acc, key) => {
           const job = allJobs[key];
-          if (job['status'] == "subtitling" && job['overlaysStatus'] == null) {
+          if (job['status'] == "subtitling" && job['overlaysStatus'] != "flagged" && (job['overlaysStatus'] == null || job['translatorId'] == translatorId || job['translatorId'] == null)) {
             acc[key] = job;
           }
           return acc;
@@ -145,14 +146,16 @@ export const getSubtitledAndCaptionedJobs = async () => {
   return res;
 };
 
-export const getModerationJobs = async (userLanguages) => {
+export const getModerationJobs = async (userLanguages, translatorId) => {
+
+
   const res = await get(ref(database, `admin-jobs/pending`)).then(
     (snapshot) => {
       if (snapshot.exists()) {
         const allJobs = snapshot.val();
         const filteredJobs = Object.keys(allJobs).reduce((acc, key) => {
           const job = allJobs[key];
-          if (userLanguages.includes(job['translatedLanguage']) && userLanguages.includes(job['originalLanguage']) && job['status']=="moderation") {
+          if (userLanguages.includes(job['translatedLanguage']) && userLanguages.includes(job['originalLanguage']) && job['status']=="moderation" && (job['translatorId'] == translatorId || job['translatorId'] == null)) {
             acc[key] = job;
           }
           return acc;
@@ -258,4 +261,10 @@ export const verifyTranslator = async (translatorId, jobId) => {
 
   const fetchedTranslatorId = snapshot.val();
   return fetchedTranslatorId === translatorId;
+}
+
+export const attachTranslatorToModerationJob = async (translatorId, jobId) => {
+  const jobRef = ref(database, `admin-jobs/pending/${jobId}/`);
+
+  await update(jobRef, {translatorId: translatorId});
 }

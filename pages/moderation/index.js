@@ -24,7 +24,7 @@ const Subtitling = () => {
   }
 
   const getPendingJobs = async (userLanguages) => {
-    const res = await getModerationJobs(userLanguages);
+    const res = await getModerationJobs(userLanguages, translatorId);
 
     const pending = res
       ? Object.values(res).map((item, i) => ({

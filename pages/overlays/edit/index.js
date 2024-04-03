@@ -87,12 +87,22 @@ const shorts_subtitling = () => {
     }
 
     const handleFlag = async (jobId) => {
-      setLoader('flag');
-      await flagOverlayJob(jobId).then(() => {
-        setLoader('');
-        setPopupSubmit(true);
-        setPopupText('Flagged!');
-      });
+      try{
+        const verify = await verifyTranslator(translatorId, jobId);
+
+        if (!verify){
+          throw new Error ("Job has expired");
+        }
+      
+        setLoader('flag');
+        await flagOverlayJob(jobId).then(() => {
+          setLoader('');
+          setPopupSubmit(true);
+          setPopupText('Flagged!');
+        });
+      }catch(error){
+        ErrorHandler(error);
+      }
     }
 
     const getJob = async (jobId) => {
@@ -127,25 +137,31 @@ const shorts_subtitling = () => {
     }
 
     const handleSubmit = async (jobId) =>{
-      setLoader('submit');
-      console.log(captionsArray, subtitleDetails);
-      console.log(rectangles);
-
-
-      let operationsArray = [];
-      if (subtitleDetails){
-        operationsArray.push(subtitleDetails);
-      }
-      
-
-      for (const caption of captionsArray){
-        operationsArray.push(caption.captionDetails);
-      }
-
-      console.log(operationsArray.entries());
       try{
+        const verify = await verifyTranslator(translatorId, jobId);
 
+        if (!verify){
+          throw new Error ("Job has expired");
+        }
+
+
+        setLoader('submit');
+        console.log(captionsArray, subtitleDetails);
+        console.log(rectangles);
+
+
+        let operationsArray = [];
+        if (subtitleDetails){
+          operationsArray.push(subtitleDetails);
+        }
         
+
+        for (const caption of captionsArray){
+          operationsArray.push(caption.captionDetails);
+        }
+
+        console.log(operationsArray.entries());
+
         for (const operations of operationsArray) {
           const rectangle = rectangles[operations.index];
           console.log(rectangle);
@@ -160,15 +176,16 @@ const shorts_subtitling = () => {
 
 
         }
+      
+
+        await submitOverlayJob(jobId).then(() => {
+          setLoader('');
+          setPopupSubmit(true);
+          setPopupText('Submitted!');
+        });
       }catch(error){
         ErrorHandler(error);
       }
-
-      await submitOverlayJob(jobId).then(() => {
-        setLoader('');
-        setPopupSubmit(true);
-        setPopupText('Submitted!');
-      });
     }
 
     const validateTimeString = (time) => {

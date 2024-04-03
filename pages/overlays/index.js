@@ -8,7 +8,10 @@ const Subtitling = () => {
   const [jobs, setJobs] = useState([]);
 
   const getPendingJobs = async () => {
-    const res = await getSubtitledAndCaptionedJobs();
+    const userId = localStorage.getItem('uid');
+    const translatorId = await getTranslatorId(userId);
+    console.log(translatorId);
+    const res = await getSubtitledAndCaptionedJobs(translatorId);
 
     const pending = res
       ? Object.values(res).map((item, i) => ({
