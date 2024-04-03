@@ -14,7 +14,6 @@ import {
   createTranslator,
   sendSupportMessage,
 } from '../../services/apis';
-import { addTranslatorIdToUser } from '../api/firebase/index'
 import FullScreenLoader from '../../public/loaders/FullScreenLoader';
 import CheckBox from '../../components/FormComponents/CheckBox';
 import Popup from '../../components/UI/Popup';
@@ -49,7 +48,7 @@ const Onboarding = () => {
 
   const handleEditor = () => {
     setEditor(!editor);
-  }
+  };
 
   const handleSubmit = async () => {
     setLoader('submit');
@@ -60,23 +59,25 @@ const Onboarding = () => {
         throw new Error('Please enter email');
       } else if (!verifyEmail(email)) {
         throw new Error('Please enter a valid email');
-      } else if (nativeLanguage.length == 0) {
+      } else if (nativeLanguage.length === 0) {
         throw new Error('Please select native language');
-      } else if (country == 'Select') {
+      } else if (country === 'Select') {
         throw new Error('Please select country');
       } else if (!checkedState) {
         throw new Error('Please select payment method');
       } else if (
         !(
-          (checkedState == 'xoom' && xoom) ||
-          (checkedState == 'remitly' && remitly) ||
-          (checkedState == 'paypal' && paypal)
+          (checkedState === 'xoom' && xoom) ||
+          (checkedState === 'remitly' && remitly) ||
+          (checkedState === 'paypal' && paypal)
         )
       ) {
         throw new Error('Please enter payment details');
       } else {
         try {
-          const translator = await createTranslator(
+          localStorage.setItem('emailForSignIn', email);
+
+          await createTranslator(
             name,
             email,
             nativeLanguage,
@@ -86,10 +87,6 @@ const Onboarding = () => {
             editor
           );
 
-          const userId = localStorage.getItem('uid');
-          const translatorId = translator.data._id;
-
-          await addTranslatorIdToUser(translatorId, userId);
           setPopupSubmit(true);
         } catch (error) {
           ErrorHandler(error);
@@ -173,13 +170,13 @@ const Onboarding = () => {
       ) : (
         <>
           <Popup show={popupSubmit} disableClose={true}>
-            <div className="h-full w-full">
+            <div className="h-full w-full text-white">
               <div className="w-[500px] rounded-2xl bg-indigo-2 p-s3">
                 <div className="flex flex-col items-center justify-center">
-                  <h2 className="mb-s2 text-2xl text-white">Success!</h2>
-                  <p className="text-white">
-                    You&apos;ll be notified via email when there is a new
-                    translation to be reviewed, thank you.
+                  <h2 className="mb-s2 text-2xl">Verify email address</h2>
+                  <p className="text-center">
+                    Please check your email inbox to verify and continue, thank
+                    you
                   </p>
                 </div>
               </div>
@@ -312,7 +309,7 @@ const Onboarding = () => {
                 isChecked={checkedState === 'paypal'}
               />
             </div>
-            {checkedState == 'paypal' && (
+            {checkedState === 'paypal' && (
               <FormInput
                 value={paypal}
                 placeholder="Name, username, email"

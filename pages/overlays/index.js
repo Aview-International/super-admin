@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import PageTitle from '../../components/SEO/PageTitle';
-import { getSubtitledAndCaptionedJobs, getTranslatorId, acceptOverlayJob } from '../api/firebase';
 import ErrorHandler from '../../utils/errorHandler';
+import {
+  getSubtitledAndCaptionedJobs,
+  getTranslatorId,
+  acceptOverlayJob,
+} from '../../services/firebase';
 
 const Subtitling = () => {
   const [jobs, setJobs] = useState([]);
@@ -23,20 +27,23 @@ const Subtitling = () => {
   };
 
   const handleAccept = async (jobId) => {
-    try{
+    try {
       const userId = localStorage.getItem('uid');
       const translatorId = await getTranslatorId(userId);
 
-      if (translatorId==null){
-        throw new Error("Invalid translatorId.");
+      if (translatorId == null) {
+        throw new Error('Invalid translatorId.');
       }
       await acceptOverlayJob(translatorId, jobId);
 
-      window.open(`/overlays/edit?translatorId=${translatorId}&jobId=${jobId}`, '_blank');
-    }catch(error){
+      window.open(
+        `/overlays/edit?translatorId=${translatorId}&jobId=${jobId}`,
+        '_blank'
+      );
+    } catch (error) {
       ErrorHandler(error);
     }
-  }
+  };
 
   useEffect(() => {
     getPendingJobs();
@@ -48,38 +55,67 @@ const Subtitling = () => {
 
   return (
     <>
-    <PageTitle title="Captions & Subtitles" />
-    <div className="w-full flex flex-col justify-center">
-        <div className="text-white text-4xl">Jobs</div>
-        <div className="bg-white-transparent rounded-2xl p-4">
-            {jobs.length > 0 ? (
-                <div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem', textAlign: 'center' }}>
-                    <div className="text-white font-bold text-left">Job ID</div>
-                    <div className="text-white font-bold text-left">Title</div>
-                    <div className="text-white font-bold text-left">Translated Language</div>
+      <PageTitle title="Captions & Subtitles" />
+      <div className="flex w-full flex-col justify-center">
+        <div className="text-4xl text-white">Jobs</div>
+        <div className="rounded-2xl bg-white-transparent p-4">
+          {jobs.length > 0 ? (
+            <div>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr 1fr 1fr',
+                  gap: '1rem',
+                  textAlign: 'center',
+                }}
+              >
+                <div className="text-left font-bold text-white">Job ID</div>
+                <div className="text-left font-bold text-white">Title</div>
+                <div className="text-left font-bold text-white">
+                  Translated Language
                 </div>
+              </div>
 
-                <div className="w-full bg-white h-[1px] mt-s2 mb-s2"></div>
-                {jobs.map((job) => (
-                    <div key={job.jobId} className="">
-                        <div className="hover:bg-white-transparent py-s2"> {/* Replace p-s2 with actual padding if needed */}
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem', textAlign: 'left' }}>
-                                <div className="text-white text-left">{job.jobId}</div>
-                                <div className="text-white text-left">{job.videoData.caption}</div>
-                                <div className="text-white text-left">{job.translatedLanguage}</div>
-                                <div className="text-white underline cursor-pointer" onClick={()=>{handleAccept(job.jobId)}}>Accept job</div>
-                            </div>
-                            <div className="w-full bg-white h-[1px] bg-opacity-25"></div>
-                        </div>
+              <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
+              {jobs.map((job) => (
+                <div key={job.jobId} className="">
+                  <div className="py-s2 hover:bg-white-transparent">
+                    {' '}
+                    {/* Replace p-s2 with actual padding if needed */}
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr 1fr 1fr',
+                        gap: '1rem',
+                        textAlign: 'left',
+                      }}
+                    >
+                      <div className="text-left text-white">{job.jobId}</div>
+                      <div className="text-left text-white">
+                        {job.videoData.caption}
+                      </div>
+                      <div className="text-left text-white">
+                        {job.translatedLanguage}
+                      </div>
+                      <div
+                        className="cursor-pointer text-white underline"
+                        onClick={() => {
+                          handleAccept(job.jobId);
+                        }}
+                      >
+                        Accept job
+                      </div>
                     </div>
-                ))}
+                    <div className="h-[1px] w-full bg-white bg-opacity-25"></div>
+                  </div>
                 </div>
-            ) : (
-                <p className="text-white">No jobs available.</p>
-            )}
+              ))}
+            </div>
+          ) : (
+            <p className="text-white">No jobs available.</p>
+          )}
         </div>
-    </div>
+      </div>
     </>
   );
 };
