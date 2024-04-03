@@ -24,7 +24,7 @@ import Border from '../../components/UI/Border';
 import Thumbnail from '../../components/creators/Thumbnail';
 import Button from '../../components/UI/Button';
 import VideoUpload from '../../components/creators/VideoUpload';
-import { getSingleVideoData, getUserProfile } from '../api/firebase';
+import { getSingleVideoData, getUserProfile } from '../../services/firebase';
 
 const Creators = () => {
   const tagsInputRef = useRef(null);

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { getUserProfile } from '../../pages/api/firebase';
 import { approveSrt } from '../../services/apis';
 import YoutubePlayer from '../admin/YoutubePlayer';
 import S3VideoPlayer from '../admin/S3VideoPlayer';
 import ErrorHandler from '../../utils/errorHandler';
+import { getUserProfile } from '../../services/firebase';
 
 const SelectedVideo = ({ selectedJob, setSelectedJob }) => {
   const [loader, setLoader] = useState('');
