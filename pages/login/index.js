@@ -30,7 +30,7 @@ const Login = () => {
     if (prevRoute) {
       Cookies.remove('redirectUrl');
       window.location.href = decodeURIComponent(prevRoute);
-    } else window.location.href = '/dashboard';
+    } else window.location.href = '/';
   };
 
   return (

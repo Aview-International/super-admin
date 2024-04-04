@@ -103,8 +103,6 @@ const Subtitling = () => {
               {jobs.map((job) => (
                 <div key={job.jobId} className="">
                   <div className="py-s2 hover:bg-white-transparent">
-                    {' '}
-                    {/* Replace p-s2 with actual padding if needed */}
                     <div
                       style={{
                         display: 'grid',

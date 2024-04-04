@@ -212,12 +212,10 @@ const QA = () => {
             await getSrt(job.creatorId, jobId, lang);
             await updateTranslatorProgress(jobId, null)
             .then(() => {
-                // This code will run after the promise is successfully fulfilled
                 setLoader('');
                 SuccessHandler("Changes discarded.");
             })
             .catch((error) => {
-                // This code will run if there is an error during the promise execution
                 setLoader('');
                 ErrorHandler("Failed to discard changes", error);
             });
