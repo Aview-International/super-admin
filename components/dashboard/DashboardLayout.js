@@ -3,8 +3,8 @@ import { UserContext } from '../../store/user-profile';
 import FullScreenLoader from '../../public/loaders/FullScreenLoader';
 import DashBoardHeader from './Header';
 import DashboardSidebar from './Sidebar';
-import { getUserProfile } from '../../pages/api/firebase';
 import ErrorHandler from '../../utils/errorHandler';
+import { getUserProfile } from '../../services/firebase';
 
 const DashboardStructure = ({ children }) => {
   const { user, updateUser } = useContext(UserContext);

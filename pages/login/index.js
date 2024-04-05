@@ -6,8 +6,8 @@ import Google from '../../public/img/icons/google.svg';
 import { UserContext } from '../../store/user-profile';
 import ButtonLoader from '../../public/loaders/ButtonLoader';
 import Cookies from 'js-cookie';
-import { signInWithGoogle } from '../api/firebase';
 import PageTitle from '../../components/SEO/PageTitle';
+import { signInWithGoogle } from '../../services/firebase';
 
 const Login = () => {
   const { user, updateUser } = useContext(UserContext);

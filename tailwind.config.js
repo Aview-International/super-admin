@@ -29,6 +29,16 @@ module.exports = {
     },
     fontFamily: {
       overpass: ['Overpass', 'sans-serif'],
+      coolvetica: ['coolvetica', 'sans-serif'],
+      komika: ['Komika', 'sans-serif'],
+      lemonmilk: ['LEMONMILK', 'sans-serif'],
+      merriweather: ['Merriweather', 'sans-serif'],
+      montserrat: ['Montserrat', 'sans-serif'],
+      notosans: ['NotoSans', 'sans-serif'],
+      notosanssemibold: ['NotoSans-SemiBold', 'sans-serif'],
+      proxima: ['Proxima', 'sans-serif'],
+      roboto: ['Roboto', 'sans-serif'],
+      rubik: ['Rubik', 'sans-serif'],
     },
     fontSize: {
       xs: ['12px', { lineHeight: '16px' }],

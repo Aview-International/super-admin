@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import PageTitle from '../../components/SEO/PageTitle';
-import { getAllPendingDistribution } from '../api/firebase';
 import Logo from '../../public/img/aview/logo.svg';
 import Image from 'next/image';
 import AllVideos from '../../components/admin/AllVideos';
 import SelectedVideo from '../../components/distribution/SelectedVideo-Distribution';
+import { getAllPendingDistribution } from '../../services/firebase';
 
 const Distribution = () => {
   const [reloadTrigger, setReloadTrigger] = useState(0);

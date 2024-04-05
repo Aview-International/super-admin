@@ -1,12 +1,25 @@
 import axios from 'axios';
 import { baseUrl } from './baseUrl';
 import FormData from 'form-data';
+import Cookies from 'js-cookie';
 
-// Create an Axios instance without default headers
 const axiosInstance = axios.create({
   baseURL: baseUrl,
-  withCredentials: true,
 });
+
+axiosInstance.interceptors.request.use(
+  async (config) => {
+    const token = Cookies.get('session');
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+export const signInWithGoogleAcc = async (token) =>
+  (await axiosInstance.post(baseUrl + 'auth/login', { token })).data;
 
 export const downloadS3Object = async (s3Path) => {
   await axiosInstance.post(baseUrl + 'admin/download-object', {
@@ -274,9 +287,9 @@ export const sendSupportMessage = async (email, message) => {
   });
 };
 
-export const getTranslatorById = async (id) => {
+export const getTranslatorById = async (translatorId) => {
   return axiosInstance.post(baseUrl + 'admin/get-translator-by-id', {
-    id,
+    translatorId,
   });
 };
 
@@ -321,3 +334,18 @@ export const getTranslatorProgress = async (jobId) => {
 
 export const getS3DownloadLink = async (timestamp, lang) =>
   (await axiosInstance.get(`admin/download/${timestamp}/${lang}`)).data;
+
+export const getDownloadLink = async (s3Path) => {
+  const response = axiosInstance.post(baseUrl + 'admin/download-object', {
+    s3Path,
+  });
+
+  return response;
+};
+
+export const submitOverlayJob = async (jobId) => {
+  return axiosInstance.post(baseUrl + 'admin/submit-overlay-job', { jobId });
+};
+
+export const verifyTranslatorEmail = async () =>
+  await axiosInstance.get('admin/verify-translator');

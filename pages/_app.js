@@ -4,6 +4,7 @@ import UserContextProvider from '../store/user-profile';
 import { MenuOpenContextProvider } from '../store/menu-open-context';
 
 import '../styles/globals.css';
+import '../styles/fonts.css';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
