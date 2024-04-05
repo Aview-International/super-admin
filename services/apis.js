@@ -318,3 +318,6 @@ export const getTranslatorProgress = async (jobId) => {
     jobId,
   });
 };
+
+export const getS3DownloadLink = async (timestamp, lang) =>
+  (await axiosInstance.get(`admin/download/${timestamp}/${lang}`)).data;
