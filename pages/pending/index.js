@@ -21,7 +21,6 @@ const Transcription = () => {
         }))
       : [];
     setJobs(pending);
-    console.log(pending);
   };
 
   const getPendingJobs = async () => {
@@ -31,8 +30,6 @@ const Transcription = () => {
   useEffect(() => {
     getPendingJobs();
   }, [updateTrigger]);
-
-  console.log(jobs);
 
   return (
     <>
@@ -56,7 +53,7 @@ const Transcription = () => {
             </p>
           )}
         </div>
-        {selectedJob ? (
+        {selectedJob && videoDownloadLink ? (
           <div className="ml-s3 w-1/2">
             <SelectedVideo
               selectedJob={selectedJob}

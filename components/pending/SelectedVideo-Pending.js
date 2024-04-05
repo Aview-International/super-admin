@@ -12,6 +12,7 @@ const SelectedVideo = ({
   videoDownloadLink,
   triggerUpdate,
 }) => {
+  console.log(videoDownloadLink);
   const [loader, setLoader] = useState('');
 
   const handleApproval = async () => {

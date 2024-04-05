@@ -32,9 +32,14 @@ const AllVideos = ({
         selectedJob?.jobId === job?.jobId ? 'bg-white-transparent' : ''
       }`}
       onClick={async () => {
+        console.log(job);
         setSelectedJob(job);
         setVideoDownloadLink(
-          await getS3DownloadLink(job.timestamp, job.translatedLanguage)
+          await getS3DownloadLink({
+            userId: job.creatorId,
+            timestamp: job.timestamp,
+            lang: job.translatedLanguage,
+          })
         );
       }}
     >
