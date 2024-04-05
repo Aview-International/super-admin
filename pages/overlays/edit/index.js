@@ -21,9 +21,8 @@ import FullScreenLoader from '../../../public/loaders/FullScreenLoader';
 import {
   getUserProfile,
   verifyTranslator,
-  getPendingTranslation,
+  getFirebaseJob,
   flagOverlayJob,
-  getTranslatorId,
 } from '../../../services/firebase';
 import { authStatus } from '../../../utils/authStatus';
 import Cookies from 'js-cookie';
@@ -111,7 +110,7 @@ const Shorts_subtitling = () => {
   };
 
     const getJob = async (jobId) => {
-      await getPendingTranslation(jobId, callback); 
+      await getFirebaseJob(jobId, callback); 
       setIsLoading(false);
     }
 

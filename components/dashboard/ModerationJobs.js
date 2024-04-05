@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { getTranslatorById, getTranslatorFromUserId } from '../../services/apis';
+import { getTranslatorFromUserId } from '../../services/apis';
 import ErrorHandler from '../../utils/errorHandler';
-import { getModerationJobs } from '../../services/firebase';
+import { 
+  getAllModerationJobs,
+  acceptJob, } from '../../services/firebase';
 import Cookies from 'js-cookie';
 import { authStatus } from '../../utils/authStatus';
 
@@ -18,7 +20,7 @@ const ModerationJobs = () => {
   };
   
   const getPendingJobs = async (userLanguages) => {
-    const res = await getModerationJobs(userLanguages, translatorId);
+    const res = await getAllModerationJobs(userLanguages, translatorId);
 
     const pending = res
       ? Object.values(res).map((item, i) => ({
@@ -34,6 +36,8 @@ const ModerationJobs = () => {
       if (translatorId == null) {
         throw new Error('Invalid translatorId.');
       }
+      
+      await acceptJob(translatorId, jobId, "moderation");
 
       window.open(`/translation/QA?jobId=${jobId}`, '_blank');
     }catch(error){
@@ -113,7 +117,7 @@ const ModerationJobs = () => {
                           handleAccept(job.jobId);
                         }}
                       >
-                        Go to job
+                        Accept job
                       </div>
                     </div>
                     <div className="h-[1px] w-full bg-white bg-opacity-25"></div>

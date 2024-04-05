@@ -291,44 +291,15 @@ export const getTranslatorById = async (translatorId) => {
   });
 };
 
-export const createTranslatorProgress = async (
-  jobId,
-  creatorId,
-  lang,
-  translatorId,
-  progress,
-  startTimestamp,
-  endTimestamp
-) => {
-  return axiosInstance.post(baseUrl + 'admin/create-translator-progress', {
-    jobId,
-    creatorId,
-    lang,
-    translatorId,
-    progress,
-    startTimestamp,
-    endTimestamp,
-  });
-};
 
-export const updateTranslatorProgress = async (jobId, progress) => {
-  return axiosInstance.post(baseUrl + 'admin/update-translator-progress', {
-    jobId,
-    progress,
-  });
-};
-
-export const finishTranslation = async (jobId) => {
+export const finishTranslation = async (jobId, translatorId, updatedSrt) => {
   return axiosInstance.post(baseUrl + 'admin/finish-translation', {
     jobId,
+    translatorId, 
+    updatedSrt,
   });
 };
 
-export const getTranslatorProgress = async (jobId) => {
-  return axiosInstance.post(baseUrl + 'admin/get-translator-progress', {
-    jobId,
-  });
-};
 
 export const getDownloadLink = async (s3Path) => {
   const response = axiosInstance.post(baseUrl + 'admin/download-object', {

@@ -3,7 +3,7 @@ import ErrorHandler from '../../utils/errorHandler';
 import { getTranslatorFromUserId } from '../../services/apis';
 import {
   getSubtitledAndCaptionedJobs,
-  acceptOverlayJob,
+  acceptJob,
 } from '../../services/firebase';
 import Cookies from 'js-cookie';
 import { authStatus } from '../../utils/authStatus';
@@ -35,7 +35,7 @@ const OverlayJobs = () => {
       if (translatorId == null) {
         throw new Error('Invalid translatorId.');
       }
-      await acceptOverlayJob(translatorId, jobId);
+      await acceptJob(translatorId, jobId, "overlay");
 
       window.open(`/overlays/edit?jobId=${jobId}`, '_blank');
     }catch(error){

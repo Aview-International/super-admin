@@ -85,10 +85,9 @@ export const getAllPendingTranslations = async (callback) => {
   });
 };
 
-export const getPendingTranslation = async (jobId, callback) => {
+export const getFirebaseJob = async (jobId, callback) => {
   console.log(`Job ID: ${jobId}`);
   const translationRef = ref(database, `admin-jobs/pending/${jobId}`);
-  // Listen for value changes
   try {
     onValue(translationRef, (snapshot) => {
       const jobData = snapshot.val();
@@ -162,7 +161,7 @@ export const getSubtitledAndCaptionedJobs = async (translatorId) => {
   return res;
 };
 
-export const getModerationJobs = async (userLanguages, translatorId) => {
+export const getAllModerationJobs = async (userLanguages, translatorId) => {
   const res = await get(ref(database, `admin-jobs/pending`)).then(
     (snapshot) => {
       if (snapshot.exists()) {
@@ -221,13 +220,12 @@ export const getTranslatorId = async (userId) => {
   }
 };
 
-export const acceptOverlayJob = async (translatorId, jobId) => {
+export const acceptJob = async (translatorId, jobId, jobType) => {
   const db = database;
   const jobRef = ref(db, `admin-jobs/pending/${jobId}`);
   const pendingJobsRef = ref(db, 'admin-jobs/pending');
 
   const jobSnapshot = await get(jobRef);
-  // Check if the job is already taken by a different translator.
   if (
     jobSnapshot.exists() &&
     jobSnapshot.child('translatorId').val() &&
@@ -237,7 +235,6 @@ export const acceptOverlayJob = async (translatorId, jobId) => {
     throw new Error('This job is already taken by another translator.');
   }
 
-  // Check if the translator is assigned to any other pending job.
   const pendingJobsSnapshot = await get(pendingJobsRef);
   if (pendingJobsSnapshot.exists()) {
     let hasOtherJobs = false;
@@ -255,19 +252,25 @@ export const acceptOverlayJob = async (translatorId, jobId) => {
     }
   }
 
-  // If all checks pass, assign the translator to the job.
   if (
     !jobSnapshot.exists() ||
     jobSnapshot.child('translatorId').val() === null ||
     jobSnapshot.child('translatorId').val() === translatorId
   ) {
-    await update(jobRef, {
-      translatorId: translatorId,
-      overlaysStatus: serverTimestamp(),
-    });
+    if (jobType== "overlay"){
+      await update(jobRef, {
+        translatorId: translatorId,
+        overlaysStatus: serverTimestamp(),
+      });
+    }else if (jobType == "moderation"){
+      await update(jobRef, {
+        translatorId: translatorId,
+        moderationStatus: serverTimestamp(),
+      });
+    }
+    
     console.log('Job accepted successfully.');
   } else {
-    // This case should theoretically never be reached due to earlier checks.
     throw new Error('Job cannot be accepted.');
   }
 };
@@ -285,7 +288,7 @@ export const verifyTranslator = async (translatorId, jobId) => {
   const snapshot = await get(translatorRef);
 
   if (!snapshot.exists()) {
-    return true;
+    return false;
   }
 
   const fetchedTranslatorId = snapshot.val();
