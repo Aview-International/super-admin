@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react';
 import DashboardLayoutNoSidebar from '../../components/dashboard/DashboardLayoutNoSidebar';
-import PendingJobs from '../../components/dashboard/PendingJobs';
+import PendingJobs from '../../components/dashboard/PendingJobsV2';
 import OverlayJobs from '../../components/dashboard/OverlayJobs';
 import ModerationJobs from '../../components/dashboard/ModerationJobs';
 import PageTitle from '../../components/SEO/PageTitle';
 import { getTranslatorFromUserId } from '../../services/apis';
 import { authStatus } from '../../utils/authStatus';
 import Cookies from 'js-cookie';
+import ReviewerSettingsPopup from '../../components/dashboard/ReviewerSettingsPopup';
 
 
 const Dashboard = () => {
   const [selectedOption, setSelectedOption] = useState("pending");
   const [translatorId, setTranslatorId] = useState(null);
+  const [settings, setSettings] = useState(false);
 
   const handleTranslator = async (userId) => {
     const translator = await getTranslatorFromUserId(userId);
@@ -32,8 +34,59 @@ const Dashboard = () => {
 
   return (
     <>
+      <DashboardLayoutNoSidebar setSettings={setSettings}>
         <PageTitle title="Dashboard" />
+        <ReviewerSettingsPopup show={settings} onClose={()=>{setSettings(false)}} />
         <div className="flex flex-col justify-center w-full h-full p-s8 ">
+            <div className="w-full h-[300px] mb-s2 flex">
+              <div className="w-1/2 h-full pr-s1">
+                <div className="w-full h-full flex">
+                  <div className="w-1/3 h-full flex flex-col p-s2 bg-white-transparent rounded-2xl mr-s1">
+                    <div className="text-white h-1/2 flex flex-col">
+                      <div className="text-lg">
+                        Lifetime earnings
+                      </div>
+
+                      <div className="text-8xl flex items-center h-full">
+                        <div>
+                          $24.54
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <div className="text-white h-1/2 flex flex-col">
+                      <div className="text-lg">
+                        Weekly earnings
+                      </div>
+
+                      <div className="text-8xl flex items-center h-full">
+                        <div>
+                          $5.33
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                  <div className="w-2/3 h-full flex flex-col p-s2 bg-white-transparent rounded-2xl ml-s1">
+                    <div className="text-white text-lg">
+                      Lifetime jobs
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+              <div className="w-1/2 h-full pl-s1">
+                <div className="w-full h-full rounded-2xl bg-white-transparent p-s2">
+                  <div className="text-white text-2xl">
+                      Leaderboards
+                    </div>
+                </div>
+              </div>
+
+            </div>
             <div className="w-full bg-white-transparent rounded-2xl p-s2 flex items-center mb-s2">
                 <div className="flex flex-row ">
                     <div className={`min-w-fit rounded-full text-white py-s1 px-s2 text-xl mr-s2 cursor-pointer ${selectedOption == "pending" ? "bg-white text-black":"bg-white-transparent text-white"}`} onClick={() => setSelectedOption("pending")}>
@@ -60,10 +113,10 @@ const Dashboard = () => {
 
             </div>
         </div>
+        </DashboardLayoutNoSidebar>
     </>
   );
 };
 
-Dashboard.getLayout = DashboardLayoutNoSidebar;
 
 export default Dashboard;

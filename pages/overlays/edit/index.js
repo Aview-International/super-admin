@@ -16,7 +16,7 @@ import {
   getDownloadLink, 
   submitOverlayJob, 
   getTranslatorFromUserId } from '../../../services/apis';
-import Popup from '../../../components/UI/Popup';
+import Popup from '../../../components/UI/PopupWithBorder';
 import FullScreenLoader from '../../../public/loaders/FullScreenLoader';
 import {
   getUserProfile,

@@ -15,7 +15,7 @@ import {
 } from '../../services/apis';
 import FullScreenLoader from '../../public/loaders/FullScreenLoader';
 import CheckBox from '../../components/FormComponents/CheckBox';
-import Popup from '../../components/UI/Popup';
+import Popup from '../../components/UI/PopupWithBorder';
 import messages from '../../public/img/icons/messages.svg';
 import Textarea from '../../components/FormComponents/Textarea';
 import PageTitle from '../../components/SEO/PageTitle';

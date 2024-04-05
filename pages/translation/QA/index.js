@@ -20,7 +20,7 @@ import { SupportedLanguages } from '../../../constants/constants';
 import FullScreenLoader from '../../../public/loaders/FullScreenLoader';
 import ErrorHandler from '../../../utils/errorHandler';
 import SuccessHandler from '../../../utils/successHandler';
-import Popup from '../../../components/UI/Popup';
+import Popup from '../../../components/UI/PopupWithBorder';
 import warning from '/public/img/icons/warning.svg';
 import PageTitle from '../../../components/SEO/PageTitle';
 import {
