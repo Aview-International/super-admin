@@ -342,5 +342,14 @@ export const submitOverlayJob = async (jobId) => {
   return axiosInstance.post(baseUrl + 'admin/submit-overlay-job', { jobId });
 };
 
-export const verifyTranslatorEmail = async () =>
+export const verifyTranslatorEmail = async () =>{
   await axiosInstance.get('admin/verify-translator');
+}
+
+export const attachUserIdToTranslator = async (email, userId) => {
+  await axiosInstance.post('admin/attach-userid-to-translator', {email, userId});
+}
+
+export const getTranslatorFromUserId = async (userId) => {
+  return axiosInstance.post('admin/get-translator-from-userid', {userId});
+}

@@ -7,6 +7,7 @@ import {
   getTranslatorProgress,
   getTranslatorById,
   getDownloadLink,
+  getTranslatorFromUserId,
 } from '../../../services/apis';
 import QATranslationBubble from '../../../components/translation/QATranslationBubble';
 import { useRouter } from 'next/router';
@@ -29,6 +30,8 @@ import {
   verifyTranslator,
   getTranslatorId,
 } from '../../../services/firebase';
+import { authStatus } from '../../../utils/authStatus';
+import Cookies from 'js-cookie';
 
 const QA = () => {
   const [subtitles, setSubtitles] = useState([]);
@@ -49,7 +52,6 @@ const QA = () => {
   const [flags, setFlags] = useState([]);
   const [downloadLink, setDownloadLink] = useState(null);
   const [translatorId, setTranslatorId] = useState(null);   
-  const [userId, setUserId] = useState(null);
 
     const router = useRouter();
     const { jobId } = router.query;
@@ -61,9 +63,10 @@ const QA = () => {
     };
 
     const handleTranslator = async (userId) => {
-        const translatorId = await getTranslatorId(userId);
-        setTranslatorId(translatorId);
-    }
+      const translator = await getTranslatorFromUserId(userId);
+      console.log(translator.data._id);
+      setTranslatorId(translator.data._id);
+    };
 
   const handleVideo = async () => {
     const videoPath = `dubbing-tasks/${job.creatorId}/${jobId}/video.mp4`;
@@ -72,16 +75,15 @@ const QA = () => {
     setDownloadLink(downloadLink.data);
   };
 
-    useEffect(() => {
-        const userId = localStorage.getItem('uid');
-        setUserId(userId);
-    }, []);
+  useEffect(() => {
+    const token = Cookies.get("session");
+    const userId = authStatus(token).data.user_id;
+    console.log(token);
+    console.log(userId);
 
-    useEffect(() => {
-        if (userId){
-            handleTranslator(userId);
-        }
-    }, [userId]);
+    handleTranslator(userId);
+
+  },[]);
 
     useEffect(() => {
 

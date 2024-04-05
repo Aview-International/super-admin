@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import DashboardLayout from '../../components/dashboard/DashboardLayoutNoSidebar';
+import DashboardLayout from '../../components/dashboard/DashboardLayoutOnboarding';
 import FormInput from '../../components/FormComponents/FormInput';
 import CustomSelectInput from '../../components/FormComponents/CustomSelectInput';
 import Button from '../../components/UI/Button';

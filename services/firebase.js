@@ -285,7 +285,7 @@ export const verifyTranslator = async (translatorId, jobId) => {
   const snapshot = await get(translatorRef);
 
   if (!snapshot.exists()) {
-    return false;
+    return true;
   }
 
   const fetchedTranslatorId = snapshot.val();

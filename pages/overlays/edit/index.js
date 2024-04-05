@@ -12,7 +12,10 @@ import trash from '/public/img/icons/trash.svg';
 import plus from '/public/img/icons/plus.svg';
 import ErrorHandler from '../../../utils/errorHandler';
 import { useRouter } from 'next/router';
-import { getDownloadLink, submitOverlayJob } from '../../../services/apis';
+import { 
+  getDownloadLink, 
+  submitOverlayJob, 
+  getTranslatorFromUserId } from '../../../services/apis';
 import Popup from '../../../components/UI/Popup';
 import FullScreenLoader from '../../../public/loaders/FullScreenLoader';
 import {
@@ -22,6 +25,8 @@ import {
   flagOverlayJob,
   getTranslatorId,
 } from '../../../services/firebase';
+import { authStatus } from '../../../utils/authStatus';
+import Cookies from 'js-cookie';
 
 const Shorts_subtitling = () => {
   const videoRef = useRef(null);
@@ -42,7 +47,6 @@ const Shorts_subtitling = () => {
   const [popupText, setPopupText] = useState('');
   const [creatorId, setCreatorId] = useState(null);
   const [translatorId, setTranslatorId] = useState(null);
-  const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
     const router = useRouter();
@@ -63,12 +67,13 @@ const Shorts_subtitling = () => {
         console.log(downloadLink);
         setVideoLink(downloadLink.data);
       }
-    }
+  }
 
-    const handleTranslator = async (userId) => {
-      const translatorId = await getTranslatorId(userId);
-      setTranslatorId(translatorId);
-    }
+  const handleTranslator = async (userId) => {
+    const translator = await getTranslatorFromUserId(userId);
+    console.log(translator.data._id);
+    setTranslatorId(translator.data._id);
+  };
 
   const handleVerifyTranslator = async () => {
     if (jobId && translatorId) {
@@ -189,21 +194,21 @@ const Shorts_subtitling = () => {
     }
   };
 
-    const validateTimeString = (time) => {
-      const pattern = /^\d{2}:\d{2}:\d{2}(\.\d{2})?$/;
-      return pattern.test(time);
-    }
+  const validateTimeString = (time) => {
+    const pattern = /^\d{2}:\d{2}:\d{2}(\.\d{2})?$/;
+    return pattern.test(time);
+  }
 
-    useEffect(() => {
-      const userId = localStorage.getItem('uid');
-      setUserId(userId);
-    }, []);
-  
-    useEffect(() => {
-      if (userId){
-          handleTranslator(userId);
-      }
-    }, [userId]);
+  useEffect(() => {
+    const token = Cookies.get("session");
+    console.log(token);
+    const userId = authStatus(token).data.user_id;
+    console.log(token);
+    console.log(userId);
+
+    handleTranslator(userId);
+
+  },[]);
 
   useEffect(() => {
     handleVerifyTranslator();

@@ -23,21 +23,19 @@ const DashboardStructure = ({ children }) => {
         <header className="flex w-full items-center justify-between pt-s4 pb-s2.5 text-white bg-white-transparent">
             <div className="flex flex-row">
                 <div className="w-[170px] flex justify-center">
-                    <Link href="/dashboard">
-                    <a>
-                        <Image
-                        src={aviewLogo}
-                        alt="AVIEW International logo"
-                        width={56}
-                        height={56}
-                        />
-                    </a>
-                    </Link>
+                  <a>
+                      <Image
+                      src={aviewLogo}
+                      alt="AVIEW International logo"
+                      width={56}
+                      height={56}
+                      />
+                  </a>
                 </div>
-                <div className="pt-[5px]">
+                <div className="pl-s9">
                     <div>
                         <h3 className="text-xl"> {time}!</h3>
-                        <p className="text-lg text-gray-2">Welcome to your dashboard</p>
+                        <p className="text-lg text-gray-2">Welcome to Aview reviewer onboarding.</p>
                     </div>
                 </div>
             </div>
