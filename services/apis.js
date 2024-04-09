@@ -278,6 +278,29 @@ export const createTranslator = async (
   });
 };
 
+export const updateTranslator = async (
+  name,
+  email,
+  nativeLanguage,
+  country,
+  paymentMethod,
+  paymentDetails,
+  translatorId,
+) => {
+  return axiosInstance.post(baseUrl + 'admin/update-translator', {
+    translatorData: {
+      name,
+      email,
+      nativeLanguage,
+      country,
+      paymentMethod,
+      paymentDetails,
+    },
+    translatorId,
+  });
+};
+
+
 export const sendSupportMessage = async (email, message) => {
   return axiosInstance.post(baseUrl + 'admin/create-translator-inquiry', {
     email,

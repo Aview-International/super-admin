@@ -8,13 +8,14 @@ import SuccessHandler from '../../utils/successHandler';
 import {
   getSupportedLanguages,
   getCountriesAndCodes,
+  updateTranslator,
 } from '../../services/apis';
 import CheckBox from '../../components/FormComponents/CheckBox';
 import Popup from '../../components/UI/PopupNormal';
 import MultipleSelectInput from '../../components/FormComponents/MultipleSelectInput';
 
 
-const ReviewerSettingsPopup = ({show, onClose}) =>{
+const ReviewerSettingsPopup = ({show, onClose, translator}) =>{
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [nativeLanguage, setNativeLanguage] = useState([]);
@@ -22,18 +23,21 @@ const ReviewerSettingsPopup = ({show, onClose}) =>{
     const [paypal, setPaypal] = useState('');
     const [xoom, setXoom] = useState('');
     const [remitly, setRemitly] = useState('');
-    const [isLoading, setIsLoading] = useState(true);
     const [supportedLanguages, setSupportedLanguages] = useState([]);
     const [countriesAndCodes, setCountriesAndCodes] = useState([]);
     const [checkedState, setCheckedState] = useState('');
     const [paymentDetails, setPaymentDetails] = useState('');
     const [loader, setLoader] = useState('');
 
+    
+    const handleCheckBox = (name) => {
+      setCheckedState(name);
+    };
 
     const verifyEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
-      };
+    };
     
     const getLanguagesAndCountries = async () => {
     await getSupportedLanguages().then((res) => {
@@ -44,20 +48,96 @@ const ReviewerSettingsPopup = ({show, onClose}) =>{
         setCountriesAndCodes(res.map((item) => item.name).sort());
     });
 
-    setIsLoading(false);
     };
 
     const handleMultipleLanguages = (option) => {
-    const allLanguages = [...nativeLanguage];
-    if (allLanguages.includes(option))
-        allLanguages.splice(allLanguages.indexOf(option), 1);
-    else allLanguages.push(option);
-    setNativeLanguage(allLanguages);
+      const allLanguages = [...nativeLanguage];
+      if (allLanguages.includes(option))
+          allLanguages.splice(allLanguages.indexOf(option), 1);
+      else allLanguages.push(option);
+      setNativeLanguage(allLanguages);
+    };
+
+    const handleUpdate = async () => {
+      setLoader('update');
+      try {
+        if (!name) {
+          throw new Error('Please enter name');
+        } else if (!email) {
+          throw new Error('Please enter email');
+        } else if (!verifyEmail(email)) {
+          throw new Error('Please enter a valid email');
+        } else if (nativeLanguage.length === 0) {
+          throw new Error('Please select native language');
+        } else if (country === 'Select') {
+          throw new Error('Please select country');
+        } else if (!checkedState) {
+          throw new Error('Please select payment method');
+        } else if (
+          !(
+            (checkedState === 'xoom' && xoom) ||
+            (checkedState === 'remitly' && remitly) ||
+            (checkedState === 'paypal' && paypal)
+          )
+        ) {
+          throw new Error('Please enter payment details');
+        } else {
+          try {
+
+  
+            await updateTranslator(
+              name,
+              email,
+              nativeLanguage,
+              country,
+              checkedState,
+              paymentDetails,
+              translator._id,
+            );
+  
+            SuccessHandler("Details updated successfully");
+          } catch (error) {
+            ErrorHandler(error);
+          }
+  
+          setLoader('');
+        }
+      } catch (error) {
+        ErrorHandler(error);
+        setLoader('');
+      }
+    };
+
+    const handleSetValues = () => {
+      if (translator){
+        setName(translator.name);
+        setEmail(translator.email);
+        setNativeLanguage(translator.nativeLanguage);
+        setCountry(translator.country);
+        setPaymentDetails(translator.paymentDetails);
+        if (translator.paymentMethod == "paypal"){
+          setCheckedState("paypal");
+          setPaypal(translator.paymentDetails);
+          setPaymentDetails(translator.paymentDetails);
+        }else if (translator.paymentMethod == "remitly"){
+          setCheckedState("remitly");
+          setRemitly(translator.paymentDetails);
+          setPaymentDetails(translator.paymentDetails);
+        }else if (translator.paymentMethod == "xoom"){
+          setCheckedState("xoom");
+          setXoom(translator.paymentDetails);
+          setPaymentDetails(translator.paymentDetails);
+        }
+      }
     };
 
     useEffect(() => {
-    getLanguagesAndCountries();
+      getLanguagesAndCountries();
     }, []);
+
+    useEffect(() => {
+      handleSetValues();
+    }, [translator]);
 
     return (
         <>
@@ -193,10 +273,10 @@ const ReviewerSettingsPopup = ({show, onClose}) =>{
               <div className="float-right mt-s4 h-[47px] w-[134px]">
                 <Button
                   theme="light"
-                  
-                  isLoading={loader === 'submit'}
+                  onClick={handleUpdate}
+                  isLoading={loader === 'update'}
                 >
-                  Save
+                  Update
                 </Button>
               </div>
             </div>

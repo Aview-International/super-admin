@@ -12,13 +12,13 @@ import ReviewerSettingsPopup from '../../components/dashboard/ReviewerSettingsPo
 
 const Dashboard = () => {
   const [selectedOption, setSelectedOption] = useState("pending");
-  const [translatorId, setTranslatorId] = useState(null);
+  const [translator, setTranslator] = useState(null);
   const [settings, setSettings] = useState(false);
 
   const handleTranslator = async (userId) => {
     const translator = await getTranslatorFromUserId(userId);
-    console.log(translator.data._id);
-    setTranslatorId(translator.data._id);
+    console.log(translator.data);
+    setTranslator(translator.data);
   };
 
   useEffect(() => {
@@ -36,7 +36,7 @@ const Dashboard = () => {
     <>
       <DashboardLayoutNoSidebar setSettings={setSettings}>
         <PageTitle title="Dashboard" />
-        <ReviewerSettingsPopup show={settings} onClose={()=>{setSettings(false)}} />
+        <ReviewerSettingsPopup show={settings} onClose={()=>{setSettings(false)}} translator={translator}/>
         <div className="flex flex-col justify-center w-full h-full p-s8 ">
             <div className="w-full h-[300px] mb-s2 flex">
               <div className="w-1/2 h-full pr-s1">

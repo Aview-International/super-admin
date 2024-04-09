@@ -68,6 +68,7 @@ export const getAllJobsUnderReview = async (callback) => {
       console.error('Firebase read failed: ', error);
     });
 };
+
 export const getAllPendingTranscriptionsApproval = async (callback) => {
   const transcriptionRef = ref(
     database,
@@ -185,6 +186,30 @@ export const getAllModerationJobs = async (userLanguages, translatorId) => {
   return res;
 };
 
+export const getAllPendingJobs = async (userLanguages, translatorId) => {
+  const res = await get(ref(database, `admin-jobs/pending`)).then(
+    (snapshot) => {
+      if (snapshot.exists()) {
+        const allJobs = snapshot.val();
+        const filteredJobs = Object.keys(allJobs).reduce((acc, key) => {
+          const job = allJobs[key];
+          if (
+            userLanguages.includes(job['translatedLanguage']) &&
+            userLanguages.includes(job['originalLanguage']) &&
+            job['status'] == 'under review' &&
+            (job['translatorId'] == translatorId || job['translatorId'] == null)
+          ) {
+            acc[key] = job;
+          }
+          return acc;
+        }, {});
+        return filteredJobs;
+      } else return null;
+    }
+  );
+  return res;
+};
+
 export const getFlaggedSubtitledAndCaptionedJobs = async () => {
   const res = await get(ref(database, `admin-jobs/pending`)).then(
     (snapshot) => {
@@ -267,6 +292,11 @@ export const acceptJob = async (translatorId, jobId, jobType) => {
         translatorId: translatorId,
         moderationStatus: serverTimestamp(),
       });
+    }else if (jobType == "pending"){
+      await update(jobRef, {
+        translatorId: translatorId,
+        pendingStatus: serverTimestamp(),
+      })
     }
     
     console.log('Job accepted successfully.');

@@ -1,26 +1,21 @@
 import { useEffect, useState } from 'react';
-import { 
-  getAllPendingJobs,
-  acceptJob, } from '../../services/firebase';
-import Cookies from 'js-cookie';
-import { authStatus } from '../../utils/authStatus';
-import { getTranslatorFromUserId } from '../../services/apis';
+import DashboardLayout from '../../components/dashboard/DashboardLayout';
+import PageTitle from '../../components/SEO/PageTitle';
+import ErrorHandler from '../../utils/errorHandler';
+import {
+  getSubtitledAndCaptionedJobs,
+  getTranslatorId,
+  acceptOverlayJob,
+} from '../../services/firebase';
 
-const PendingJobs = () => {
+const Subtitling = () => {
   const [jobs, setJobs] = useState([]);
-  const [translatorId, setTranslatorId] = useState(null);
-  const [userLanguages, setUserLanguages] = useState(null);
 
-  const getUserLanguages = async (userId) => {
-    const translator = await getTranslatorFromUserId(userId);
-    console.log(translator.data._id);
-    setUserLanguages(translator.data.nativeLanguage);
-    setTranslatorId(translator.data._id);
-  };
-
-
-  const getPendingJobs = async (userLanguages) => {
-    const res = await getAllPendingJobs(userLanguages, translatorId);
+  const getPendingJobs = async () => {
+    const userId = localStorage.getItem('uid');
+    const translatorId = await getTranslatorId(userId);
+    console.log(translatorId);
+    const res = await getSubtitledAndCaptionedJobs(translatorId);
 
     const pending = res
       ? Object.values(res).map((item, i) => ({
@@ -33,52 +28,49 @@ const PendingJobs = () => {
 
   const handleAccept = async (jobId) => {
     try {
+      const userId = localStorage.getItem('uid');
+      const translatorId = await getTranslatorId(userId);
+
       if (translatorId == null) {
         throw new Error('Invalid translatorId.');
       }
-      await acceptJob(translatorId, jobId, "pending");
+      await acceptOverlayJob(translatorId, jobId);
 
-      window.open(`/pending?jobId=${jobId}`, '_blank');
+      window.open(`/overlays/edit?jobId=${jobId}`, '_blank');
     }catch(error){
       ErrorHandler(error);
     }
   };
 
   useEffect(() => {
-    const token = Cookies.get("session");
-    const userId = authStatus(token).data.user_id;
-    console.log(token);
-    console.log(userId);
-
-    getUserLanguages(userId);
-
-  },[]);
+    getPendingJobs();
+  }, []);
 
   useEffect(() => {
-    if (translatorId) {
-      getPendingJobs(userLanguages);
-    }
-  }, [translatorId]);
-
-  console.log(jobs);
+    console.log(jobs);
+  }, [jobs]);
 
   return (
     <>
+      <PageTitle title="Overlays" />
+      <div className="flex w-full flex-col justify-center">
+        <div className="text-4xl text-white">Jobs</div>
         <div className="rounded-2xl bg-white-transparent p-4">
           {jobs.length > 0 ? (
             <div>
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr',
+                  gridTemplateColumns: '1fr 1fr 1fr 1fr',
                   gap: '1rem',
                   textAlign: 'center',
                 }}
               >
                 <div className="text-left font-bold text-white">Job ID</div>
                 <div className="text-left font-bold text-white">Title</div>
-                <div className="text-left font-bold text-white">Original Language</div>
-                <div className="text-left font-bold text-white">Translated Language</div>
+                <div className="text-left font-bold text-white">
+                  Translated Language
+                </div>
               </div>
 
               <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
@@ -88,7 +80,7 @@ const PendingJobs = () => {
                     <div
                       style={{
                         display: 'grid',
-                        gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr',
+                        gridTemplateColumns: '1fr 1fr 1fr 1fr',
                         gap: '1rem',
                         textAlign: 'left',
                       }}
@@ -96,9 +88,6 @@ const PendingJobs = () => {
                       <div className="text-left text-white">{job.jobId}</div>
                       <div className="text-left text-white">
                         {job.videoData.caption}
-                      </div>
-                      <div className="text-left text-white">
-                        {job.originalLanguage}
                       </div>
                       <div className="text-left text-white">
                         {job.translatedLanguage}
@@ -109,7 +98,7 @@ const PendingJobs = () => {
                           handleAccept(job.jobId);
                         }}
                       >
-                        Accept Job
+                        Accept job
                       </div>
                     </div>
                     <div className="h-[1px] w-full bg-white bg-opacity-25"></div>
@@ -121,8 +110,11 @@ const PendingJobs = () => {
             <p className="text-white">No jobs available.</p>
           )}
         </div>
+      </div>
     </>
   );
 };
 
-export default PendingJobs;
+Subtitling.getLayout = DashboardLayout;
+
+export default Subtitling;

@@ -19,7 +19,7 @@ const ModerationJobs = () => {
     setTranslatorId(translator.data._id);
   };
   
-  const getPendingJobs = async (userLanguages) => {
+  const getModerationJobs = async (userLanguages) => {
     const res = await getAllModerationJobs(userLanguages, translatorId);
 
     const pending = res
@@ -39,7 +39,7 @@ const ModerationJobs = () => {
       
       await acceptJob(translatorId, jobId, "moderation");
 
-      window.open(`/translation/QA?jobId=${jobId}`, '_blank');
+      window.open(`/moderation?jobId=${jobId}`, '_blank');
     }catch(error){
       ErrorHandler(error);
     }
@@ -58,7 +58,7 @@ const ModerationJobs = () => {
 
   useEffect(() => {
     if (userLanguages&&translatorId) {
-      getPendingJobs(userLanguages);
+      getModerationJobs(userLanguages);
     }
   }, [userLanguages,translatorId]);
 

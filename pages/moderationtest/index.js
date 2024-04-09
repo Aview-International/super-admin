@@ -1,26 +1,29 @@
 import { useEffect, useState } from 'react';
-import { 
-  getAllPendingJobs,
-  acceptJob, } from '../../services/firebase';
-import Cookies from 'js-cookie';
-import { authStatus } from '../../utils/authStatus';
-import { getTranslatorFromUserId } from '../../services/apis';
+import DashboardLayout from '../../components/dashboard/DashboardLayout';
+import PageTitle from '../../components/SEO/PageTitle';
+import { getTranslatorById } from '../../services/apis';
+import ErrorHandler from '../../utils/errorHandler';
+import { getTranslatorId, getModerationJobs } from '../../services/firebase';
 
-const PendingJobs = () => {
+const Subtitling = () => {
   const [jobs, setJobs] = useState([]);
   const [translatorId, setTranslatorId] = useState(null);
+  const [userId, setUserId] = useState(null);
   const [userLanguages, setUserLanguages] = useState(null);
 
-  const getUserLanguages = async (userId) => {
-    const translator = await getTranslatorFromUserId(userId);
-    console.log(translator.data._id);
-    setUserLanguages(translator.data.nativeLanguage);
-    setTranslatorId(translator.data._id);
+  const handleTranslator = async (userId) => {
+    const translatorId = await getTranslatorId(userId);
+    setTranslatorId(translatorId);
   };
 
+  const getUserLanguages = async (translatorId) => {
+    const translator = await getTranslatorById(translatorId);
+    console.log(translator.data.nativeLanguage);
+    setUserLanguages(translator.data.nativeLanguage);
+  };
 
   const getPendingJobs = async (userLanguages) => {
-    const res = await getAllPendingJobs(userLanguages, translatorId);
+    const res = await getModerationJobs(userLanguages, translatorId);
 
     const pending = res
       ? Object.values(res).map((item, i) => ({
@@ -36,34 +39,45 @@ const PendingJobs = () => {
       if (translatorId == null) {
         throw new Error('Invalid translatorId.');
       }
-      await acceptJob(translatorId, jobId, "pending");
 
-      window.open(`/pending?jobId=${jobId}`, '_blank');
+      window.open(`/translation/QA?jobId=${jobId}`, '_blank');
     }catch(error){
       ErrorHandler(error);
     }
   };
 
   useEffect(() => {
-    const token = Cookies.get("session");
-    const userId = authStatus(token).data.user_id;
-    console.log(token);
-    console.log(userId);
+    const userId = localStorage.getItem('uid');
+    setUserId(userId);
+  }, []);
 
-    getUserLanguages(userId);
-
-  },[]);
+  useEffect(() => {
+    if (userId) {
+      handleTranslator(userId);
+    }
+  }, [userId]);
 
   useEffect(() => {
     if (translatorId) {
-      getPendingJobs(userLanguages);
+      getUserLanguages(translatorId);
     }
   }, [translatorId]);
 
-  console.log(jobs);
+  useEffect(() => {
+    if (userLanguages) {
+      getPendingJobs(userLanguages);
+    }
+  }, [userLanguages]);
+
+  useEffect(() => {
+    console.log(jobs);
+  }, [jobs]);
 
   return (
     <>
+      <PageTitle title="Captions & Subtitles" />
+      <div className="flex w-full flex-col justify-center">
+        <div className="text-4xl text-white">Jobs</div>
         <div className="rounded-2xl bg-white-transparent p-4">
           {jobs.length > 0 ? (
             <div>
@@ -77,8 +91,12 @@ const PendingJobs = () => {
               >
                 <div className="text-left font-bold text-white">Job ID</div>
                 <div className="text-left font-bold text-white">Title</div>
-                <div className="text-left font-bold text-white">Original Language</div>
-                <div className="text-left font-bold text-white">Translated Language</div>
+                <div className="text-left font-bold text-white">
+                  Original Language
+                </div>
+                <div className="text-left font-bold text-white">
+                  Translated Language
+                </div>
               </div>
 
               <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
@@ -109,7 +127,7 @@ const PendingJobs = () => {
                           handleAccept(job.jobId);
                         }}
                       >
-                        Accept Job
+                        Go to job
                       </div>
                     </div>
                     <div className="h-[1px] w-full bg-white bg-opacity-25"></div>
@@ -121,8 +139,11 @@ const PendingJobs = () => {
             <p className="text-white">No jobs available.</p>
           )}
         </div>
+      </div>
     </>
   );
 };
 
-export default PendingJobs;
+Subtitling.getLayout = DashboardLayout;
+
+export default Subtitling;

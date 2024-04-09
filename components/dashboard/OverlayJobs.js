@@ -18,7 +18,7 @@ const OverlayJobs = () => {
     setTranslatorId(translator.data._id);
   };
 
-  const getPendingJobs = async () => {
+  const getOverlayJobs = async () => {
     const res = await getSubtitledAndCaptionedJobs(translatorId);
 
     const pending = res
@@ -37,7 +37,7 @@ const OverlayJobs = () => {
       }
       await acceptJob(translatorId, jobId, "overlay");
 
-      window.open(`/overlays/edit?jobId=${jobId}`, '_blank');
+      window.open(`/overlays?jobId=${jobId}`, '_blank');
     }catch(error){
       ErrorHandler(error);
     }
@@ -55,7 +55,7 @@ const OverlayJobs = () => {
 
   useEffect(() => {
     if (translatorId) {
-      getPendingJobs();
+      getOverlayJobs();
     }
   }, [translatorId]);
 
