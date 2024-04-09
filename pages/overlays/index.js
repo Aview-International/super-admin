@@ -15,13 +15,13 @@ import { useRouter } from 'next/router';
 import { 
   getDownloadLink, 
   submitOverlayJob, 
-  getTranslatorFromUserId } from '../../services/apis';
+  getTranslatorFromUserId,
+  getJobAndVerify } from '../../services/apis';
 import Popup from '../../components/UI/PopupWithBorder';
 import FullScreenLoader from '../../public/loaders/FullScreenLoader';
 import {
   getUserProfile,
   verifyTranslator,
-  getFirebaseJob,
   flagOverlayJob,
 } from '../../services/firebase';
 import { authStatus } from '../../utils/authStatus';
@@ -72,21 +72,6 @@ const Shorts_subtitling = () => {
     setTranslatorId(translator.data._id);
   };
 
-  const handleVerifyTranslator = async () => {
-    if (jobId && translatorId) {
-      try {
-        const verify = await verifyTranslator(translatorId, jobId);
-        console.log(verify);
-        if (!verify) {
-          throw new Error('invalid translatorId or JobId');
-        }
-
-        getJob(jobId);
-      } catch (error) {
-        ErrorHandler(error);
-      }
-    }
-  };
 
   const handleFlag = async (jobId) => {
     try {
@@ -107,14 +92,16 @@ const Shorts_subtitling = () => {
     }
   };
 
-  const getJob = async (jobId) => {
-    await getFirebaseJob(jobId, callback); 
-    setIsLoading(false);
-  }
+  const getJob = async (jobId, translatorId) => {
 
-  const callback = (data) => {
-    setJob(data);
-  };
+    try {
+        const job = await getJobAndVerify(translatorId, jobId)
+        setJob(job.data);
+        setIsLoading(false);
+    }catch(error) {
+        ErrorHandler(error);
+    }
+  }
 
   function timeStringToSeconds(timeString) {
     if (typeof timeString !== 'string' || !timeString.includes(':')) {
@@ -207,8 +194,10 @@ const Shorts_subtitling = () => {
   },[]);
 
   useEffect(() => {
-    handleVerifyTranslator();
-  }, [jobId, translatorId]);
+    if(jobId && translatorId) {
+      getJob(jobId, translatorId);
+    }
+  },[jobId, translatorId]);
 
   useEffect(() => {
     if (job && translatorId) {
@@ -336,7 +325,6 @@ const Shorts_subtitling = () => {
       </Popup>
       {isLoading && <FullScreenLoader/>}
       <div className="flex flex-col h-screen">
-        {/* First two sections with calculated height */}
         {videoLink && (
           <video
             ref={hiddenVideoRef}

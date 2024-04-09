@@ -4,6 +4,7 @@ import {
   finishTranslation,
   getDownloadLink,
   getTranslatorFromUserId,
+  getJobAndVerify,
 } from '../../services/apis';
 import QATranslationBubble from '../../components/translation/QATranslationBubble';
 import { useRouter } from 'next/router';
@@ -19,7 +20,6 @@ import Popup from '../../components/UI/PopupWithBorder';
 import warning from '/public/img/icons/warning.svg';
 import PageTitle from '../../components/SEO/PageTitle';
 import {
-  getFirebaseJob,
   getUserProfile,
   verifyTranslator,
 } from '../../services/firebase';
@@ -40,20 +40,20 @@ const QA = () => {
   const [downloadLink, setDownloadLink] = useState(null);
   const [translatorId, setTranslatorId] = useState(null);   
 
-    const router = useRouter();
-    const { jobId } = router.query;
+  const router = useRouter();
+  const { jobId } = router.query;
 
   const { width: windowWidth, height: windowHeight } = useWindowSize();
 
-    const callback = (data) => {
-        setJob(data);
-    };
+  const callback = (data) => {
+      setJob(data);
+  };
 
-    const handleTranslator = async (userId) => {
-      const translator = await getTranslatorFromUserId(userId);
-      console.log(translator.data._id);
-      setTranslatorId(translator.data._id);
-    };
+  const handleTranslator = async (userId) => {
+    const translator = await getTranslatorFromUserId(userId);
+    console.log(translator.data._id);
+    setTranslatorId(translator.data._id);
+  };
 
   const handleVideo = async () => {
     const videoPath = `dubbing-tasks/${job.creatorId}/${jobId}/video.mp4`;
@@ -62,92 +62,28 @@ const QA = () => {
     setDownloadLink(downloadLink.data);
   };
 
-  useEffect(() => {
-    const token = Cookies.get("session");
-    const userId = authStatus(token).data.user_id;
-    console.log(token);
-    console.log(userId);
-
-    handleTranslator(userId);
-
-  },[]);
-
-    useEffect(() => {
-
-        handleVerifyTranslator();
-
-    },[jobId, translatorId]);
-
-
-  useEffect(() => {
-    if (job) {
-      if (job.status == "moderation"){
-        setIsLoading(false)
-      }
-      setLang(
-        SupportedLanguages.find(
-          (language) => language.languageName === job.translatedLanguage
-        ).translateCode
-      );
-      getProfile();
-      setFlags(job.flags);
-      handleVideo();
-      console.log(job);
-    }
-  }, [job]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (lang) {
-        await getSrt(job.creatorId, jobId, lang);
-        await getEnglishSrt(job.creatorId, jobId);
-      }
-    };
-    fetchData();
-  }, [lang]);
-
-
-    const handleResetSRT = async () => {
-        try{
-            const verify = await verifyTranslator(translatorId, jobId);
-            console.log(verify);
-            if (!verify){
-                throw new Error("Job has expired");
-            }
-            setLoader('reset');
-            await getSrt(job.creatorId, jobId, lang)
-            .then(() => {
-                setLoader('');
-                SuccessHandler("Changes discarded.");
-            })
-            .catch((error) => {
-                setLoader('');
-                ErrorHandler("Failed to discard changes", error);
-            });
-        }catch(error) {
-            ErrorHandler(error);
+  const handleResetSRT = async () => {
+    try{
+        const verify = await verifyTranslator(translatorId, jobId);
+        console.log(verify);
+        if (!verify){
+            throw new Error("Job has expired");
         }
-
+        setLoader('reset');
+        await getSrt(job.creatorId, jobId, lang)
+        .then(() => {
+            setLoader('');
+            SuccessHandler("Changes discarded.");
+        })
+        .catch((error) => {
+            setLoader('');
+            ErrorHandler("Failed to discard changes", error);
+        });
+    }catch(error) {
+        ErrorHandler(error);
     }
 
-    const handleVerifyTranslator = async () => {
-        if (jobId && translatorId){
-          try{
-            const verify = await verifyTranslator(translatorId, jobId);
-            console.log(verify);
-            if (!verify){
-              throw new Error("invalid translatorId or JobId");
-            }
-            
-            getJob(jobId);
-
-            
-          }catch(error){
-            ErrorHandler(error);
-          }
-        }
-        
-    }
+  }
 
   const handleApprove = async () => {
     try {
@@ -177,9 +113,16 @@ const QA = () => {
     setCreatorName(res?.firstName + ' ' + res?.lastName);
   };
 
-  const getJob = async (jobId) => {
-    await getFirebaseJob(jobId, callback);
-  };
+  const getJob = async (jobId, translatorId) => {
+
+    try {
+        const job = await getJobAndVerify(translatorId, jobId)
+        setJob(job.data);
+        setIsLoading(false);
+    }catch(error) {
+        ErrorHandler(error);
+    }
+  }
 
   const getSrt = async (creatorId, jobId, key) => {
     const data = await getRawSRT(
@@ -242,6 +185,46 @@ const QA = () => {
     setSubtitles(updatedSubtitles);
   };
 
+  useEffect(() => {
+    const token = Cookies.get("session");
+    const userId = authStatus(token).data.user_id;
+    console.log(token);
+    console.log(userId);
+
+    handleTranslator(userId);
+
+  },[]);
+
+  useEffect(() => {
+    if(jobId && translatorId) {
+      getJob(jobId, translatorId);
+    }
+  },[jobId, translatorId]);
+
+
+  useEffect(() => {
+    if (job) {
+      setLang(
+        SupportedLanguages.find(
+          (language) => language.languageName === job.translatedLanguage
+        ).translateCode
+      );
+      getProfile();
+      setFlags(job.flags);
+      handleVideo();
+      console.log(job);
+    }
+  }, [job]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (lang) {
+        await getSrt(job.creatorId, jobId, lang);
+        await getEnglishSrt(job.creatorId, jobId);
+      }
+    };
+    fetchData();
+  }, [lang]);
 
   return (
     <div>

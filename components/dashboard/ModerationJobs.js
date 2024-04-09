@@ -1,31 +1,29 @@
 import { useEffect, useState } from 'react';
-import { getTranslatorFromUserId } from '../../services/apis';
-import ErrorHandler from '../../utils/errorHandler';
 import { 
+  getTranslatorFromUserId,
   getAllModerationJobs,
-  acceptJob, } from '../../services/firebase';
+  acceptJob, } from '../../services/apis';
+import ErrorHandler from '../../utils/errorHandler';
 import Cookies from 'js-cookie';
 import { authStatus } from '../../utils/authStatus';
 
 const ModerationJobs = () => {
   const [jobs, setJobs] = useState([]);
-  const [userLanguages, setUserLanguages] = useState(null);
   const [translatorId, setTranslatorId] = useState(null);
 
-  const getUserLanguages = async (userId) => {
+  const handleTranslator = async (userId) => {
     const translator = await getTranslatorFromUserId(userId);
     console.log(translator.data._id);
-    setUserLanguages(translator.data.nativeLanguage);
     setTranslatorId(translator.data._id);
   };
   
-  const getModerationJobs = async (userLanguages) => {
-    const res = await getAllModerationJobs(userLanguages, translatorId);
-
-    const pending = res
-      ? Object.values(res).map((item, i) => ({
+  const getModerationJobs = async () => {
+    const res = await getAllModerationJobs(translatorId);
+    const resData = res.data;
+    const pending = resData
+      ? Object.values(resData).map((item, i) => ({
           ...item,
-          jobId: Object.keys(res)[i],
+          jobId: Object.keys(resData)[i],
         }))
       : [];
     setJobs(pending);
@@ -38,7 +36,6 @@ const ModerationJobs = () => {
       }
       
       await acceptJob(translatorId, jobId, "moderation");
-
       window.open(`/moderation?jobId=${jobId}`, '_blank');
     }catch(error){
       ErrorHandler(error);
@@ -52,15 +49,15 @@ const ModerationJobs = () => {
     console.log(token);
     console.log(userId);
 
-    getUserLanguages(userId);
+    handleTranslator(userId);
 
   },[]);
 
   useEffect(() => {
-    if (userLanguages&&translatorId) {
-      getModerationJobs(userLanguages);
+    if (translatorId) {
+      getModerationJobs();
     }
-  }, [userLanguages,translatorId]);
+  }, [translatorId]);
 
   useEffect(() => {
     console.log(jobs);

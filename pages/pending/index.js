@@ -8,15 +8,14 @@ import { SupportedLanguages } from '../../constants/constants';
 import {
     getUserProfile,
     verifyTranslator,
-    getFirebaseJob,
     flagOverlayJob,
   } from '../../services/firebase';
 import { 
     completeJob,
     getDownloadLink,
-    getTranslatorFromUserId, }  from '../../services/apis';
+    getTranslatorFromUserId,
+    getJobAndVerify, }  from '../../services/apis';
 import Check from '../../public/img/icons/check-circle-green.svg';
-import ReactPlayer from 'react-player';
 import Cookies from 'js-cookie';
 import { authStatus } from '../../utils/authStatus';
 import Button from '../../components/UI/Button';
@@ -31,6 +30,7 @@ const pending = () => {
     const [creatorName, setCreatorName] = useState(null);
     const [creatorPfp, setCreatorPfp] = useState(null);
     const [loader, setLoader] = useState(null);
+    const [popupApprove, setPopupApprove] = useState(false);
 
     const router = useRouter();
     const { jobId } = router.query;
@@ -39,9 +39,8 @@ const pending = () => {
         setLoader('approve');
         await completeJob(job.creatorId, job.timestamp).then(() => {
           setLoader('');
-          triggerUpdate();
-          setSelectedJob(undefined);
           successHandler('Approved!');
+          setPopupApprove(true);
         });
     };
 
@@ -64,14 +63,16 @@ const pending = () => {
         }
     };
 
-    const getJob = async (jobId) => {
-        await getFirebaseJob(jobId,callback);
-        setIsLoading(false);
-    }
+    const getJob = async (jobId, translatorId) => {
 
-    const callback = (data) => {
-        setJob(data);
-    };
+        try {
+            const job = await getJobAndVerify(translatorId, jobId)
+            setJob(job.data);
+            setIsLoading(false);
+        }catch(error) {
+            ErrorHandler(error);
+        }
+    }
 
     const handleTranslator = async (userId) => {
         const translator = await getTranslatorFromUserId(userId);
@@ -101,22 +102,6 @@ const pending = () => {
         }
     }
 
-    const handleVerifyTranslator = async () => {
-        if (jobId && translatorId) {
-            try {
-            const verify = await verifyTranslator(translatorId, jobId);
-            console.log(verify);
-            if (!verify) {
-                throw new Error('invalid translatorId or JobId');
-            }
-
-            getJob(jobId);
-            } catch (error) {
-            ErrorHandler(error);
-            }
-        }
-    };
-
     useEffect(() => {
         const token = Cookies.get("session");
         console.log(token);
@@ -129,7 +114,9 @@ const pending = () => {
     },[]);
 
     useEffect(() => {
-        handleVerifyTranslator();
+        if(jobId && translatorId) {
+            getJob(jobId, translatorId);
+        }
     }, [jobId, translatorId]);
 
     useEffect(() => {
@@ -142,6 +129,19 @@ const pending = () => {
         <>
         <PageTitle title="Pending" />
 
+        {isLoading && <FullScreenLoader/>}
+        <Popup show={popupApprove} disableClose={true}>
+            <div className="h-full w-full">
+            <div className="w-[500px] rounded-2xl bg-indigo-2 p-s3">
+                <div className="flex flex-col items-center justify-center">
+                <h2 className="mb-s2 text-2xl text-white">Approved!</h2>
+                <p className="text-white">
+                    Please wait 1-2 business days for payment to process. Thank you.
+                </p>
+                </div>
+            </div>
+            </div>
+        </Popup>
         <div className="w-full h-screen flex flex-col p-s5">
             <div className="flex flex-col">
                 <div className="text-white text-3xl">{job ? job.videoData.caption : ""}</div>

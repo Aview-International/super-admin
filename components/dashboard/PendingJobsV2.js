@@ -1,31 +1,32 @@
 import { useEffect, useState } from 'react';
-import { 
-  getAllPendingJobs,
-  acceptJob, } from '../../services/firebase';
 import Cookies from 'js-cookie';
 import { authStatus } from '../../utils/authStatus';
-import { getTranslatorFromUserId } from '../../services/apis';
+import { 
+  getTranslatorFromUserId,
+  getAllPendingJobs,
+  acceptJob, } from '../../services/apis';
+import ErrorHandler from '../../utils/errorHandler';
+
 
 const PendingJobs = () => {
   const [jobs, setJobs] = useState([]);
   const [translatorId, setTranslatorId] = useState(null);
-  const [userLanguages, setUserLanguages] = useState(null);
 
-  const getUserLanguages = async (userId) => {
+  const handleTranslator = async (userId) => {
     const translator = await getTranslatorFromUserId(userId);
     console.log(translator.data._id);
-    setUserLanguages(translator.data.nativeLanguage);
     setTranslatorId(translator.data._id);
   };
 
 
-  const getPendingJobs = async (userLanguages) => {
-    const res = await getAllPendingJobs(userLanguages, translatorId);
+  const getPendingJobs = async () => {
+    const res = await getAllPendingJobs(translatorId);
+    const resData = res.data;
 
-    const pending = res
-      ? Object.values(res).map((item, i) => ({
+    const pending = resData
+      ? Object.values(resData).map((item, i) => ({
           ...item,
-          jobId: Object.keys(res)[i],
+          jobId: Object.keys(resData)[i],
         }))
       : [];
     setJobs(pending);
@@ -50,13 +51,13 @@ const PendingJobs = () => {
     console.log(token);
     console.log(userId);
 
-    getUserLanguages(userId);
+    handleTranslator(userId);
 
   },[]);
 
   useEffect(() => {
     if (translatorId) {
-      getPendingJobs(userLanguages);
+      getPendingJobs();
     }
   }, [translatorId]);
 

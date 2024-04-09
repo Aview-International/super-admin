@@ -347,3 +347,24 @@ export const attachUserIdToTranslator = async (email, userId) => {
 export const getTranslatorFromUserId = async (userId) => {
   return axiosInstance.post('admin/get-translator-from-userid', {userId});
 }
+
+export const getAllPendingJobs = async (translatorId) => {
+  return axiosInstance.post('admin/get-pending-jobs', {translatorId});
+}
+
+export const getAllModerationJobs = async (translatorId) => {
+  return axiosInstance.post('admin/get-moderation-jobs', {translatorId});
+}
+
+export const getAllOverlayJobs = async (translatorId) => {
+  return axiosInstance.post('admin/get-overlay-jobs', {translatorId});
+}
+
+export const acceptJob = async (translatorId, jobId, jobType) => {
+  return axiosInstance.post('admin/accept-job', {translatorId, jobId, jobType});
+}
+
+export const getJobAndVerify = async (translatorId, jobId) => {
+  return axiosInstance.post('admin/get-job-and-verify', {translatorId, jobId});
+}
+

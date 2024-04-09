@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import ErrorHandler from '../../utils/errorHandler';
-import { getTranslatorFromUserId } from '../../services/apis';
-import {
-  getSubtitledAndCaptionedJobs,
-  acceptJob,
-} from '../../services/firebase';
+import { 
+  getTranslatorFromUserId,
+  getAllOverlayJobs,
+  acceptJob } from '../../services/apis';
 import Cookies from 'js-cookie';
 import { authStatus } from '../../utils/authStatus';
 
@@ -19,12 +18,12 @@ const OverlayJobs = () => {
   };
 
   const getOverlayJobs = async () => {
-    const res = await getSubtitledAndCaptionedJobs(translatorId);
-
-    const pending = res
-      ? Object.values(res).map((item, i) => ({
+    const res = await getAllOverlayJobs(translatorId);
+    const resData = res.data;
+    const pending = resData
+      ? Object.values(resData).map((item, i) => ({
           ...item,
-          jobId: Object.keys(res)[i],
+          jobId: Object.keys(resData)[i],
         }))
       : [];
     setJobs(pending);
