@@ -19,7 +19,7 @@ import Check from '../../public/img/icons/check-circle-green.svg';
 import ReactPlayer from 'react-player';
 import Cookies from 'js-cookie';
 import { authStatus } from '../../utils/authStatus';
-import Button from '../../components/UI/button';
+import Button from '../../components/UI/Button';
 import Image from 'next/image'
 
 const pending = () => {
