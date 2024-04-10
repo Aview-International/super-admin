@@ -9,7 +9,6 @@ import { authStatus } from '../../utils/authStatus';
 import Cookies from 'js-cookie';
 import ReviewerSettingsPopup from '../../components/dashboard/ReviewerSettingsPopup';
 
-
 const Dashboard = () => {
   const [selectedOption, setSelectedOption] = useState("pending");
   const [translator, setTranslator] = useState(null);

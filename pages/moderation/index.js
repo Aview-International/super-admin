@@ -25,6 +25,8 @@ import {
 } from '../../services/firebase';
 import { authStatus } from '../../utils/authStatus';
 import Cookies from 'js-cookie';
+import Timer from '../../components/UI/Timer';
+
 
 const QA = () => {
   const [subtitles, setSubtitles] = useState([]);
@@ -45,9 +47,6 @@ const QA = () => {
 
   const { width: windowWidth, height: windowHeight } = useWindowSize();
 
-  const callback = (data) => {
-      setJob(data);
-  };
 
   const handleTranslator = async (userId) => {
     const translator = await getTranslatorFromUserId(userId);
@@ -250,6 +249,11 @@ const QA = () => {
         </div>
       </Popup>
       {isLoading && <FullScreenLoader />}
+      <div className="relative w-full h-screen">
+            <div className="absolute top-0 right-0 py-s2 px-s5">
+                <Timer />
+            </div>
+      </div>
       <div className={`flex `}>
         <div
           className={`fixed left-0 top-0 flex h-screen w-1/2 flex-col py-s5 pl-s5 pr-s1`}

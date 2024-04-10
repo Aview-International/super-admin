@@ -26,6 +26,7 @@ import {
 } from '../../services/firebase';
 import { authStatus } from '../../utils/authStatus';
 import Cookies from 'js-cookie';
+import Timer from '../../components/UI/Timer';
 
 const Shorts_subtitling = () => {
   const videoRef = useRef(null);

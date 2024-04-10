@@ -20,6 +20,7 @@ import Cookies from 'js-cookie';
 import { authStatus } from '../../utils/authStatus';
 import Button from '../../components/UI/Button';
 import Image from 'next/image'
+import Timer from '../../components/UI/Timer';
 
 const pending = () => {
     const [job, setJob] = useState(null);
@@ -142,7 +143,13 @@ const pending = () => {
             </div>
             </div>
         </Popup>
-        <div className="w-full h-screen flex flex-col p-s5">
+        <div className="relative w-full h-screen">
+            <div className="absolute top-0 right-0 py-s2 px-s5">
+                <Timer />
+            </div>
+        </div>
+
+        <div className="w-full h-screen flex flex-col px-s5 pb-s5 pt-s2">
             <div className="flex flex-col">
                 <div className="text-white text-3xl">{job ? job.videoData.caption : ""}</div>
                 <div className="text-white text-lg mb-s2">{creatorName ? creatorName : ""}</div>
