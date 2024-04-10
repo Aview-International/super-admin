@@ -11,7 +11,7 @@ import {
     flagOverlayJob,
   } from '../../services/firebase';
 import { 
-    completeJob,
+    finishPendingJob,
     getDownloadLink,
     getTranslatorFromUserId,
     getJobAndVerify, }  from '../../services/apis';
@@ -38,31 +38,13 @@ const pending = () => {
 
     const handleApproval = async () => {
         setLoader('approve');
-        await completeJob(job.creatorId, job.timestamp).then(() => {
+        await finishPendingJob(translatorId, jobId).then(() => {
           setLoader('');
           successHandler('Approved!');
           setPopupApprove(true);
         });
     };
 
-    const handleFlag = async (jobId) => {
-        try {
-          const verify = await verifyTranslator(translatorId, jobId);
-    
-          if (!verify) {
-            throw new Error('Job has expired');
-          }
-    
-          setLoader('flag');
-          await flagOverlayJob(jobId).then(() => {
-            setLoader('');
-            setPopupSubmit(true);
-            setPopupText('Flagged!');
-          });
-        } catch (error) {
-          ErrorHandler(error);
-        }
-    };
 
     const getJob = async (jobId, translatorId) => {
 
@@ -216,7 +198,7 @@ const pending = () => {
                             <Button
                             theme="error"
                             classes="flex flex-col justify-center items-center  mt-s2 mr-s2"
-                            onClick={() => handleFlag()}
+                            onClick={()=>{}}
                             isLoading={loader === 'flagged'}
                             >
                             <div className="flex flex-row items-center">

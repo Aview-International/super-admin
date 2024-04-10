@@ -14,7 +14,7 @@ import ErrorHandler from '../../utils/errorHandler';
 import { useRouter } from 'next/router';
 import { 
   getDownloadLink, 
-  submitOverlayJob, 
+  finishOverlayJob, 
   getTranslatorFromUserId,
   getJobAndVerify } from '../../services/apis';
 import Popup from '../../components/UI/PopupWithBorder';
@@ -129,11 +129,6 @@ const Shorts_subtitling = () => {
 
   const handleSubmit = async (jobId) => {
     try {
-      const verify = await verifyTranslator(translatorId, jobId);
-
-      if (!verify) {
-        throw new Error('Job has expired');
-      }
 
       setLoader('submit');
       console.log(captionsArray, subtitleDetails);
@@ -168,7 +163,7 @@ const Shorts_subtitling = () => {
         operations.end_time = timeStringToSeconds(operations.end_time);
       }
 
-      await submitOverlayJob(jobId).then(() => {
+      await finishOverlayJob(translatorId, jobId).then(() => {
         setLoader('');
         setPopupSubmit(true);
         setPopupText('Submitted!');

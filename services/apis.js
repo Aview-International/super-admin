@@ -253,10 +253,10 @@ export const getElevenLabsVoices = async () =>
 export const transcribeSocialLink = async (body) =>
   await axiosInstance.post('transcription/social', body);
 
-export const completeJob = async (creatorId, timestamp) => {
-  await axiosInstance.post('admin/complete-job', {
-    creatorId,
-    timestamp,
+export const finishPendingJob = async (translatorId, jobId) => {
+  await axiosInstance.post('admin/finish-pending-job', {
+    translatorId,
+    jobId,
   });
 };
 
@@ -315,8 +315,8 @@ export const getTranslatorById = async (translatorId) => {
 };
 
 
-export const finishTranslation = async (jobId, translatorId, updatedSrt) => {
-  return axiosInstance.post(baseUrl + 'admin/finish-translation', {
+export const finishModerationJob = async (jobId, translatorId, updatedSrt) => {
+  return axiosInstance.post(baseUrl + 'admin/finish-moderation-job', {
     jobId,
     translatorId, 
     updatedSrt,
@@ -332,8 +332,8 @@ export const getDownloadLink = async (s3Path) => {
   return response;
 };
 
-export const submitOverlayJob = async (jobId) => {
-  return axiosInstance.post(baseUrl + 'admin/submit-overlay-job', { jobId });
+export const finishOverlayJob = async (translatorId, jobId) => {
+  return axiosInstance.post(baseUrl + 'admin/finish-overlay-job', { translatorId, jobId });
 };
 
 export const verifyTranslatorEmail = async () =>{

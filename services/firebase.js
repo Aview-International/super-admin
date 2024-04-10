@@ -126,7 +126,7 @@ export const getUserProfile = async (_id) => {
 
 export const flagOverlayJob = async (jobId) => {
   const jobRef = ref(database, `admin-jobs/pending/${jobId}`);
-  await update(jobRef, { overlaysStatus: 'flagged' });
+  await update(jobRef, { overlayStatus: 'flagged' });
 };
 
 export const verifyTranslator = async (translatorId, jobId) => {

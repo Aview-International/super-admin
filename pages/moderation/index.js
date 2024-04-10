@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   getRawSRT,
-  finishTranslation,
+  finishModerationJob,
   getDownloadLink,
   getTranslatorFromUserId,
   getJobAndVerify,
@@ -93,7 +93,7 @@ const QA = () => {
       }
       setLoader('approve');
       console.log(jobId, translatorId, getSrtText());
-      await finishTranslation(jobId, translatorId, getSrtText())
+      await finishModerationJob(jobId, translatorId, getSrtText())
         .then(() => {
           setLoader('');
           setPopupSubmit(true);
