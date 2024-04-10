@@ -7,8 +7,6 @@ import FullScreenLoader from '../../public/loaders/FullScreenLoader';
 import { SupportedLanguages } from '../../constants/constants';
 import {
     getUserProfile,
-    verifyTranslator,
-    flagOverlayJob,
   } from '../../services/firebase';
 import { 
     finishPendingJob,
@@ -37,12 +35,17 @@ const pending = () => {
     const { jobId } = router.query;
 
     const handleApproval = async () => {
-        setLoader('approve');
-        await finishPendingJob(translatorId, jobId).then(() => {
-          setLoader('');
-          successHandler('Approved!');
-          setPopupApprove(true);
-        });
+        try{
+            setLoader('approve');
+            await finishPendingJob(translatorId, jobId).then(() => {
+            setLoader('');
+            successHandler('Approved!');
+            setPopupApprove(true);
+            });
+        }catch(error){
+            ErrorHandler(error);
+        }
+        
     };
 
 

@@ -3,6 +3,7 @@ import DashboardLayoutNoSidebar from '../../components/dashboard/DashboardLayout
 import PendingJobs from '../../components/dashboard/PendingJobsV2';
 import OverlayJobs from '../../components/dashboard/OverlayJobs';
 import ModerationJobs from '../../components/dashboard/ModerationJobs';
+import AllJobs from '../../components/dashboard/AllJobs';
 import PageTitle from '../../components/SEO/PageTitle';
 import { getTranslatorFromUserId } from '../../services/apis';
 import { authStatus } from '../../utils/authStatus';
@@ -10,7 +11,7 @@ import Cookies from 'js-cookie';
 import ReviewerSettingsPopup from '../../components/dashboard/ReviewerSettingsPopup';
 
 const Dashboard = () => {
-  const [selectedOption, setSelectedOption] = useState("pending");
+  const [selectedOption, setSelectedOption] = useState("all");
   const [translator, setTranslator] = useState(null);
   const [settings, setSettings] = useState(false);
 
@@ -37,7 +38,7 @@ const Dashboard = () => {
         <PageTitle title="Dashboard" />
         <ReviewerSettingsPopup show={settings} onClose={()=>{setSettings(false)}} translator={translator}/>
         <div className="flex flex-col justify-center w-full h-full p-s8 ">
-            <div className="w-full h-[300px] mb-s2 flex">
+            <div className="w-full h-[292px] mb-s2 flex">
               <div className="w-1/2 h-full pr-s1">
                 <div className="w-full h-full flex">
                   <div className="w-1/3 h-full flex flex-col p-s2 bg-white-transparent rounded-2xl mr-s1">
@@ -86,26 +87,31 @@ const Dashboard = () => {
               </div>
 
             </div>
-            <div className="w-full bg-white-transparent rounded-2xl p-s2 flex items-center mb-s2">
+            <div className="w-full p-s1 flex items-center mb-s2">
                 <div className="flex flex-row ">
-                    <div className={`min-w-fit rounded-full text-white py-s1 px-s2 text-xl mr-s2 cursor-pointer ${selectedOption == "pending" ? "bg-white text-black":"bg-white-transparent text-white"}`} onClick={() => setSelectedOption("pending")}>
-                        Pending videos
+                    <div className={`min-w-fit rounded-xl text-white py-s1 px-s2 text-xl mr-s2 cursor-pointer ${selectedOption == "all" ? "bg-white text-black":"bg-white-transparent text-white"}`} onClick={() => setSelectedOption("all")}>
+                      All
                     </div>
 
-                    <div className={`min-w-fit rounded-full text-white py-s1 px-s2 text-xl mr-s2 cursor-pointer ${selectedOption == "moderation" ? "bg-white text-black":"bg-white-transparent text-white"}`} onClick={() => setSelectedOption("moderation")}>
-                        Moderation
+                    <div className={`min-w-fit rounded-xl text-white py-s1 px-s2 text-xl mr-s2 cursor-pointer ${selectedOption == "pending" ? "bg-white text-black":"bg-white-transparent text-white"}`} onClick={() => setSelectedOption("pending")}>
+                      Pending
                     </div>
 
-                    <div className={`min-w-fit rounded-full text-white py-s1 px-s2 text-xl mr-s2 cursor-pointer ${selectedOption == "overlays" ? "bg-white text-black":"bg-white-transparent text-white"}`} onClick={() => setSelectedOption("overlays")}>
-                        Overlays
+                    <div className={`min-w-fit rounded-xl text-white py-s1 px-s2 text-xl mr-s2 cursor-pointer ${selectedOption == "moderation" ? "bg-white text-black":"bg-white-transparent text-white"}`} onClick={() => setSelectedOption("moderation")}>
+                      Moderation
+                    </div>
+
+                    <div className={`min-w-fit rounded-xl text-white py-s1 px-s2 text-xl mr-s2 cursor-pointer ${selectedOption == "overlay" ? "bg-white text-black":"bg-white-transparent text-white"}`} onClick={() => setSelectedOption("overlay")}>
+                      Overlay
                     </div>
                 </div>
             </div>
 
             <div>
+              {selectedOption == "all" && <AllJobs />}
                 {selectedOption == "pending" && <PendingJobs />}
                 {selectedOption == "moderation" && <ModerationJobs />}
-                {selectedOption == "overlays" && <OverlayJobs />}
+                {selectedOption == "overlay" && <OverlayJobs />}
             </div>
 
             <div>

@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 import ErrorHandler from '../../utils/errorHandler';
 import { 
   getTranslatorFromUserId,
-  getAllOverlayJobs,
+  getAllJobs,
   acceptJob } from '../../services/apis';
 import Cookies from 'js-cookie';
 import { authStatus } from '../../utils/authStatus';
 
-const OverlayJobs = () => {
+const AllJobs = () => {
   const [jobs, setJobs] = useState([]);
   const [translatorId, setTranslatorId] = useState(null);
 
@@ -17,8 +17,8 @@ const OverlayJobs = () => {
     setTranslatorId(translator.data._id);
   };
 
-  const getOverlayJobs = async () => {
-    const res = await getAllOverlayJobs(translatorId);
+  const getJobs = async () => {
+    const res = await getAllJobs(translatorId);
     const resData = res.data;
     const pending = resData
       ? Object.values(resData).map((item, i) => ({
@@ -29,12 +29,12 @@ const OverlayJobs = () => {
     setJobs(pending);
   };
 
-  const handleAccept = async (jobId) => {
+  const handleAccept = async (jobId, jobType) => {
     try {
       if (translatorId == null) {
         throw new Error('Invalid translatorId.');
       }
-      await acceptJob(translatorId, jobId, "overlay");
+      await acceptJob(translatorId, jobId, jobType);
 
       window.open(`/overlays?jobId=${jobId}`, '_blank');
     }catch(error){
@@ -54,7 +54,7 @@ const OverlayJobs = () => {
 
   useEffect(() => {
     if (translatorId) {
-      getOverlayJobs();
+      getJobs();
     }
   }, [translatorId]);
 
@@ -70,15 +70,20 @@ const OverlayJobs = () => {
             <div
             style={{
                 display: 'grid',
-                gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr',
+                gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr',
                 gap: '1rem',
                 textAlign: 'center',
             }}
             >
-            <div className="text-left font-bold text-white">Job ID</div>
-            <div className="text-left font-bold text-white">Title</div>
-            <div className="text-left font-bold text-white">Original Language</div>
-            <div className="text-left font-bold text-white">Translated Language</div>
+            <div className="text-left font-bold text-white text-lg">Job Type</div>
+            <div className="text-left font-bold text-white text-lg">Job ID</div>
+            <div className="text-left font-bold text-white text-lg">Title</div>
+            <div className="text-left font-bold text-white text-lg">
+              Original Language
+            </div>
+            <div className="text-left font-bold text-white text-lg">
+              Translated Language
+            </div>
             </div>
 
             <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
@@ -88,11 +93,14 @@ const OverlayJobs = () => {
                 <div
                     style={{
                     display: 'grid',
-                    gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr',
+                    gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr',
                     gap: '1rem',
                     textAlign: 'left',
                     }}
                 >
+                    <div className="text-left text-white">
+                    {job.status == "moderation" ? "moderation" : (job.status == "subtitling" ? "overlay" : "pending")}
+                    </div>
                     <div className="text-left text-white">{job.jobId}</div>
                     <div className="text-left text-white">
                     {job.videoData.caption}
@@ -126,4 +134,4 @@ const OverlayJobs = () => {
 };
 
 
-export default OverlayJobs;
+export default AllJobs;

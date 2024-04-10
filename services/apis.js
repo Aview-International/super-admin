@@ -332,6 +332,10 @@ export const getDownloadLink = async (s3Path) => {
   return response;
 };
 
+export const getAllJobs = async (translatorId) => {
+  return axiosInstance.post('admin/get-all-jobs', {translatorId});
+}
+
 export const finishOverlayJob = async (translatorId, jobId) => {
   return axiosInstance.post(baseUrl + 'admin/finish-overlay-job', { translatorId, jobId });
 };

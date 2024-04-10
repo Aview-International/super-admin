@@ -129,18 +129,4 @@ export const flagOverlayJob = async (jobId) => {
   await update(jobRef, { overlayStatus: 'flagged' });
 };
 
-export const verifyTranslator = async (translatorId, jobId) => {
-  const translatorRef = ref(
-    database,
-    `admin-jobs/pending/${jobId}/translatorId`
-  );
-  const snapshot = await get(translatorRef);
-
-  if (!snapshot.exists()) {
-    return false;
-  }
-
-  const fetchedTranslatorId = snapshot.val();
-  return fetchedTranslatorId === translatorId;
-};
 

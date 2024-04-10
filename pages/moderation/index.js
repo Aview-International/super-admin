@@ -21,7 +21,6 @@ import warning from '/public/img/icons/warning.svg';
 import PageTitle from '../../components/SEO/PageTitle';
 import {
   getUserProfile,
-  verifyTranslator,
 } from '../../services/firebase';
 import { authStatus } from '../../utils/authStatus';
 import Cookies from 'js-cookie';
@@ -63,11 +62,6 @@ const QA = () => {
 
   const handleResetSRT = async () => {
     try{
-        const verify = await verifyTranslator(translatorId, jobId);
-        console.log(verify);
-        if (!verify){
-            throw new Error("Job has expired");
-        }
         setLoader('reset');
         await getSrt(job.creatorId, jobId, lang)
         .then(() => {
@@ -86,11 +80,6 @@ const QA = () => {
 
   const handleApprove = async () => {
     try {
-      const verify = await verifyTranslator(translatorId, jobId);
-      console.log(verify);
-      if (!verify) {
-        throw new Error('Job has expired');
-      }
       setLoader('approve');
       console.log(jobId, translatorId, getSrtText());
       await finishModerationJob(jobId, translatorId, getSrtText())
@@ -98,10 +87,6 @@ const QA = () => {
           setLoader('');
           setPopupSubmit(true);
         })
-        .catch((error) => {
-          ErrorHandler(error, 'Failed to approve.');
-          setLoader('');
-        });
     } catch (error) {
       ErrorHandler(error);
     }

@@ -21,7 +21,6 @@ import Popup from '../../components/UI/PopupWithBorder';
 import FullScreenLoader from '../../public/loaders/FullScreenLoader';
 import {
   getUserProfile,
-  verifyTranslator,
   flagOverlayJob,
 } from '../../services/firebase';
 import { authStatus } from '../../utils/authStatus';
@@ -76,12 +75,6 @@ const Shorts_subtitling = () => {
 
   const handleFlag = async (jobId) => {
     try {
-      const verify = await verifyTranslator(translatorId, jobId);
-
-      if (!verify) {
-        throw new Error('Job has expired');
-      }
-
       setLoader('flag');
       await flagOverlayJob(jobId).then(() => {
         setLoader('');
