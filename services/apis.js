@@ -376,3 +376,11 @@ export const getTranslatorLeaderboards = async () => {
   return axiosInstance.post('admin/get-translator-leaderboards');
 }
 
+export const uploadReviewerProfilePicture = async (translatorId, picture) => {
+  const formData = new FormData();
+  formData.append('translatorId', translatorId);
+  formData.append('picture', picture);
+
+  return axiosInstance.post('admin/upload-reviewer-profile-picture', formData);
+};
+

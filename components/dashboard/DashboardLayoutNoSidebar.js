@@ -1,11 +1,9 @@
 import aviewLogo from '../../public/img/aview/logo.svg';
-import settingsIcon from '../../public/img/icons/settings.svg';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import timeGreeting from '../../utils/timeGreeting';
+import defaultProfilePicture from '../../public/img/graphics/default.png';
 
-const DashboardStructure = ({ children, setSettings, name }) => {
+const DashboardStructure = ({ children, setSettings, name, profilePicture=defaultProfilePicture }) => {
 
   return (
     <>
@@ -33,7 +31,7 @@ const DashboardStructure = ({ children, setSettings, name }) => {
           </div>
           <div className="flex justify-end">
             <div>
-              <Image src={settingsIcon} alt="settings button" width={36} height={36} className="cursor-pointer" onClick={() => {setSettings(true)}}/>
+              <img src={profilePicture ? profilePicture : "/img/graphics/default.png"}  style={{width:"52px", height:"52px"}} alt="settings button" width={52} height={52} className="cursor-pointer rounded-full" onClick={() => {setSettings(true)}}/>
             </div>
           </div>
         </header>
@@ -46,8 +44,8 @@ const DashboardStructure = ({ children, setSettings, name }) => {
   );
 };
 
-const DashboardLayout = ({ setSettings, children, name }) => (
-  <DashboardStructure setSettings={setSettings} name={name} >{children}</DashboardStructure>
+const DashboardLayout = ({ setSettings, children, name, profilePicture=defaultProfilePicture }) => (
+  <DashboardStructure setSettings={setSettings} name={name} profilePicture={profilePicture} >{children}</DashboardStructure>
 );
 export default DashboardLayout;
 

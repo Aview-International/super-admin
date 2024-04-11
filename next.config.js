@@ -4,6 +4,7 @@ const nextConfig = {
   swcMinify: true,
   images: {
     domains: ['lh3.googleusercontent.com', 'i.ytimg.com'],
+    domains: ['aview-public.s3.amazonaws.com'],
   },
 };
 

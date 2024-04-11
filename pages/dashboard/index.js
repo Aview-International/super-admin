@@ -11,6 +11,7 @@ import {
 import { authStatus } from '../../utils/authStatus';
 import Cookies from 'js-cookie';
 import ReviewerSettingsPopup from '../../components/dashboard/ReviewerSettingsPopup';
+import PieChart from '../../components/UI/PieChart';
 
 
 const Dashboard = () => {
@@ -18,11 +19,41 @@ const Dashboard = () => {
   const [translator, setTranslator] = useState(null);
   const [settings, setSettings] = useState(false);
   const [leaderboards, setLeaderboards] = useState([]);
+  const [pieChartData, setPieChartData] = useState(null);
 
-  const handleTranslator = async (userId) => {
+  const handleTranslator = async () => {
+    const token = Cookies.get("session");
+    console.log(token);
+    const userId = authStatus(token).data.user_id;
+    console.log(token);
+    console.log(userId);
+
     const translatorInfo = await getTranslatorFromUserId(userId);
     console.log(translatorInfo.data);
     setTranslator(translatorInfo.data);
+
+    const data = {
+      labels: ['Red', 'Blue', 'Yellow'],
+      datasets: [
+        {
+          label: '# of Votes',
+          data: [translatorInfo.data.pendingJobsCompleted, translatorInfo.data.moderationJobsCompleted, translatorInfo.data.overlayJobsCompleted],
+          backgroundColor: [
+            '#FF3939',
+            '#FC00FF',
+            '#00FFFF'
+          ],
+          borderColor: [
+            '#FF3939',
+            '#FC00FF',
+            '#00FFFF'
+          ],
+          borderWidth: 1,
+        },
+      ],
+    };
+
+    setPieChartData(data);
   };
 
   const handleLeaderboards = async () => {
@@ -33,13 +64,7 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    const token = Cookies.get("session");
-    console.log(token);
-    const userId = authStatus(token).data.user_id;
-    console.log(token);
-    console.log(userId);
-
-    handleTranslator(userId);
+    handleTranslator();
     handleLeaderboards();
 
   },[]);
@@ -60,9 +85,10 @@ const Dashboard = () => {
             }
             `}
       </style>
-      <DashboardLayoutNoSidebar setSettings={setSettings} name={translator ? translator.name:""}>
+      <div className="min-w-[1300px]">
+      <DashboardLayoutNoSidebar setSettings={setSettings} profilePicture={translator ? translator.profilePicture : null} name={translator ? translator.name:""}>
         <PageTitle title="Dashboard" />
-        <ReviewerSettingsPopup show={settings} onClose={()=>{setSettings(false)}} translator={translator}/>
+        <ReviewerSettingsPopup show={settings} onClose={()=>{setSettings(false);}} translator={translator}/>
         <div className="flex flex-col justify-center w-full h-full p-s8 ">
             <div className="w-full h-[320px] mb-s2 flex">
               <div className="w-1/3 h-full pr-s1">
@@ -85,6 +111,32 @@ const Dashboard = () => {
                       Job Statistics
                     </div>
                     <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
+                    <div className="w-full flex flex-row">
+                      <div className="w-1/2 pr-s1">
+                        <div className="w-full h-full max-h-[221px]">
+                          <PieChart data={pieChartData ? pieChartData : null}/>
+                        </div>
+                      </div>
+                      <div className="w-1/2 flex justify-center flex-col pl-s1">
+                        <div className="text-white text-lg font-bold">{translator ? translator.totalJobsCompleted:""} {(translator && translator.totalJobsCompleted) == 1 ? "job completed":"jobs completed"}</div>
+                        <div className="flex flex-row w-full items-center mt-s1">
+                          <div className="rounded-full h-[14px] w-[14px] bg-blue mr-s1"></div>
+                          <div className="text-lg text-white pt-[4px]">Pending</div>
+                          <div className="rounded-full pt-[2px] px-[8px] bg-white-transparent ml-auto text-white text-base text-center">{translator ? translator.pendingJobsCompleted : ""}</div>
+                        </div>
+                        <div className="flex flex-row w-full items-center">
+                          <div className="rounded-full h-[14px] w-[14px] bg-purple mr-s1"></div>
+                          <div className="text-lg text-white pt-[4px]">Moderation</div>
+                          <div className="rounded-full pt-[2px] px-[8px] bg-white-transparent ml-auto text-white text-base text-center">{translator ? translator.moderationJobsCompleted : ""}</div>
+                        </div>
+                        <div className="flex flex-row w-full items-center">
+                          <div className="rounded-full h-[14px] w-[14px] bg-red mr-s1"></div>
+                          <div className="text-lg text-white pt-[4px]">Moderation</div>
+                          <div className="rounded-full pt-[2px] px-[8px] bg-white-transparent ml-auto text-white text-base text-center">{translator ? translator.overlayJobsCompleted : ""}</div>
+                        </div>
+                      </div>
+                   
+                    </div>
                 </div>
 
               </div>
@@ -102,7 +154,8 @@ const Dashboard = () => {
                         <div className="flex flex-row justify-between items-center">
                           <div className="flex flex-row items-center">
                             <div className="text-lg text-white font-bold w-[22px] mt-[3px] mr-s2">{i+1}</div>
-                            <div className="h-[32px] w-[32px] rounded-full bg-white-transparent mr-s2"></div>
+                            {/* <div className="h-[32px] w-[32px] rounded-full bg-white-transparent mr-s2"></div> */}
+                            <img src={translator.profilePicture ? translator.profilePicture : "/img/graphics/default.png"} style={{width:"32px", height:"32px"}} className="rounded-full mr-s2"/>
                             <div className="text-base text-white font-bold mt-[3px]">{translator.name}</div>
                           </div>
                           <div className="text-base text-white font-bold mt-[3px] mr-s2">{translator.totalJobsCompleted} jobs</div>
@@ -147,6 +200,7 @@ const Dashboard = () => {
             </div>
         </div>
         </DashboardLayoutNoSidebar>
+        </div>
     </>
   );
 };

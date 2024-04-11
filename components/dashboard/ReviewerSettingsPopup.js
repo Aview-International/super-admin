@@ -1,19 +1,19 @@
-import Image from 'next/image';
 import FormInput from '../../components/FormComponents/FormInput';
 import CustomSelectInput from '../../components/FormComponents/CustomSelectInput';
 import Button from '../../components/UI/Button';
-import React, { useState, useEffect, useSelector } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ErrorHandler from '../../utils/errorHandler';
 import SuccessHandler from '../../utils/successHandler';
 import {
   getSupportedLanguages,
   getCountriesAndCodes,
   updateTranslator,
+  uploadReviewerProfilePicture,
 } from '../../services/apis';
 import CheckBox from '../../components/FormComponents/CheckBox';
 import Popup from '../../components/UI/PopupNormal';
 import MultipleSelectInput from '../../components/FormComponents/MultipleSelectInput';
-
+import { toast } from 'react-toastify';
 
 const ReviewerSettingsPopup = ({show, onClose, translator}) =>{
     const [name, setName] = useState('');
@@ -28,7 +28,16 @@ const ReviewerSettingsPopup = ({show, onClose, translator}) =>{
     const [checkedState, setCheckedState] = useState('');
     const [paymentDetails, setPaymentDetails] = useState('');
     const [loader, setLoader] = useState('');
+    const [profilePicture, setProfilePicture] = useState(null);
+    const [newProfilePicture, setNewProfilePicture] = useState(null);
+    const [newProfilePictureURL, setNewProfilePictureURL] = useState(null);
+    const profilePictureInputRef = useRef(null);
 
+
+    
+    const triggerFileInput = () => {
+      profilePictureInputRef.current.click();
+    };
     
     const handleCheckBox = (name) => {
       setCheckedState(name);
@@ -94,7 +103,11 @@ const ReviewerSettingsPopup = ({show, onClose, translator}) =>{
               paymentDetails,
               translator._id,
             );
-  
+
+            if (newProfilePicture) {
+              await uploadReviewerProfilePicture(translator._id, newProfilePicture);
+            }
+
             SuccessHandler("Details updated successfully");
           } catch (error) {
             ErrorHandler(error);
@@ -108,13 +121,25 @@ const ReviewerSettingsPopup = ({show, onClose, translator}) =>{
       }
     };
 
+    const handleImageUpload = (e) => {
+      const file = e.target.files[0];
+      if (file.size > 2097152) {
+        toast.error('Maximum file size of 2mb allowed');
+        return;
+      }
+      setNewProfilePicture(file);
+      setNewProfilePictureURL(URL.createObjectURL(file));
+    };
+
     const handleSetValues = () => {
       if (translator){
+        console.log(translator.profilePicture);
         setName(translator.name);
         setEmail(translator.email);
         setNativeLanguage(translator.nativeLanguage);
         setCountry(translator.country);
         setPaymentDetails(translator.paymentDetails);
+        setProfilePicture(translator.profilePicture);
         if (translator.paymentMethod == "paypal"){
           setCheckedState("paypal");
           setPaypal(translator.paymentDetails);
@@ -143,12 +168,21 @@ const ReviewerSettingsPopup = ({show, onClose, translator}) =>{
         <>
         <Popup show={show} onClose={onClose}>
         <div className="mx-auto max-h-screen w-full max-w-[768px] min-w-[768px] px-4 sm:px-6 lg:px-8">
-            <div className="text-4xl font-normal text-left text-white mb-s2">
-              Settings
-            </div>
             <div className="w-full h-full bg-indigo-1 px-s4 pt-s4 pb-s14 rounded-2xl">
-              <div className=" text-xl font-bold text-white">
-                Personal Information
+              <div className="w-full flex justify-center">
+                <div className="relative h-[86px] w-[86px]">
+                  <img src={newProfilePictureURL ? newProfilePictureURL :(profilePicture ? profilePicture : "/img/graphics/default.png")} style={{width:"86px", height:"86px"}} alt="profile picture" height={86} width={86} className="rounded-full"/>
+                  <div className="absolute inset-0 cursor-pointer flex items-center justify-center bg-black bg-opacity-0 hover:bg-opacity-50 rounded-full transition duration-300 ease-in-out opacity-0 hover:opacity-100" onClick={triggerFileInput}>
+                    <span className="text-white font-semibold cursor-pointer">Change</span>
+                  </div>
+                </div>
+                <input
+                  ref={profilePictureInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
               </div>
               <FormInput
                 label="Name"
