@@ -36,7 +36,14 @@ const AllJobs = () => {
       }
       await acceptJob(translatorId, jobId, jobType);
 
-      window.open(`/overlays?jobId=${jobId}`, '_blank');
+      if (jobType=="moderation"){
+        window.open(`/moderation?jobId=${jobId}`, '_blank');
+      }else if (jobType=="pending"){
+        window.open(`/pending?jobId=${jobId}`, '_blank');
+      }else if (jobType== "overlay"){
+        window.open(`/overlays?jobId=${jobId}`, '_blank');
+      }
+      
     }catch(error){
       ErrorHandler(error);
     }
@@ -114,7 +121,7 @@ const AllJobs = () => {
                     <div
                     className="cursor-pointer text-white underline"
                     onClick={() => {
-                        handleAccept(job.jobId);
+                        handleAccept(job.jobId, job.status == "moderation" ? "moderation" : (job.status == "subtitling" ? "overlay" : "pending"));
                     }}
                     >
                     Accept job

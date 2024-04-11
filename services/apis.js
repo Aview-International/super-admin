@@ -372,3 +372,7 @@ export const getJobAndVerify = async (translatorId, jobId) => {
   return axiosInstance.post('admin/get-job-and-verify', {translatorId, jobId});
 }
 
+export const getTranslatorLeaderboards = async () => {
+  return axiosInstance.post('admin/get-translator-leaderboards');
+}
+

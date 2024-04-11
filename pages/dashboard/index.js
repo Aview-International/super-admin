@@ -5,21 +5,32 @@ import OverlayJobs from '../../components/dashboard/OverlayJobs';
 import ModerationJobs from '../../components/dashboard/ModerationJobs';
 import AllJobs from '../../components/dashboard/AllJobs';
 import PageTitle from '../../components/SEO/PageTitle';
-import { getTranslatorFromUserId } from '../../services/apis';
+import { 
+  getTranslatorFromUserId, 
+  getTranslatorLeaderboards } from '../../services/apis';
 import { authStatus } from '../../utils/authStatus';
 import Cookies from 'js-cookie';
 import ReviewerSettingsPopup from '../../components/dashboard/ReviewerSettingsPopup';
+
 
 const Dashboard = () => {
   const [selectedOption, setSelectedOption] = useState("all");
   const [translator, setTranslator] = useState(null);
   const [settings, setSettings] = useState(false);
+  const [leaderboards, setLeaderboards] = useState([]);
 
   const handleTranslator = async (userId) => {
-    const translator = await getTranslatorFromUserId(userId);
-    console.log(translator.data);
-    setTranslator(translator.data);
+    const translatorInfo = await getTranslatorFromUserId(userId);
+    console.log(translatorInfo.data);
+    setTranslator(translatorInfo.data);
   };
+
+  const handleLeaderboards = async () => {
+    const leaderboard = await getTranslatorLeaderboards();
+    const leaderboardData = leaderboard.data;
+    console.log(leaderboardData);
+    setLeaderboards(leaderboardData);
+  }
 
   useEffect(() => {
     const token = Cookies.get("session");
@@ -29,59 +40,76 @@ const Dashboard = () => {
     console.log(userId);
 
     handleTranslator(userId);
+    handleLeaderboards();
 
   },[]);
 
+  const formatMoney = (amount) => {
+    let dollars = Math.floor(amount / 100);
+    let cents = amount % 100;
+    return dollars + '.' + (cents < 10 ? '0' : '') + cents;
+  }
+
   return (
     <>
-      <DashboardLayoutNoSidebar setSettings={setSettings}>
+      <style>
+        {`
+            ::-webkit-scrollbar-track {
+                background: #28243c !important;
+                border-radius: 100vw;
+            }
+            `}
+      </style>
+      <DashboardLayoutNoSidebar setSettings={setSettings} name={translator ? translator.name:""}>
         <PageTitle title="Dashboard" />
         <ReviewerSettingsPopup show={settings} onClose={()=>{setSettings(false)}} translator={translator}/>
         <div className="flex flex-col justify-center w-full h-full p-s8 ">
-            <div className="w-full h-[292px] mb-s2 flex">
-              <div className="w-1/2 h-full pr-s1">
-                <div className="w-full h-full flex">
-                  <div className="w-1/3 h-full flex flex-col p-s2 bg-white-transparent rounded-2xl mr-s1">
-                    <div className="text-white h-1/2 flex flex-col">
-                      <div className="text-lg">
-                        Lifetime earnings
-                      </div>
-
-                      <div className="text-8xl flex items-center h-full">
-                        <div>
-                          $24.54
-                        </div>
-                      </div>
-
+            <div className="w-full h-[320px] mb-s2 flex">
+              <div className="w-1/3 h-full pr-s1">
+                <div className="w-full h-full rounded-2xl bg-white-transparent p-s2">
+                    <div className="text-white text-2xl">
+                      Earnings
                     </div>
-
-                    <div className="text-white h-1/2 flex flex-col">
-                      <div className="text-lg">
-                        Weekly earnings
-                      </div>
-
-                      <div className="text-8xl flex items-center h-full">
-                        <div>
-                          $5.33
-                        </div>
-                      </div>
-
-                    </div>
-                  </div>
-                  <div className="w-2/3 h-full flex flex-col p-s2 bg-white-transparent rounded-2xl ml-s1">
-                    <div className="text-white text-lg">
-                      Lifetime jobs
-                    </div>
-                  </div>
-
+                    <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
+                    <div className="text-lg text-white mb-s1">Lifetime</div>
+                    <div className="text-lg text-white bg-white-transparent rounded-lg p-s1.5 text-5xl font-bold">${translator ? formatMoney(translator.totalPayment) : ""}</div>
+                    <div className="text-lg text-white mt-s4 mb-s1">Weekly</div>
+                    <div className="text-lg text-white bg-white-transparent rounded-lg p-s1.5 text-5xl font-bold">${translator ? formatMoney(translator.paymentOwed) : ""}</div>
                 </div>
 
               </div>
 
-              <div className="w-1/2 h-full pl-s1">
+              <div className="w-1/3 h-full pr-s1 pl-s1">
                 <div className="w-full h-full rounded-2xl bg-white-transparent p-s2">
-                  <div className="text-white text-2xl">
+                    <div className="text-white text-2xl">
+                      Job Statistics
+                    </div>
+                    <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
+                </div>
+
+              </div>
+
+              <div className="w-1/3 h-full pl-s1">
+                <div className="w-full h-full rounded-2xl bg-white-transparent p-s2">
+                    <div className="text-white text-2xl">
                       Leaderboards
+                    </div>
+                    <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
+                    <div className="overflow-y-scroll overflow-x-hidden h-[226px]">
+                    {leaderboards.map((translator, i) => (
+                      <>
+                      <div key={i} className="w-full my-s2">
+                        <div className="flex flex-row justify-between items-center">
+                          <div className="flex flex-row items-center">
+                            <div className="text-lg text-white font-bold w-[22px] mt-[3px] mr-s2">{i+1}</div>
+                            <div className="h-[32px] w-[32px] rounded-full bg-white-transparent mr-s2"></div>
+                            <div className="text-base text-white font-bold mt-[3px]">{translator.name}</div>
+                          </div>
+                          <div className="text-base text-white font-bold mt-[3px] mr-s2">{translator.totalJobsCompleted} jobs</div>
+                        </div>
+                      </div>
+                      </>
+                    ))}
                     </div>
                 </div>
               </div>
