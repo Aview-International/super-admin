@@ -10,7 +10,7 @@ const DashboardSidebar = ({ user }) => {
   return (
     <aside className="relative flex h-full w-[170px] flex-col items-center overflow-hidden overflow-y-auto py-s4 text-white">
       <div>
-        <Link href="/dashboard">
+        <Link href="/pending">
           <a>
             <Image
               src={aviewLogo}
