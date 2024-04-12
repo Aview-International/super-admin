@@ -3,6 +3,7 @@ import styles from './TimelineSlider.module.css';
 import Image from 'next/image';
 import play_black from '../../public/img/icons/play-black.svg';
 import pause_black from '../../public/img/icons/pause-black.svg';
+import React from 'react';
 
 const TimelineSlider = ({ videoRef, hiddenVideoRef }) => {
   const [canvases, setCanvases] = useState([]);

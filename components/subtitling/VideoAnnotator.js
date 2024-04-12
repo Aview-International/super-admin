@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 
-const cornerSize = 10; // Size of the draggable corner area for resizing
+const cornerSize = 10; 
 
 const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef, rectIndex, setRectIndex, rectangles, setRectangles }) => {
   const canvasRef = useRef(null);
@@ -10,7 +10,6 @@ const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef, re
   const [selectedRectIndex, setSelectedRectIndex] = useState(null);
   const [dragStartPoint, setDragStartPoint] = useState(null);
   const [resizeCorner, setResizeCorner] = useState(null);
-  //const [rectangles, setRectangles] = useState([]);
   const [currentRect, setCurrentRect] = useState(null);
   const [width, setWidth] = useState(null);
   const [height, setHeight] = useState(null);
@@ -23,16 +22,14 @@ const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef, re
 
   useEffect(() => {
     if (addRectangle) {
-      // Add a new rectangle with default dimensions
       const newRect = {
-        start: { x: 100, y: 100 }, // Example starting point
-        end: { x: 200, y: 200 }, // Example ending point
+        start: { x: 100, y: 100 }, 
+        end: { x: 200, y: 200 }, 
       };
 
-      // Clear existing rectangles and add the new one
       setRectangles([...rectangles, newRect]);
       setCurrentRect(null);
-      onRectangleAdded(); // Notify parent that rectangle has been added
+      onRectangleAdded();
     }
   }, [addRectangle, onRectangleAdded]);
 
@@ -53,12 +50,11 @@ const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef, re
         setOriginalHeight(videoRef.current.videoHeight);
       };
   
-      // Ensure the video element is present and add event listener
+      
       if (video) {
         video.addEventListener('loadedmetadata', handleMetadataLoaded);
       }
   
-      // Cleanup event listener
       return () => {
         if (video) {
           video.removeEventListener('loadedmetadata', handleMetadataLoaded);
@@ -76,14 +72,12 @@ const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef, re
   
       window.addEventListener('resize', updateSize);
   
-      // Call updateSize to set the initial size
       updateSize();
   
-      // Cleanup function to remove the event listener
       return () => {
         window.removeEventListener('resize', updateSize);
       };
-    }, []); // Empty dependency array means this effect runs once on mount
+    }, []);
 
     useEffect(() => {
       if (originalWidth && originalHeight && width && height) {
@@ -103,7 +97,7 @@ const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef, re
           if (index != rectIndex || !rect){
             return;
           }
-          // Scale the rectangle dimensions and position
+
           const startX = rect.start.x * scaleX;
           const startY = rect.start.y * scaleY;
           const endX = (rect.end.x - rect.start.x) * scaleX;
@@ -115,13 +109,12 @@ const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef, re
           context.stroke();
 
 
-          // Draw resize handles at each corner of the rectangle
-          const handleSize = cornerSize; // The size for resize handles
+          const handleSize = cornerSize; 
           const handleLocations = [
-            { x: startX - handleSize / 2, y: startY - handleSize / 2 }, // Top-left
-            { x: startX + endX - handleSize / 2, y: startY - handleSize / 2 }, // Top-right
-            { x: startX - handleSize / 2, y: startY + endY - handleSize / 2 }, // Bottom-left
-            { x: startX + endX - handleSize / 2, y: startY + endY - handleSize / 2 }, // Bottom-right
+            { x: startX - handleSize / 2, y: startY - handleSize / 2 }, 
+            { x: startX + endX - handleSize / 2, y: startY - handleSize / 2 },
+            { x: startX - handleSize / 2, y: startY + endY - handleSize / 2 },
+            { x: startX + endX - handleSize / 2, y: startY + endY - handleSize / 2 },
           ];
 
           handleLocations.forEach(handle => {
@@ -152,12 +145,11 @@ const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef, re
 
   const handleMouseDown = (e) => {
     const rect = canvasRef.current.getBoundingClientRect();
-    const scaledX = (e.clientX - rect.left) / scaleX; // Apply inverse scaleX
-    const scaledY = (e.clientY - rect.top) / scaleY; // Apply inverse scaleY
+    const scaledX = (e.clientX - rect.left) / scaleX; 
+    const scaledY = (e.clientY - rect.top) / scaleY; 
   
     let handled = false;
   
-    // Use scaledX and scaledY for hit detection
     for (let i = 0; i < rectangles.length; i++) {
       if (!rectangles[i]){
         continue;
@@ -187,13 +179,12 @@ const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef, re
     if (!isDrawing && !isMoving && !isResizing) return;
   
     const rect = canvasRef.current.getBoundingClientRect();
-    const scaledX = (e.clientX - rect.left) / scaleX; // Apply inverse scaleX
-    const scaledY = (e.clientY - rect.top) / scaleY; // Apply inverse scaleY
+    const scaledX = (e.clientX - rect.left) / scaleX; 
+    const scaledY = (e.clientY - rect.top) / scaleY; 
   
     if (isDrawing) {
       setCurrentRect({ ...currentRect, end: { x: scaledX, y: scaledY } });
     } else if (isMoving) {
-      // Calculate the distance moved, taking scaling into account
       const dx = scaledX - dragStartPoint.x;
       const dy = scaledY - dragStartPoint.y;
   
@@ -204,7 +195,6 @@ const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef, re
         end: { x: movedRect.end.x + dx, y: movedRect.end.y + dy },
       };
   
-      // Update rectangles array with the moved rectangle
       setRectangles([
         ...rectangles.slice(0, selectedRectIndex),
         movedRect,
@@ -216,7 +206,6 @@ const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef, re
       let rect = rectangles[selectedRectIndex];
       let { start, end } = rect;
   
-      // Adjusting the rectangle coordinates based on the dragged corner
       switch (resizeCorner) {
         case 'tl':
           start = { x: scaledX, y: scaledY };
@@ -236,11 +225,9 @@ const VideoAnnotator = ({ videoUrl, addRectangle, onRectangleAdded, videoRef, re
   
       const updatedRect = { start, end };
   
-      // Ensuring that start and end points stay consistent; start should always be top-left, end should be bottom-right
       updatedRect.start = { x: Math.min(updatedRect.start.x, updatedRect.end.x), y: Math.min(updatedRect.start.y, updatedRect.end.y) };
       updatedRect.end = { x: Math.max(updatedRect.start.x, updatedRect.end.x), y: Math.max(updatedRect.start.y, updatedRect.end.y) };
   
-      // Update rectangles array with the resized rectangle
       setRectangles([
         ...rectangles.slice(0, selectedRectIndex),
         updatedRect,

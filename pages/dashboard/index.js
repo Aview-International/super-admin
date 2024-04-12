@@ -1,0 +1,155 @@
+import { useEffect, useState } from 'react';
+import DashboardLayoutNoSidebar from '../../components/dashboard/DashboardLayoutNoSidebar';
+import PendingJobs from '../../components/dashboard/PendingJobsV2';
+import OverlayJobs from '../../components/dashboard/OverlayJobs';
+import ModerationJobs from '../../components/dashboard/ModerationJobs';
+import AllJobs from '../../components/dashboard/AllJobs';
+import PageTitle from '../../components/SEO/PageTitle';
+import { 
+  getTranslatorFromUserId, 
+  getTranslatorLeaderboards } from '../../services/apis';
+import { authStatus } from '../../utils/authStatus';
+import Cookies from 'js-cookie';
+import ReviewerSettingsPopup from '../../components/dashboard/ReviewerSettingsPopup';
+
+
+const Dashboard = () => {
+  const [selectedOption, setSelectedOption] = useState("all");
+  const [translator, setTranslator] = useState(null);
+  const [settings, setSettings] = useState(false);
+  const [leaderboards, setLeaderboards] = useState([]);
+
+  const handleTranslator = async (userId) => {
+    const translatorInfo = await getTranslatorFromUserId(userId);
+    console.log(translatorInfo.data);
+    setTranslator(translatorInfo.data);
+  };
+
+  const handleLeaderboards = async () => {
+    const leaderboard = await getTranslatorLeaderboards();
+    const leaderboardData = leaderboard.data;
+    console.log(leaderboardData);
+    setLeaderboards(leaderboardData);
+  }
+
+  useEffect(() => {
+    const token = Cookies.get("session");
+    console.log(token);
+    const userId = authStatus(token).data.user_id;
+    console.log(token);
+    console.log(userId);
+
+    handleTranslator(userId);
+    handleLeaderboards();
+
+  },[]);
+
+  const formatMoney = (amount) => {
+    let dollars = Math.floor(amount / 100);
+    let cents = amount % 100;
+    return dollars + '.' + (cents < 10 ? '0' : '') + cents;
+  }
+
+  return (
+    <>
+      <style>
+        {`
+            ::-webkit-scrollbar-track {
+                background: #28243c !important;
+                border-radius: 100vw;
+            }
+            `}
+      </style>
+      <DashboardLayoutNoSidebar setSettings={setSettings} name={translator ? translator.name:""}>
+        <PageTitle title="Dashboard" />
+        <ReviewerSettingsPopup show={settings} onClose={()=>{setSettings(false)}} translator={translator}/>
+        <div className="flex flex-col justify-center w-full h-full p-s8 ">
+            <div className="w-full h-[320px] mb-s2 flex">
+              <div className="w-1/3 h-full pr-s1">
+                <div className="w-full h-full rounded-2xl bg-white-transparent p-s2">
+                    <div className="text-white text-2xl">
+                      Earnings
+                    </div>
+                    <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
+                    <div className="text-lg text-white mb-s1">Lifetime</div>
+                    <div className="text-lg text-white bg-white-transparent rounded-lg p-s1.5 text-5xl font-bold">${translator ? formatMoney(translator.totalPayment) : ""}</div>
+                    <div className="text-lg text-white mt-s4 mb-s1">Weekly</div>
+                    <div className="text-lg text-white bg-white-transparent rounded-lg p-s1.5 text-5xl font-bold">${translator ? formatMoney(translator.paymentOwed) : ""}</div>
+                </div>
+
+              </div>
+
+              <div className="w-1/3 h-full pr-s1 pl-s1">
+                <div className="w-full h-full rounded-2xl bg-white-transparent p-s2">
+                    <div className="text-white text-2xl">
+                      Job Statistics
+                    </div>
+                    <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
+                </div>
+
+              </div>
+
+              <div className="w-1/3 h-full pl-s1">
+                <div className="w-full h-full rounded-2xl bg-white-transparent p-s2">
+                    <div className="text-white text-2xl">
+                      Leaderboards
+                    </div>
+                    <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
+                    <div className="overflow-y-scroll overflow-x-hidden h-[226px]">
+                    {leaderboards.map((translator, i) => (
+                      <>
+                      <div key={i} className="w-full my-s2">
+                        <div className="flex flex-row justify-between items-center">
+                          <div className="flex flex-row items-center">
+                            <div className="text-lg text-white font-bold w-[22px] mt-[3px] mr-s2">{i+1}</div>
+                            <div className="h-[32px] w-[32px] rounded-full bg-white-transparent mr-s2"></div>
+                            <div className="text-base text-white font-bold mt-[3px]">{translator.name}</div>
+                          </div>
+                          <div className="text-base text-white font-bold mt-[3px] mr-s2">{translator.totalJobsCompleted} jobs</div>
+                        </div>
+                      </div>
+                      </>
+                    ))}
+                    </div>
+                </div>
+              </div>
+
+            </div>
+            <div className="w-full p-s1 flex items-center mb-s2">
+                <div className="flex flex-row ">
+                    <div className={`min-w-fit rounded-xl text-white py-s1 px-s2 text-xl mr-s2 cursor-pointer ${selectedOption == "all" ? "bg-white text-black":"bg-white-transparent text-white"}`} onClick={() => setSelectedOption("all")}>
+                      All
+                    </div>
+
+                    <div className={`min-w-fit rounded-xl text-white py-s1 px-s2 text-xl mr-s2 cursor-pointer ${selectedOption == "pending" ? "bg-white text-black":"bg-white-transparent text-white"}`} onClick={() => setSelectedOption("pending")}>
+                      Pending
+                    </div>
+
+                    <div className={`min-w-fit rounded-xl text-white py-s1 px-s2 text-xl mr-s2 cursor-pointer ${selectedOption == "moderation" ? "bg-white text-black":"bg-white-transparent text-white"}`} onClick={() => setSelectedOption("moderation")}>
+                      Moderation
+                    </div>
+
+                    <div className={`min-w-fit rounded-xl text-white py-s1 px-s2 text-xl mr-s2 cursor-pointer ${selectedOption == "overlay" ? "bg-white text-black":"bg-white-transparent text-white"}`} onClick={() => setSelectedOption("overlay")}>
+                      Overlay
+                    </div>
+                </div>
+            </div>
+
+            <div>
+              {selectedOption == "all" && <AllJobs />}
+                {selectedOption == "pending" && <PendingJobs />}
+                {selectedOption == "moderation" && <ModerationJobs />}
+                {selectedOption == "overlay" && <OverlayJobs />}
+            </div>
+
+            <div>
+
+            </div>
+        </div>
+        </DashboardLayoutNoSidebar>
+    </>
+  );
+};
+
+
+export default Dashboard;
