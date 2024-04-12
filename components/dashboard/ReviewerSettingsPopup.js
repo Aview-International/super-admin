@@ -171,7 +171,7 @@ const ReviewerSettingsPopup = ({show, onClose, translator}) =>{
             <div className="w-full h-full bg-indigo-1 px-s4 pt-s4 pb-s14 rounded-2xl">
               <div className="w-full flex justify-center">
                 <div className="relative h-[86px] w-[86px]">
-                  <img src={newProfilePictureURL ? newProfilePictureURL :(profilePicture ? profilePicture : "/img/graphics/default.png")} style={{width:"86px", height:"86px"}} alt="profile picture" height={86} width={86} className="rounded-full"/>
+                  <img src={newProfilePictureURL ? newProfilePictureURL :(profilePicture ? profilePicture+ "?v=" + new Date().getTime() : "/img/graphics/default.png")} style={{width:"86px", height:"86px"}} alt="profile picture" height={86} width={86} className="rounded-full"/>
                   <div className="absolute inset-0 cursor-pointer flex items-center justify-center bg-black bg-opacity-0 hover:bg-opacity-50 rounded-full transition duration-300 ease-in-out opacity-0 hover:opacity-100" onClick={triggerFileInput}>
                     <span className="text-white font-semibold cursor-pointer">Change</span>
                   </div>

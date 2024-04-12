@@ -1,23 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import Button from './Button';
+import {
+  addTime,
+  clearOverdueJobFromTimer
+} from '../../services/apis';
+import { toast } from 'react-toastify';
+import SuccessHandler from '../../utils/successHandler';
 
-const Timer = () => {
+const Timer = ({translatorId, jobId, jobType, setIsLoading, jobTimestamp}) => {
   const [timeLeft, setTimeLeft] = useState(3600);
 
   const resetTimer = () => {
     setTimeLeft(3600);
+    addTime(translatorId, jobId, jobType);
+    SuccessHandler("Added more time");
   };
 
+  const startingTime = () => {
+    const now = Date.now(); 
+    const remainingTime = Math.ceil((jobTimestamp + 3600000 - now) / 1000);
+    console.log(remainingTime);
+    setTimeLeft(remainingTime);
+  }
+
   const onCountdownEnd = () => {
-    alert('Countdown finished!');
+    clearOverdueJobFromTimer(translatorId, jobId, jobType);
+    setIsLoading(true);
+    toast.error('Job Expired',{autoClose:false});
   };
 
   useEffect(() => {
-    if (timeLeft === 0) {
+    startingTime();
+  }, [jobTimestamp]);
+
+  useEffect(() => {
+    if (timeLeft == 0) {
       onCountdownEnd();
       return;
     }
-
     const intervalId = setInterval(() => {
       setTimeLeft(timeLeft - 1);
     }, 1000);
@@ -38,14 +58,14 @@ const Timer = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center py-s2 px-s2 w-[200px] bg-white-transparent rounded-2xl text-white text-2xl">
+    <div className="flex flex-col items-center justify-center py-s2 px-s2 w-[200px] bg-white-transparent rounded-2xl text-white text-2xl z-50">
         <div>{formatTimeLeft()}</div>
         <Button
             theme=""
             classes="flex justify-center items-center h-[28px]"
             onClick={resetTimer}
         >
-            <span className="text-lg">Add time</span>
+            <span className="text-lg text-black">Add time</span>
         </Button>
     </div>
   );

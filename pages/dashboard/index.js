@@ -154,8 +154,7 @@ const Dashboard = () => {
                         <div className="flex flex-row justify-between items-center">
                           <div className="flex flex-row items-center">
                             <div className="text-lg text-white font-bold w-[22px] mt-[3px] mr-s2">{i+1}</div>
-                            {/* <div className="h-[32px] w-[32px] rounded-full bg-white-transparent mr-s2"></div> */}
-                            <img src={translator.profilePicture ? translator.profilePicture : "/img/graphics/default.png"} style={{width:"32px", height:"32px"}} className="rounded-full mr-s2"/>
+                            <img src={translator.profilePicture ? translator.profilePicture + "?v=" + new Date().getTime() : "/img/graphics/default.png"} style={{width:"32px", height:"32px"}} className="rounded-full mr-s2"/>
                             <div className="text-base text-white font-bold mt-[3px]">{translator.name}</div>
                           </div>
                           <div className="text-base text-white font-bold mt-[3px] mr-s2">{translator.totalJobsCompleted} jobs</div>

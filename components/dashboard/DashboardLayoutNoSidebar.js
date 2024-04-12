@@ -31,7 +31,7 @@ const DashboardStructure = ({ children, setSettings, name, profilePicture=defaul
           </div>
           <div className="flex justify-end">
             <div>
-              <img src={profilePicture ? profilePicture : "/img/graphics/default.png"}  style={{width:"52px", height:"52px"}} alt="settings button" width={52} height={52} className="cursor-pointer rounded-full" onClick={() => {setSettings(true)}}/>
+              <img src={profilePicture ? profilePicture+ "?v=" + new Date().getTime() : "/img/graphics/default.png"}  style={{width:"52px", height:"52px"}} alt="settings button" width={52} height={52} className="cursor-pointer rounded-full" onClick={() => {setSettings(true)}}/>
             </div>
           </div>
         </header>

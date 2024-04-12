@@ -128,13 +128,10 @@ const pending = () => {
             </div>
             </div>
         </Popup>
-        <div className="relative w-full h-screen">
-            <div className="absolute top-0 right-0 py-s2 px-s5">
-                <Timer />
-            </div>
+        <div className="absolute top-0 right-0 py-s2 px-s5">
+            <Timer translatorId={translatorId} jobId={jobId} jobType={"pending"} setIsLoading={setIsLoading} jobTimestamp={job ? job.pendingStatus:null}/>
         </div>
-
-        <div className="w-full h-screen flex flex-col px-s5 pb-s5 pt-s2">
+        <div className="w-full h-screen flex flex-col px-s5 pb-s5 pt-s7">
             <div className="flex flex-col">
                 <div className="text-white text-3xl">{job ? job.videoData.caption : ""}</div>
                 <div className="text-white text-lg mb-s2">{creatorName ? creatorName : ""}</div>

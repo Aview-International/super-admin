@@ -384,3 +384,15 @@ export const uploadReviewerProfilePicture = async (translatorId, picture) => {
   return axiosInstance.post('admin/upload-reviewer-profile-picture', formData);
 };
 
+export const addTime = async (translatorId, jobId, jobType) => {
+  return axiosInstance.post('admin/add-time', {translatorId, jobId, jobType});
+}
+
+export const flagOverlayJob = async (translatorId, jobId, message, jobType) => {
+  return axiosInstance.post('admin/flag-overlay-job', {translatorId, jobId, message, jobType});
+}
+
+export const clearOverdueJobFromTimer = async (translatorId, jobId, jobType) => {
+  return axiosInstance.post('admin/clear-overdue-job-from-timer', {translatorId, jobId, jobType});
+}
+
