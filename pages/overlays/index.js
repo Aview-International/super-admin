@@ -16,16 +16,15 @@ import {
   getDownloadLink, 
   finishOverlayJob, 
   getTranslatorFromUserId,
-  getJobAndVerify } from '../../services/apis';
+  getJobAndVerify,
+  flagJob,
+  getCreatorProfile, } from '../../services/apis';
 import Popup from '../../components/UI/PopupWithBorder';
 import FullScreenLoader from '../../public/loaders/FullScreenLoader';
-import {
-  getUserProfile,
-  flagOverlayJob,
-} from '../../services/firebase';
 import { authStatus } from '../../utils/authStatus';
 import Cookies from 'js-cookie';
 import Timer from '../../components/UI/Timer';
+import Textarea from '../../components/FormComponents/Textarea';
 
 const Shorts_subtitling = () => {
   const videoRef = useRef(null);
@@ -43,19 +42,22 @@ const Shorts_subtitling = () => {
   const [job, setJob] = useState(null);
   const [loader, setLoader] = useState('');
   const [popupSubmit, setPopupSubmit] = useState(false);
-  const [popupText, setPopupText] = useState('');
   const [translatorId, setTranslatorId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [popupFlag, setPopupFlag] = useState(false);
+  const [flagReason, setFlagReason] = useState(null);
+  const [submitHeader, setSubmitHeader] = useState("Submitted!");
 
   const router = useRouter();
   const { jobId } = router.query;
 
   const handleVideo = async () => {
     if (job && translatorId) {
-      const res = await getUserProfile(job.creatorId);
+      const res = await getCreatorProfile(job.creatorId);
+      const resData = res.data;
 
-      setCreatorName(res?.firstName + ' ' + res?.lastName);
-      setCreatorPfp(res?.picture);
+      setCreatorName(resData?.firstName + ' ' + resData?.lastName);
+      setCreatorPfp(resData?.picture);
 
       const videoPath = `dubbing-tasks/${job.creatorId}/${jobId}/video.mp4`;
 
@@ -73,16 +75,22 @@ const Shorts_subtitling = () => {
   };
 
 
-  const handleFlag = async (jobId) => {
+  const handleFlag = async () => {
     try {
       setLoader('flag');
-      await flagOverlayJob(jobId).then(() => {
+      if (!flagReason ){
+        throw new Error(`Invalid flag reason`);
+      }
+      console.log(translatorId, jobId, flagReason);
+      await flagJob(translatorId, jobId, flagReason, "overlay").then(() => {
         setLoader('');
+        setPopupFlag(false);
+        setSubmitHeader("Flagged!");
         setPopupSubmit(true);
-        setPopupText('Flagged!');
       });
     } catch (error) {
       ErrorHandler(error);
+      setLoader('');
     }
   };
 
@@ -158,11 +166,12 @@ const Shorts_subtitling = () => {
 
       await finishOverlayJob(translatorId, jobId).then(() => {
         setLoader('');
+        setSubmitHeader("Submitted!");
         setPopupSubmit(true);
-        setPopupText('Submitted!');
       });
     } catch (error) {
       ErrorHandler(error);
+      setLoader('');
     }
   };
 
@@ -304,7 +313,7 @@ const Shorts_subtitling = () => {
         <div className="h-full w-full">
           <div className="w-[500px] rounded-2xl bg-indigo-2 p-s3">
             <div className="flex flex-col items-center justify-center">
-              <h2 className="mb-s2 text-2xl text-white">{popupText}</h2>
+              <h2 className="mb-s2 text-2xl text-white">{submitHeader}</h2>
               <p className="text-white">
                 Please wait 1-2 business days for payment to process. Thank you.
               </p>
@@ -312,6 +321,33 @@ const Shorts_subtitling = () => {
           </div>
         </div>
       </Popup>
+      <Popup show={popupFlag} onClose={() => setPopupFlag(false)}>
+            <div className="h-full w-full">
+              <div className="w-[600px] rounded-2xl bg-indigo-2 p-s2">
+                <div className="flex flex-col items-center justify-center">
+                  <h2 className="mb-s4 text-2xl text-white">Flag job?</h2>
+                  <h2 className="w-full text-lg text-white">Flag reasoning</h2>
+                  <Textarea
+                    placeholder="Write a short description of the problem"
+                    classes="!mb-s2"
+                    textAreaClasses="text-lg text-white font-light"
+                    onChange={(e) => setFlagReason(e.target.value)}
+                  />
+                  <div className="w-full">
+                    <div className="float-right h-[47px] w-[134px]">
+                      <Button
+                        theme="error"
+                        onClick={() => {handleFlag()}}
+                        isLoading={loader === 'flag'}
+                      >
+                        Flag
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Popup>
       {isLoading && <FullScreenLoader/>}
       <div className="absolute top-0 left-0 py-s2 px-s5">
                 <Timer translatorId={translatorId} jobId={jobId} jobType={"overlay"} setIsLoading={setIsLoading} jobTimestamp={job ? job.overlayStatus:null}/>
@@ -377,8 +413,7 @@ const Shorts_subtitling = () => {
                     <Button
                       theme="error"
                       classes="flex justify-center items-center h-[48px]"
-                      onClick={() => handleFlag(jobId)}
-                      isLoading={loader === 'flag'}
+                      onClick={() => setPopupFlag(true)}
                     >
                       <span className="mr-2">Flag</span>
                     </Button>

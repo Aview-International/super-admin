@@ -5,20 +5,21 @@ import ErrorHandler from '../../utils/errorHandler';
 import Popup from '../../components/UI/PopupWithBorder';
 import FullScreenLoader from '../../public/loaders/FullScreenLoader';
 import { SupportedLanguages } from '../../constants/constants';
-import {
-    getUserProfile,
-  } from '../../services/firebase';
 import { 
     finishPendingJob,
     getDownloadLink,
     getTranslatorFromUserId,
-    getJobAndVerify, }  from '../../services/apis';
+    getJobAndVerify,
+    flagJob,
+    getCreatorProfile, }  from '../../services/apis';
 import Check from '../../public/img/icons/check-circle-green.svg';
 import Cookies from 'js-cookie';
 import { authStatus } from '../../utils/authStatus';
 import Button from '../../components/UI/Button';
 import Image from 'next/image'
 import Timer from '../../components/UI/Timer';
+import Textarea from '../../components/FormComponents/Textarea';
+
 
 const pending = () => {
     const [job, setJob] = useState(null);
@@ -27,9 +28,11 @@ const pending = () => {
     const [videoLink, setVideoLink] = useState(null);
     const [originalVideoLink, setOriginalVideoLink] = useState(null);
     const [creatorName, setCreatorName] = useState(null);
-    const [creatorPfp, setCreatorPfp] = useState(null);
     const [loader, setLoader] = useState(null);
     const [popupApprove, setPopupApprove] = useState(false);
+    const [popupFlag, setPopupFlag] = useState(false);
+    const [flagReason, setFlagReason] = useState(null);
+    const [submitHeader, setSubmitHeader] = useState("Approved!");
 
     const router = useRouter();
     const { jobId } = router.query;
@@ -39,7 +42,7 @@ const pending = () => {
             setLoader('approve');
             await finishPendingJob(translatorId, jobId).then(() => {
             setLoader('');
-            successHandler('Approved!');
+            setSubmitHeader("Approved!");
             setPopupApprove(true);
             });
         }catch(error){
@@ -47,6 +50,26 @@ const pending = () => {
         }
         
     };
+
+    const handleFlag = async () => {
+        try {
+          setLoader('flag');
+          if (!flagReason ){
+            throw new Error(`Invalid flag reason`);
+          }
+          console.log(translatorId, jobId, flagReason);
+          await flagJob(translatorId, jobId, flagReason, "pending").then(() => {
+            setLoader('');
+            setPopupFlag(false);
+            setSubmitHeader("Flagged!");
+            setPopupApprove(true);
+            
+          });
+        } catch (error) {
+          ErrorHandler(error);
+          setLoader('');
+        }
+      };
 
 
     const getJob = async (jobId, translatorId) => {
@@ -68,10 +91,10 @@ const pending = () => {
 
     const handleVideo = async () => {
         if (job && translatorId) {
-            const res = await getUserProfile(job.creatorId);
+            const res = await getCreatorProfile(job.creatorId);
+            const resData = res.data;
         
-            setCreatorName(res?.firstName + ' ' + res?.lastName);
-            setCreatorPfp(res?.picture);
+            setCreatorName(resData?.firstName + ' ' + resData?.lastName);
 
             const languageCode = SupportedLanguages.find(
                 (language) => language.languageName === job.translatedLanguage
@@ -120,7 +143,7 @@ const pending = () => {
             <div className="h-full w-full">
             <div className="w-[500px] rounded-2xl bg-indigo-2 p-s3">
                 <div className="flex flex-col items-center justify-center">
-                <h2 className="mb-s2 text-2xl text-white">Approved!</h2>
+                <h2 className="mb-s2 text-2xl text-white">{submitHeader}</h2>
                 <p className="text-white">
                     Please wait 1-2 business days for payment to process. Thank you.
                 </p>
@@ -128,18 +151,45 @@ const pending = () => {
             </div>
             </div>
         </Popup>
-        <div className="absolute top-0 right-0 py-s2 px-s5">
+        <Popup show={popupFlag} onClose={() => setPopupFlag(false)}>
+            <div className="h-full w-full">
+              <div className="w-[600px] rounded-2xl bg-indigo-2 p-s2">
+                <div className="flex flex-col items-center justify-center">
+                  <h2 className="mb-s4 text-2xl text-white">Flag job?</h2>
+                  <h2 className="w-full text-lg text-white">Flag reasoning</h2>
+                  <Textarea
+                    placeholder="Write a short description of the problem"
+                    classes="!mb-s2"
+                    textAreaClasses="text-lg text-white font-light"
+                    onChange={(e) => setFlagReason(e.target.value)}
+                  />
+                  <div className="w-full">
+                    <div className="float-right h-[47px] w-[134px]">
+                      <Button
+                        theme="error"
+                        onClick={() => {handleFlag()}}
+                        isLoading={loader === 'flag'}
+                      >
+                        Flag
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Popup>
+        <div className="absolute top-0 right-0 py-s2 px-s2">
             <Timer translatorId={translatorId} jobId={jobId} jobType={"pending"} setIsLoading={setIsLoading} jobTimestamp={job ? job.pendingStatus:null}/>
         </div>
-        <div className="w-full h-screen flex flex-col px-s5 pb-s5 pt-s7">
-            <div className="flex flex-col">
-                <div className="text-white text-3xl">{job ? job.videoData.caption : ""}</div>
-                <div className="text-white text-lg mb-s2">{creatorName ? creatorName : ""}</div>
-            </div>
-            <div className="flex flex-row">
+        <div className="w-full h-screen flex flex-col px-s12 pb-s5 pt-s7">
+            <div className="flex flex-row mt-s15">
                 <div className="w-1/2 pr-s1">
                     <div className="relative w-full flex-1 overflow-hidden rounded-2xl bg-white-transparent p-s2 pb-[76px]">
-                        <div className="text-white text-2xl mb-s2">Original Video - {job ? job.originalLanguage:""}</div>
+                        <div className="flex flex-row items-center justify-between">
+                            <div className="text-white text-2xl mb-[4px] font-bold">Original Video - {job ? job.videoData.caption:""}</div>
+                            <div className="bg-white-transparent rounded-full py-[4px] px-s1 text-white">{job ? job.originalLanguage:""}</div>
+                        </div>
+                        <div className="text-white text-lg mb-s2">{creatorName ? creatorName:""}</div>
                         <div
                         className="relative w-full overflow-hidden"
                         style={{ paddingTop: '56.25%' }}
@@ -169,7 +219,11 @@ const pending = () => {
 
                 <div className="w-1/2 pl-s1">
                     <div className="relative w-full flex-1 overflow-hidden rounded-2xl bg-white-transparent p-s2">
-                    <div className="text-white text-2xl mb-s2">Translated Video - {job ? job.translatedLanguage:""}</div>
+                        <div className="flex flex-row items-center justify-between">
+                            <div className="text-white text-2xl mb-[4px] font-bold">Translated Video - {job ? job.videoData.caption:""}</div>
+                            <div className="bg-white-transparent rounded-full py-[4px] px-s1 text-white">{job ? job.originalLanguage:""}</div>
+                        </div>
+                        <div className="text-white text-lg mb-s2">{creatorName ? creatorName:""}</div>
                         <div
                         className="relative w-full overflow-hidden"
                         style={{ paddingTop: '56.25%' }}
@@ -198,7 +252,7 @@ const pending = () => {
                             <Button
                             theme="error"
                             classes="flex flex-col justify-center items-center  mt-s2 mr-s2"
-                            onClick={()=>{}}
+                            onClick={()=>{setPopupFlag(true)}}
                             isLoading={loader === 'flagged'}
                             >
                             <div className="flex flex-row items-center">

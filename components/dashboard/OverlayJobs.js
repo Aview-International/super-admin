@@ -7,7 +7,7 @@ import {
 import Cookies from 'js-cookie';
 import { authStatus } from '../../utils/authStatus';
 
-const OverlayJobs = () => {
+const OverlayJobs = ({setPopupPreview, setPreviewJob, setPreviewJobType}) => {
   const [jobs, setJobs] = useState([]);
   const [translatorId, setTranslatorId] = useState(null);
 
@@ -109,7 +109,7 @@ const OverlayJobs = () => {
                         handleAccept(job.jobId);
                     }}
                     >
-                    Accept job
+                    Preview job
                     </div>
                 </div>
                 <div className="h-[1px] w-full bg-white bg-opacity-25"></div>

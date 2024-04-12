@@ -58,11 +58,11 @@ const Timer = ({translatorId, jobId, jobType, setIsLoading, jobTimestamp}) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center py-s2 px-s2 w-[200px] bg-white-transparent rounded-2xl text-white text-2xl z-50">
-        <div>{formatTimeLeft()}</div>
+    <div className="flex flex-col items-center justify-center py-s2 px-s2 w-[170px] bg-white-transparent rounded-2xl text-white text-2xl z-50">
+        <div className="mb-s1">{formatTimeLeft()}</div>
         <Button
             theme=""
-            classes="flex justify-center items-center h-[28px]"
+            classes="flex justify-center items-center h-[36px] !px-s2"
             onClick={resetTimer}
         >
             <span className="text-lg text-black">Add time</span>

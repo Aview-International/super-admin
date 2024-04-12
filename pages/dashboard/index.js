@@ -1,36 +1,41 @@
 import { useEffect, useState } from 'react';
 import DashboardLayoutNoSidebar from '../../components/dashboard/DashboardLayoutNoSidebar';
-import PendingJobs from '../../components/dashboard/PendingJobsV2';
+import PendingJobs from '../../components/dashboard/PendingJobs';
 import OverlayJobs from '../../components/dashboard/OverlayJobs';
 import ModerationJobs from '../../components/dashboard/ModerationJobs';
 import AllJobs from '../../components/dashboard/AllJobs';
 import PageTitle from '../../components/SEO/PageTitle';
 import { 
   getTranslatorFromUserId, 
-  getTranslatorLeaderboards } from '../../services/apis';
+  getTranslatorLeaderboards,
+  acceptJob } from '../../services/apis';
 import { authStatus } from '../../utils/authStatus';
 import Cookies from 'js-cookie';
 import ReviewerSettingsPopup from '../../components/dashboard/ReviewerSettingsPopup';
 import PieChart from '../../components/UI/PieChart';
+import Popup from '../../components/UI/PopupWithBorder';
+import Button from '../../components/UI/Button';
 
 
 const Dashboard = () => {
   const [selectedOption, setSelectedOption] = useState("all");
   const [translator, setTranslator] = useState(null);
+  const [translatorId, setTranslatorId] = useState(null);
   const [settings, setSettings] = useState(false);
   const [leaderboards, setLeaderboards] = useState([]);
   const [pieChartData, setPieChartData] = useState(null);
+  const [popupPreview, setPopupPreview] = useState(false);
+  const [previewJob, setPreviewJob] = useState(null);
+  const [previewJobVideoLink, setPreviewJobVideoLink] = useState(null);
+  const [previewJobType, setPreviewJobType] = useState(null);
 
   const handleTranslator = async () => {
     const token = Cookies.get("session");
-    console.log(token);
     const userId = authStatus(token).data.user_id;
-    console.log(token);
-    console.log(userId);
 
     const translatorInfo = await getTranslatorFromUserId(userId);
-    console.log(translatorInfo.data);
     setTranslator(translatorInfo.data);
+    setTranslatorId(translatorInfo.data._id);
 
     const data = {
       labels: ['Red', 'Blue', 'Yellow'],
@@ -54,6 +59,45 @@ const Dashboard = () => {
     };
 
     setPieChartData(data);
+  };
+
+  const handleAcceptPendingJob = async (jobId) => {
+    try {
+      if (translatorId == null) {
+        throw new Error('Invalid translatorId.');
+      }
+      await acceptJob(translatorId, jobId, "pending");
+
+      window.open(`/pending?jobId=${jobId}`, '_blank');
+    }catch(error){
+      ErrorHandler(error);
+    }
+  };
+
+  const handleAcceptOverlayJob = async (jobId) => {
+    try {
+      if (translatorId == null) {
+        throw new Error('Invalid translatorId.');
+      }
+      await acceptJob(translatorId, jobId, "overlay");
+
+      window.open(`/overlays?jobId=${jobId}`, '_blank');
+    }catch(error){
+      ErrorHandler(error);
+    }
+  };
+
+  const handleAcceptModerationjob = async (jobId) => {
+    try {
+      if (translatorId == null) {
+        throw new Error('Invalid translatorId.');
+      }
+      
+      await acceptJob(translatorId, jobId, "moderation");
+      window.open(`/moderation?jobId=${jobId}`, '_blank');
+    }catch(error){
+      ErrorHandler(error);
+    }
   };
 
   const handleLeaderboards = async () => {
@@ -89,6 +133,50 @@ const Dashboard = () => {
       <DashboardLayoutNoSidebar setSettings={setSettings} profilePicture={translator ? translator.profilePicture : null} name={translator ? translator.name:""}>
         <PageTitle title="Dashboard" />
         <ReviewerSettingsPopup show={settings} onClose={()=>{setSettings(false);}} translator={translator}/>
+        <Popup show={popupPreview} onClose={() => {setPopupPreview(false); setPreviewJob(null); setPreviewJobType(null); setPreviewJobVideoLink(null)}}>
+            <div className="h-full w-full">
+              <div className="w-[600px] rounded-2xl bg-indigo-2 p-s2">
+                <div className="flex flex-col items-center justify-center">
+                  <h2 className="mb-s4 text-2xl text-white">Preview</h2>
+                  <h2 className="w-full text-lg text-white">{previewJob ? previewJob.videoData.caption : ""}</h2>
+                  <div
+                  className="relative w-full overflow-hidden"
+                  style={{ paddingTop: '56.25%' }}
+                  >
+                      {previewJobVideoLink &&
+                      <video
+                          style={{
+                          objectFit: 'contain',
+                          position: 'absolute',
+                          top: '0',
+                          left: '0',
+                          width: '100%',
+                          height: '100%',
+                          backgroundColor: '#000',
+                          }}
+                          controls
+                      >
+                          <source
+                          src={previewJobVideoLink ? previewJobVideoLink : ''}
+                          type="video/mp4"
+                          />
+                      </video>
+                      }
+                  </div>
+                  <div className="w-full">
+                    <div className="float-right h-[47px] w-[134px]">
+                      <Button
+                        theme="success"
+                        onClick={() => {handleFlag()}}
+                      >
+                        Flag
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Popup>
         <div className="flex flex-col justify-center w-full h-full p-s8 ">
             <div className="w-full h-[320px] mb-s2 flex">
               <div className="w-1/3 h-full pr-s1">
@@ -122,17 +210,17 @@ const Dashboard = () => {
                         <div className="flex flex-row w-full items-center mt-s1">
                           <div className="rounded-full h-[14px] w-[14px] bg-blue mr-s1"></div>
                           <div className="text-lg text-white pt-[4px]">Pending</div>
-                          <div className="rounded-full pt-[2px] px-[8px] bg-white-transparent ml-auto text-white text-base text-center">{translator ? translator.pendingJobsCompleted : ""}</div>
+                          <div className="rounded-lg pt-[2px] px-[8px] bg-white-transparent ml-auto text-white text-base text-center w-[50px]">{translator ? translator.pendingJobsCompleted : ""}</div>
                         </div>
                         <div className="flex flex-row w-full items-center">
                           <div className="rounded-full h-[14px] w-[14px] bg-purple mr-s1"></div>
                           <div className="text-lg text-white pt-[4px]">Moderation</div>
-                          <div className="rounded-full pt-[2px] px-[8px] bg-white-transparent ml-auto text-white text-base text-center">{translator ? translator.moderationJobsCompleted : ""}</div>
+                          <div className="rounded-lg pt-[2px] px-[8px] bg-white-transparent ml-auto text-white text-base text-center w-[50px]">{translator ? translator.moderationJobsCompleted : ""}</div>
                         </div>
                         <div className="flex flex-row w-full items-center">
                           <div className="rounded-full h-[14px] w-[14px] bg-red mr-s1"></div>
                           <div className="text-lg text-white pt-[4px]">Moderation</div>
-                          <div className="rounded-full pt-[2px] px-[8px] bg-white-transparent ml-auto text-white text-base text-center">{translator ? translator.overlayJobsCompleted : ""}</div>
+                          <div className="rounded-lg pt-[2px] px-[8px] bg-white-transparent ml-auto text-white text-base text-center w-[50px]">{translator ? translator.overlayJobsCompleted : ""}</div>
                         </div>
                       </div>
                    
@@ -146,7 +234,7 @@ const Dashboard = () => {
                     <div className="text-white text-2xl">
                       Leaderboards
                     </div>
-                    <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
+                    <div className="mt-s2  h-[1px] w-full bg-white"></div>
                     <div className="overflow-y-scroll overflow-x-hidden h-[226px]">
                     {leaderboards.map((translator, i) => (
                       <>
@@ -188,10 +276,10 @@ const Dashboard = () => {
             </div>
 
             <div>
-              {selectedOption == "all" && <AllJobs />}
-                {selectedOption == "pending" && <PendingJobs />}
-                {selectedOption == "moderation" && <ModerationJobs />}
-                {selectedOption == "overlay" && <OverlayJobs />}
+                {selectedOption == "all" && <AllJobs setPopupPreview={setPopupPreview} setPreviewJob={setPreviewJob} setPreviewJobType={setPreviewJobType} setPreviewJobVideoLink={setPreviewJobVideoLink}/>}
+                {selectedOption == "pending" && <PendingJobs setPopupPreview={setPopupPreview} setPreviewJob={setPreviewJob} setPreviewJobType={setPreviewJobType}/>}
+                {selectedOption == "moderation" && <ModerationJobs setPopupPreview={setPopupPreview} setPreviewJob={setPreviewJob} setPreviewJobType={setPreviewJobType}/>}
+                {selectedOption == "overlay" && <OverlayJobs setPopupPreview={setPopupPreview} setPreviewJob={setPreviewJob} setPreviewJobType={setPreviewJobType}/>}
             </div>
 
             <div>

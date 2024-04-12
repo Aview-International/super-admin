@@ -3,11 +3,12 @@ import ErrorHandler from '../../utils/errorHandler';
 import { 
   getTranslatorFromUserId,
   getAllJobs,
-  acceptJob } from '../../services/apis';
+  acceptJob,
+  getDownloadLink, } from '../../services/apis';
 import Cookies from 'js-cookie';
 import { authStatus } from '../../utils/authStatus';
 
-const AllJobs = () => {
+const AllJobs = ({setPopupPreview, setPreviewJob, setPreviewJobType, setPreviewJobVideoLink}) => {
   const [jobs, setJobs] = useState([]);
   const [translatorId, setTranslatorId] = useState(null);
 
@@ -48,6 +49,15 @@ const AllJobs = () => {
       ErrorHandler(error);
     }
   };
+
+  const handlePreview = async(job, jobType) => {
+    const videoPath = `dubbing-tasks/${job.creatorId}/${job.jobId}/video.mp4`
+    const downloadLink = await getDownloadLink(videoPath);
+    setPreviewJobVideoLink(downloadLink);
+    setPreviewJob(job);
+    setPreviewJobType(jobType);
+    setPopupPreview(true);
+  }
 
   useEffect(() => {
     const token = Cookies.get("session");
@@ -106,7 +116,7 @@ const AllJobs = () => {
                     }}
                 >
                     <div className="text-left text-white">
-                    {job.status == "moderation" ? "moderation" : (job.status == "subtitling" ? "overlay" : "pending")}
+                    {job.status == "moderation" ? "Moderation" : (job.status == "subtitling" ? "Overlay" : "Pending")}
                     </div>
                     <div className="text-left text-white">{job.jobId}</div>
                     <div className="text-left text-white">
@@ -121,10 +131,10 @@ const AllJobs = () => {
                     <div
                     className="cursor-pointer text-white underline"
                     onClick={() => {
-                        handleAccept(job.jobId, job.status == "moderation" ? "moderation" : (job.status == "subtitling" ? "overlay" : "pending"));
+                      handlePreview(job, job.status == "moderation" ? "moderation" : (job.status == "subtitling" ? "overlay" : "pending"));
                     }}
                     >
-                    Accept job
+                    Preview job
                     </div>
                 </div>
                 <div className="h-[1px] w-full bg-white bg-opacity-25"></div>

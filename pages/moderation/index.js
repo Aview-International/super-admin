@@ -5,6 +5,7 @@ import {
   getDownloadLink,
   getTranslatorFromUserId,
   getJobAndVerify,
+  getCreatorProfile,
 } from '../../services/apis';
 import QATranslationBubble from '../../components/translation/QATranslationBubble';
 import { useRouter } from 'next/router';
@@ -19,9 +20,6 @@ import SuccessHandler from '../../utils/successHandler';
 import Popup from '../../components/UI/PopupWithBorder';
 import warning from '/public/img/icons/warning.svg';
 import PageTitle from '../../components/SEO/PageTitle';
-import {
-  getUserProfile,
-} from '../../services/firebase';
 import { authStatus } from '../../utils/authStatus';
 import Cookies from 'js-cookie';
 import Timer from '../../components/UI/Timer';
@@ -93,8 +91,10 @@ const QA = () => {
   };
 
   const getProfile = async () => {
-    const res = await getUserProfile(job.creatorId);
-    setCreatorName(res?.firstName + ' ' + res?.lastName);
+    const res = await getCreatorProfile(job.creatorId);
+    const resData = res.data;
+
+    setCreatorName(resData?.firstName + ' ' + resData?.lastName);
   };
 
   const getJob = async (jobId, translatorId) => {

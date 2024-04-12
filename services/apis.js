@@ -388,11 +388,14 @@ export const addTime = async (translatorId, jobId, jobType) => {
   return axiosInstance.post('admin/add-time', {translatorId, jobId, jobType});
 }
 
-export const flagOverlayJob = async (translatorId, jobId, message, jobType) => {
-  return axiosInstance.post('admin/flag-overlay-job', {translatorId, jobId, message, jobType});
+export const flagJob = async (translatorId, jobId, message, jobType) => {
+  return axiosInstance.post('admin/flag-job', {translatorId, jobId, message, jobType});
 }
 
 export const clearOverdueJobFromTimer = async (translatorId, jobId, jobType) => {
   return axiosInstance.post('admin/clear-overdue-job-from-timer', {translatorId, jobId, jobType});
 }
 
+export const getCreatorProfile = async (userId) => {
+  return axiosInstance.post('admin/get-creator-profile', {userId});
+}
