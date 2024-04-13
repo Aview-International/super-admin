@@ -4,11 +4,12 @@ import { authStatus } from '../../utils/authStatus';
 import { 
   getTranslatorFromUserId,
   getAllPendingJobs,
-  acceptJob, } from '../../services/apis';
+  acceptJob,
+  getDownloadLink, } from '../../services/apis';
 import ErrorHandler from '../../utils/errorHandler';
 
 
-const PendingJobs = ({setPopupPreview, setPreviewJob, setPreviewJobType}) => {
+const PendingJobs = ({setPopupPreview, setPreviewJob, setPreviewJobType, setPreviewJobVideoLink}) => {
   const [jobs, setJobs] = useState([]);
   const [translatorId, setTranslatorId] = useState(null);
 
@@ -45,6 +46,17 @@ const PendingJobs = ({setPopupPreview, setPreviewJob, setPreviewJobType}) => {
     }
   };
 
+  const handlePreview = async(job) => {
+    const videoPath = `dubbing-tasks/${job.creatorId}/${job.jobId}/video.mp4`
+    const downloadLink = await getDownloadLink(videoPath);
+    console.log(downloadLink.data);
+    setPreviewJobVideoLink(downloadLink.data);
+    setPreviewJob(job);
+    setPreviewJobType("pending");
+    setPopupPreview(true);
+  }
+
+
   useEffect(() => {
     const token = Cookies.get("session");
     const userId = authStatus(token).data.user_id;
@@ -76,10 +88,10 @@ const PendingJobs = ({setPopupPreview, setPreviewJob, setPreviewJobType}) => {
                   textAlign: 'center',
                 }}
               >
-                <div className="text-left font-bold text-white">Job ID</div>
-                <div className="text-left font-bold text-white">Title</div>
-                <div className="text-left font-bold text-white">Original Language</div>
-                <div className="text-left font-bold text-white">Translated Language</div>
+                <div className="text-left font-bold text-white text-lg">Job ID</div>
+                <div className="text-left font-bold text-white text-lg">Title</div>
+                <div className="text-left font-bold text-white text-lg">Original Language</div>
+                <div className="text-left font-bold text-white text-lg">Translated Language</div>
               </div>
 
               <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
@@ -107,7 +119,7 @@ const PendingJobs = ({setPopupPreview, setPreviewJob, setPreviewJobType}) => {
                       <div
                         className="cursor-pointer text-white underline"
                         onClick={() => {
-                          handleAccept(job.jobId);
+                          handlePreview(job);
                         }}
                       >
                         Preview job

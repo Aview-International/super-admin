@@ -13,8 +13,9 @@ import { authStatus } from '../../utils/authStatus';
 import Cookies from 'js-cookie';
 import ReviewerSettingsPopup from '../../components/dashboard/ReviewerSettingsPopup';
 import PieChart from '../../components/UI/PieChart';
-import Popup from '../../components/UI/PopupWithBorder';
+import Popup from '../../components/UI/PopupNormal';
 import Button from '../../components/UI/Button';
+import ErrorHandler from '../../utils/errorHandler';
 
 
 const Dashboard = () => {
@@ -60,6 +61,20 @@ const Dashboard = () => {
 
     setPieChartData(data);
   };
+
+  const handleAccept = async() => {
+    console.log(popupPreview)
+    if (popupPreview) {
+      console.log("runs")
+;      if (previewJobType == "moderation"){
+        await handleAcceptModerationjob(previewJob.jobId);
+      }else if (previewJobType == "pending"){
+        await handleAcceptPendingJob(previewJob.jobId);
+      }else if (previewJobType == "overlay"){
+        await handleAcceptOverlayJob(previewJob.jobId);
+      }
+    }
+  }
 
   const handleAcceptPendingJob = async (jobId) => {
     try {
@@ -135,10 +150,10 @@ const Dashboard = () => {
         <ReviewerSettingsPopup show={settings} onClose={()=>{setSettings(false);}} translator={translator}/>
         <Popup show={popupPreview} onClose={() => {setPopupPreview(false); setPreviewJob(null); setPreviewJobType(null); setPreviewJobVideoLink(null)}}>
             <div className="h-full w-full">
-              <div className="w-[600px] rounded-2xl bg-indigo-2 p-s2">
+            <div className="w-[600px] rounded-2xl bg-black">
+              <div className="w-[600px] rounded-2xl bg-white-transparent py-s2 px-s4">
                 <div className="flex flex-col items-center justify-center">
-                  <h2 className="mb-s4 text-2xl text-white">Preview</h2>
-                  <h2 className="w-full text-lg text-white">{previewJob ? previewJob.videoData.caption : ""}</h2>
+                  <h2 className="mb-s2 text-2xl text-white text-left w-full">Preview</h2>
                   <div
                   className="relative w-full overflow-hidden"
                   style={{ paddingTop: '56.25%' }}
@@ -163,17 +178,18 @@ const Dashboard = () => {
                       </video>
                       }
                   </div>
-                  <div className="w-full">
-                    <div className="float-right h-[47px] w-[134px]">
+                  <div className="w-full mt-s2">
+                    <div className="float-right h-[47px] w-[170px]">
                       <Button
                         theme="success"
-                        onClick={() => {handleFlag()}}
+                        onClick={() => {handleAccept()}}
                       >
-                        Flag
+                        Accept job
                       </Button>
                     </div>
                   </div>
                 </div>
+              </div>
               </div>
             </div>
           </Popup>
@@ -277,9 +293,9 @@ const Dashboard = () => {
 
             <div>
                 {selectedOption == "all" && <AllJobs setPopupPreview={setPopupPreview} setPreviewJob={setPreviewJob} setPreviewJobType={setPreviewJobType} setPreviewJobVideoLink={setPreviewJobVideoLink}/>}
-                {selectedOption == "pending" && <PendingJobs setPopupPreview={setPopupPreview} setPreviewJob={setPreviewJob} setPreviewJobType={setPreviewJobType}/>}
-                {selectedOption == "moderation" && <ModerationJobs setPopupPreview={setPopupPreview} setPreviewJob={setPreviewJob} setPreviewJobType={setPreviewJobType}/>}
-                {selectedOption == "overlay" && <OverlayJobs setPopupPreview={setPopupPreview} setPreviewJob={setPreviewJob} setPreviewJobType={setPreviewJobType}/>}
+                {selectedOption == "pending" && <PendingJobs setPopupPreview={setPopupPreview} setPreviewJob={setPreviewJob} setPreviewJobType={setPreviewJobType} setPreviewJobVideoLink={setPreviewJobVideoLink}/>}
+                {selectedOption == "moderation" && <ModerationJobs setPopupPreview={setPopupPreview} setPreviewJob={setPreviewJob} setPreviewJobType={setPreviewJobType} setPreviewJobVideoLink={setPreviewJobVideoLink}/>}
+                {selectedOption == "overlay" && <OverlayJobs setPopupPreview={setPopupPreview} setPreviewJob={setPreviewJob} setPreviewJobType={setPreviewJobType} setPreviewJobVideoLink={setPreviewJobVideoLink}/>}
             </div>
 
             <div>

@@ -53,7 +53,8 @@ const AllJobs = ({setPopupPreview, setPreviewJob, setPreviewJobType, setPreviewJ
   const handlePreview = async(job, jobType) => {
     const videoPath = `dubbing-tasks/${job.creatorId}/${job.jobId}/video.mp4`
     const downloadLink = await getDownloadLink(videoPath);
-    setPreviewJobVideoLink(downloadLink);
+    console.log(downloadLink.data);
+    setPreviewJobVideoLink(downloadLink.data);
     setPreviewJob(job);
     setPreviewJobType(jobType);
     setPopupPreview(true);

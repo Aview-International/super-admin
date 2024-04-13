@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { 
   getTranslatorFromUserId,
   getAllModerationJobs,
-  acceptJob, } from '../../services/apis';
+  acceptJob,
+  getDownloadLink, } from '../../services/apis';
 import ErrorHandler from '../../utils/errorHandler';
 import Cookies from 'js-cookie';
 import { authStatus } from '../../utils/authStatus';
 
-const ModerationJobs = ({setPopupPreview, setPreviewJob, setPreviewJobType}) => {
+const ModerationJobs = ({setPopupPreview, setPreviewJob, setPreviewJobType, setPreviewJobVideoLink}) => {
   const [jobs, setJobs] = useState([]);
   const [translatorId, setTranslatorId] = useState(null);
 
@@ -41,6 +42,16 @@ const ModerationJobs = ({setPopupPreview, setPreviewJob, setPreviewJobType}) => 
       ErrorHandler(error);
     }
   };
+
+  const handlePreview = async(job) => {
+    const videoPath = `dubbing-tasks/${job.creatorId}/${job.jobId}/video.mp4`
+    const downloadLink = await getDownloadLink(videoPath);
+    console.log(downloadLink.data);
+    setPreviewJobVideoLink(downloadLink.data);
+    setPreviewJob(job);
+    setPreviewJobType("moderation");
+    setPopupPreview(true);
+  }
 
 
   useEffect(() => {
@@ -76,12 +87,12 @@ const ModerationJobs = ({setPopupPreview, setPreviewJob, setPreviewJobType}) => 
                   textAlign: 'center',
                 }}
               >
-                <div className="text-left font-bold text-white">Job ID</div>
-                <div className="text-left font-bold text-white">Title</div>
-                <div className="text-left font-bold text-white">
+                <div className="text-left font-bold text-white text-lg">Job ID</div>
+                <div className="text-left font-bold text-white text-lg">Title</div>
+                <div className="text-left font-bold text-white text-lg">
                   Original Language
                 </div>
-                <div className="text-left font-bold text-white">
+                <div className="text-left font-bold text-white text-lg">
                   Translated Language
                 </div>
               </div>
@@ -111,7 +122,7 @@ const ModerationJobs = ({setPopupPreview, setPreviewJob, setPreviewJobType}) => 
                       <div
                         className="cursor-pointer text-white underline"
                         onClick={() => {
-                          handleAccept(job.jobId);
+                          handlePreview(job);
                         }}
                       >
                         Preview job
