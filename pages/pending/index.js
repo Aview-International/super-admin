@@ -21,7 +21,7 @@ import Image from 'next/image';
 import Timer from '../../components/UI/Timer';
 import Textarea from '../../components/FormComponents/Textarea';
 
-const pending = () => {
+const Pending = () => {
   const [job, setJob] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [translatorId, setTranslatorId] = useState(null);
@@ -232,4 +232,4 @@ const pending = () => {
   );
 };
 
-export default pending;
+export default Pending;

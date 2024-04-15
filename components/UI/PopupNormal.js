@@ -83,7 +83,7 @@ const Popup = ({ show, children, onClose, disableClose = false }) => {
         // onClick={(e) => e.stopPropagation()}
         className="fixed inset-0 flex items-center justify-center backdrop-blur"
       >
-        <div classes="w-full h-full relative">
+        <div className="relative h-full w-full">
           <OutsideClickHandler onOutsideClick={onClose}>
             {children}
           </OutsideClickHandler>
