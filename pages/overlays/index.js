@@ -349,9 +349,10 @@ const Shorts_subtitling = () => {
             </div>
           </Popup>
       {isLoading && <FullScreenLoader/>}
+      {job &&
       <div className="absolute top-0 left-0 py-s2 px-s5">
-                <Timer translatorId={translatorId} jobId={jobId} jobType={"overlay"} setIsLoading={setIsLoading} jobTimestamp={job ? job.overlayStatus:null}/>
-            </div>
+        <Timer translatorId={translatorId} jobId={jobId} jobType={"overlay"} setIsLoading={setIsLoading} jobTimestamp={job ? job.overlayStatus:null}/>
+      </div>}
       <div className="flex flex-col h-screen">
         {videoLink && (
           <video

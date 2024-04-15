@@ -224,7 +224,7 @@ const Dashboard = () => {
                       <div className="w-1/2 flex justify-center flex-col pl-s1">
                         <div className="text-white text-lg font-bold">{translator ? translator.totalJobsCompleted:""} {(translator && translator.totalJobsCompleted) == 1 ? "job completed":"jobs completed"}</div>
                         <div className="flex flex-row w-full items-center mt-s1">
-                          <div className="rounded-full h-[14px] w-[14px] bg-blue mr-s1"></div>
+                          <div className="rounded-full h-[14px] w-[14px] bg-red mr-s1"></div>
                           <div className="text-lg text-white pt-[4px]">Pending</div>
                           <div className="rounded-lg pt-[2px] px-[8px] bg-white-transparent ml-auto text-white text-base text-center w-[50px]">{translator ? translator.pendingJobsCompleted : ""}</div>
                         </div>
@@ -234,8 +234,8 @@ const Dashboard = () => {
                           <div className="rounded-lg pt-[2px] px-[8px] bg-white-transparent ml-auto text-white text-base text-center w-[50px]">{translator ? translator.moderationJobsCompleted : ""}</div>
                         </div>
                         <div className="flex flex-row w-full items-center">
-                          <div className="rounded-full h-[14px] w-[14px] bg-red mr-s1"></div>
-                          <div className="text-lg text-white pt-[4px]">Moderation</div>
+                          <div className="rounded-full h-[14px] w-[14px] bg-blue mr-s1"></div>
+                          <div className="text-lg text-white pt-[4px]">Overlay</div>
                           <div className="rounded-lg pt-[2px] px-[8px] bg-white-transparent ml-auto text-white text-base text-center w-[50px]">{translator ? translator.overlayJobsCompleted : ""}</div>
                         </div>
                       </div>
