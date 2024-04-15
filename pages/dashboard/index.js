@@ -132,18 +132,21 @@ const Dashboard = () => {
       id: 'pending',
       component: PendingJobs,
       class: 'bg-blue',
+      value: translator?.pendingJobsCompleted,
     },
     {
       title: 'Moderation',
       id: 'moderation',
       component: ModerationJobs,
       class: 'bg-purple',
+      value: translator?.moderationJobsCompleted,
     },
     {
       title: 'Overlay',
       id: 'overlay',
       component: OverlayJobs,
       class: 'bg-red',
+      value: translator?.overlayJobsCompleted,
     },
   ];
 
@@ -188,15 +191,7 @@ const Dashboard = () => {
                     >
                       {previewJobVideoLink && (
                         <video
-                          style={{
-                            objectFit: 'contain',
-                            position: 'absolute',
-                            top: '0',
-                            left: '0',
-                            width: '100%',
-                            height: '100%',
-                            backgroundColor: '#000',
-                          }}
+                          className="absolute top-0 left-0 h-full w-full bg-black object-contain"
                           controls
                         >
                           <source
@@ -208,12 +203,7 @@ const Dashboard = () => {
                     </div>
                     <div className="mt-s2 w-full">
                       <div className="float-right h-[47px] w-[170px]">
-                        <Button
-                          theme="success"
-                          onClick={() => {
-                            handleAccept();
-                          }}
-                        >
+                        <Button theme="success" onClick={handleAccept}>
                           Accept job
                         </Button>
                       </div>
@@ -260,13 +250,13 @@ const Dashboard = () => {
                       {jobTypes.slice(1).map((job) => (
                         <div className="mt-s1 flex w-full flex-row items-center">
                           <div
-                            className={`mr-s1 h-[14px] w-[14px] rounded-full ${job.class}`}
+                            className={`mr-s1 h-3.5	w-3.5 rounded-full ${job.class}`}
                           ></div>
-                          <div className="pt-[4px] text-lg text-white">
+                          <div className="pt-1 text-lg text-white">
                             {job.title}
                           </div>
                           <div className="ml-auto w-[50px] rounded-lg bg-white-transparent px-[8px] pt-[2px] text-center text-base text-white">
-                            {translator ? translator.pendingJobsCompleted : ''}
+                            {translator ? job.value : ''}
                           </div>
                         </div>
                       ))}
