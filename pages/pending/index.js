@@ -1,77 +1,235 @@
 import { useEffect, useState } from 'react';
-import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import PageTitle from '../../components/SEO/PageTitle';
-import SelectedVideo from '../../components/pending/SelectedVideo-Pending';
-import AllVideos from '../../components/admin/AllVideos';
+import { useRouter } from 'next/router';
+import ErrorHandler from '../../utils/errorHandler';
+import Popup from '../../components/UI/PopupWithBorder';
+import FullScreenLoader from '../../public/loaders/FullScreenLoader';
+import { SupportedLanguages } from '../../constants/constants';
+import {
+  finishPendingJob,
+  getDownloadLink,
+  getTranslatorFromUserId,
+  getJobAndVerify,
+  flagJob,
+  getCreatorProfile,
+} from '../../services/apis';
+import Check from '../../public/img/icons/check-circle-green.svg';
+import Cookies from 'js-cookie';
+import { authStatus } from '../../utils/authStatus';
+import Button from '../../components/UI/Button';
 import Image from 'next/image';
-import Logo from '../../public/img/aview/logo.svg';
-import { getAllJobsUnderReview } from '../../services/firebase';
+import Timer from '../../components/UI/Timer';
+import Textarea from '../../components/FormComponents/Textarea';
 
-const Transcription = () => {
-  const [jobs, setJobs] = useState([]);
-  const [selectedJob, setSelectedJob] = useState(undefined);
-  const [videoDownloadLink, setVideoDownloadLink] = useState('');
-  const [updateTrigger, setUpdateTrigger] = useState(false);
+const Pending = () => {
+  const [job, setJob] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [translatorId, setTranslatorId] = useState(null);
+  const [videoLink, setVideoLink] = useState(null);
+  const [originalVideoLink, setOriginalVideoLink] = useState(null);
+  const [creatorName, setCreatorName] = useState(null);
+  const [loader, setLoader] = useState(null);
+  const [popupApprove, setPopupApprove] = useState(false);
+  const [popupFlag, setPopupFlag] = useState(false);
+  const [flagReason, setFlagReason] = useState(null);
+  const [submitHeader, setSubmitHeader] = useState('Approved!');
 
-  const callback = (data) => {
-    const pending = data
-      ? Object.values(data).map((item, i) => ({
-          ...item,
-          jobId: Object.keys(data)[i],
-        }))
-      : [];
-    setJobs(pending);
+  const router = useRouter();
+  const { jobId } = router.query;
+
+  const handleApproval = async () => {
+    try {
+      setLoader('approve');
+      await finishPendingJob(translatorId, jobId).then(() => {
+        setLoader('');
+        successHandler('Approved!');
+        setPopupApprove(true);
+      });
+    } catch (error) {
+      ErrorHandler(error);
+    }
   };
 
-  const getPendingJobs = async () => {
-    await getAllJobsUnderReview(callback);
+  const getJob = async (jobId, translatorId) => {
+    try {
+      const job = await getJobAndVerify(translatorId, jobId);
+      setJob(job.data);
+      setIsLoading(false);
+    } catch (error) {
+      ErrorHandler(error);
+    }
+  };
+
+  const handleTranslator = async (userId) => {
+    const translator = await getTranslatorFromUserId(userId);
+    console.log(translator.data._id);
+    setTranslatorId(translator.data._id);
+  };
+
+  const handleVideo = async () => {
+    if (job && translatorId) {
+      const res = await getUserProfile(job.creatorId);
+
+      setCreatorName(res?.firstName + ' ' + res?.lastName);
+      setCreatorPfp(res?.picture);
+
+      const languageCode = SupportedLanguages.find(
+        (language) => language.languageName === job.translatedLanguage
+      ).translateCode;
+
+      const videoPath = `dubbing-tasks/${job.creatorId}/${jobId}/${languageCode}.mp4`;
+      const originalVideoPath = `dubbing-tasks/${job.creatorId}/${jobId}/video.mp4`;
+      const downloadLink = await getDownloadLink(videoPath);
+      const originalDownloadLink = await getDownloadLink(originalVideoPath);
+
+      console.log(downloadLink);
+      setVideoLink(downloadLink.data);
+      setOriginalVideoLink(originalDownloadLink.data);
+    }
   };
 
   useEffect(() => {
-    getPendingJobs();
-  }, [updateTrigger]);
+    const token = Cookies.get('session');
+    console.log(token);
+    const userId = authStatus(token).data.user_id;
+    console.log(token);
+    console.log(userId);
+
+    handleTranslator(userId);
+  }, []);
+
+  useEffect(() => {
+    if (jobId && translatorId) {
+      getJob(jobId, translatorId);
+    }
+  }, [jobId, translatorId]);
+
+  useEffect(() => {
+    if (job && translatorId) {
+      handleVideo();
+    }
+  }, [job, translatorId]);
 
   return (
     <>
-      <PageTitle title="Transcription" />
-      <div className="flex text-white">
-        <div className="w-1/2 rounded-md bg-white-transparent">
-          <h2 className="p-s2">Pending Videos</h2>
-          {jobs.length > 0 ? (
-            jobs.map((job, i) => (
-              <AllVideos
-                job={job}
-                key={i}
-                selectedJob={selectedJob}
-                setSelectedJob={setSelectedJob}
-                setVideoDownloadLink={setVideoDownloadLink}
-              />
-            ))
-          ) : (
-            <p className="mt-s3 text-center text-xl">
-              Nothing to see here folks, come back later
-            </p>
-          )}
+      <PageTitle title="Pending" />
+
+      {isLoading && <FullScreenLoader />}
+      <Popup show={popupApprove} disableClose={true}>
+        <div className="h-full w-full">
+          <div className="w-[500px] rounded-2xl bg-indigo-2 p-s3">
+            <div className="flex flex-col items-center justify-center">
+              <h2 className="mb-s2 text-2xl text-white">Approved!</h2>
+              <p className="text-white">
+                Please wait 1-2 business days for payment to process. Thank you.
+              </p>
+            </div>
+          </div>
         </div>
-        {selectedJob && videoDownloadLink ? (
-          <div className="ml-s3 w-1/2">
-            <SelectedVideo
-              selectedJob={selectedJob}
-              setSelectedJob={setSelectedJob}
-              videoDownloadLink={videoDownloadLink}
-              triggerUpdate={() => setUpdateTrigger((prev) => !prev)}
-            />
+      </Popup>
+      <div className="relative h-screen w-full">
+        <div className="absolute top-0 right-0 py-s2 px-s5">
+          <Timer />
+        </div>
+      </div>
+
+      <div className="flex h-screen w-full flex-col px-s5 pb-s5 pt-s2">
+        <div className="flex flex-col">
+          <div className="text-3xl text-white">
+            {job ? job.videoData.caption : ''}
           </div>
-        ) : (
-          <div className="flex w-1/2 items-start justify-center pt-s10">
-            <Image src={Logo} alt="" />
+          <div className="mb-s2 text-lg text-white">
+            {creatorName ? creatorName : ''}
           </div>
-        )}
+        </div>
+        <div className="flex flex-row">
+          <div className="w-1/2 pr-s1">
+            <div className="relative w-full flex-1 overflow-hidden rounded-2xl bg-white-transparent p-s2 pb-[76px]">
+              <div className="mb-s2 text-2xl text-white">
+                Original Video - {job ? job.originalLanguage : ''}
+              </div>
+              <div
+                className="relative w-full overflow-hidden"
+                style={{ paddingTop: '56.25%' }}
+              >
+                {originalVideoLink && (
+                  <video
+                    style={{
+                      objectFit: 'contain',
+                      position: 'absolute',
+                      top: '0',
+                      left: '0',
+                      width: '100%',
+                      height: '100%',
+                      backgroundColor: '#000',
+                    }}
+                    controls
+                  >
+                    <source
+                      src={originalVideoLink ? originalVideoLink : ''}
+                      type="video/mp4"
+                    />
+                  </video>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="w-1/2 pl-s1">
+            <div className="relative w-full flex-1 overflow-hidden rounded-2xl bg-white-transparent p-s2">
+              <div className="mb-s2 text-2xl text-white">
+                Translated Video - {job ? job.translatedLanguage : ''}
+              </div>
+              <div
+                className="relative w-full overflow-hidden"
+                style={{ paddingTop: '56.25%' }}
+              >
+                {videoLink && (
+                  <video
+                    style={{
+                      objectFit: 'contain',
+                      position: 'absolute',
+                      top: '0',
+                      left: '0',
+                      width: '100%',
+                      height: '100%',
+                      backgroundColor: '#000',
+                    }}
+                    controls
+                  >
+                    <source src={videoLink ? videoLink : ''} type="video/mp4" />
+                  </video>
+                )}
+              </div>
+              <div className="flex flex-row">
+                <Button
+                  theme="error"
+                  classes="flex flex-col justify-center items-center  mt-s2 mr-s2"
+                  onClick={() => {}}
+                  isLoading={loader === 'flagged'}
+                >
+                  <div className="flex flex-row items-center">
+                    <span className="">Flag</span>
+                  </div>
+                </Button>
+                <Button
+                  theme="success"
+                  classes="flex flex-col justify-center items-center  mt-s2"
+                  onClick={() => handleApproval()}
+                  isLoading={loader === 'approve'}
+                >
+                  <div className="flex flex-row items-center">
+                    <Image src={Check} alt="" width={24} height={24} />
+                    <span className="ml-s1">Approve</span>
+                  </div>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
 };
 
-Transcription.getLayout = DashboardLayout;
-
-export default Transcription;
+export default Pending;

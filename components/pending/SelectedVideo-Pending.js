@@ -12,7 +12,6 @@ const SelectedVideo = ({
   videoDownloadLink,
   triggerUpdate,
 }) => {
-  console.log(videoDownloadLink);
   const [loader, setLoader] = useState('');
 
   const handleApproval = async () => {
@@ -45,7 +44,7 @@ const SelectedVideo = ({
           height="100%"
         />
       </div>
-      <div className="flex w-full flex-col justify-center">
+      <div className="flex w-full flex-col justify-center px-s5">
         <Button
           theme="success"
           classes="flex flex-col justify-center items-center  mt-s2"

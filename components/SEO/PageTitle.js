@@ -3,7 +3,7 @@ import Head from 'next/head';
 const PageTitle = ({ title, description }) => {
   return (
     <Head>
-      <title>{`${title ? title + ' - ' : ''}Aview Admin`}</title>
+      <title>{`${title ? title + ' - ' : ''}Aview International`}</title>
       <link
         rel="apple-touch-icon"
         sizes="180x180"

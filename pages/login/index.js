@@ -1,64 +1,44 @@
-import Image from 'next/image';
-import { useContext, useState } from 'react';
-import Border from '../../components/UI/Border';
-import Shadow from '../../components/UI/Shadow';
-import Google from '../../public/img/icons/google.svg';
-import { UserContext } from '../../store/user-profile';
-import ButtonLoader from '../../public/loaders/ButtonLoader';
 import Cookies from 'js-cookie';
-import PageTitle from '../../components/SEO/PageTitle';
-import { signInWithGoogle } from '../../services/firebase';
+import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
+import Loader from '../../public/loaders/ButtonLoader';
+import { useEffect } from 'react';
+import ErrorHandler from '../../utils/errorHandler';
+import { firebaseAuth } from '../../services/firebase';
+import { useRouter } from 'next/router';
 
 const Login = () => {
-  const { user, updateUser } = useContext(UserContext);
-  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const handleSSOWithCode = async () => {
+    try {
+      const auth = firebaseAuth;
+      if (isSignInWithEmailLink(auth, window.location.href)) {
+        let email = window.localStorage.getItem('emailForSignIn');
+        if (!email)
+          email = window.prompt('Please provide your email for confirmation');
 
-  const handleSubmit = async () => {
-    setIsLoading(true);
-    const { _tokenResponse } = await signInWithGoogle();
-    localStorage.setItem('uid', _tokenResponse.localId);
-    Cookies.set('uid', _tokenResponse.localId);
-    Cookies.set('session', _tokenResponse.idToken);
-    updateUser({
-      ...user,
-      email: _tokenResponse.email,
-      firstName: _tokenResponse.firstName,
-      lastName: _tokenResponse.lastName,
-      picture: _tokenResponse.photoUrl,
-    });
-    const prevRoute = Cookies.get('redirectUrl');
-    if (prevRoute) {
-      Cookies.remove('redirectUrl');
-      window.location.href = decodeURIComponent(prevRoute);
-    } else window.location.href = '/dashboard';
+        const res = await signInWithEmailLink(
+          auth,
+          email,
+          window.location.href
+        );
+        window.localStorage.removeItem('emailForSignIn');
+        Cookies.set('session', res._tokenResponse.idToken);
+        router.push('/dashboard');
+      }
+    } catch (error) {
+      console.log(error);
+      ErrorHandler(null, 'Something went wrong, please try again');
+    }
   };
 
+  useEffect(() => {
+    handleSSOWithCode();
+  }, []);
+
   return (
-    <>
-      <PageTitle title="Login" />
-      <div className="fixed top-2/4 left-2/4 w-[min(400px,90%)] -translate-x-2/4 -translate-y-2/4 text-white">
-        <h2 className="text-center text-7xl md:text-8xl">Log In</h2>
-        <Shadow classes="w-full mb-4">
-          <Border borderRadius="full" classes="w-full">
-            <button
-              className="flex w-full items-center justify-center rounded-full bg-black p-2 text-white md:p-3"
-              onClick={handleSubmit}
-            >
-              {isLoading ? (
-                <ButtonLoader />
-              ) : (
-                <>
-                  <span className="flex items-center justify-center pr-s1">
-                    <Image src={Google} alt="Google" />
-                  </span>
-                  Continue with Google
-                </>
-              )}
-            </button>
-          </Border>
-        </Shadow>
-      </div>
-    </>
+    <div className="mt-s20 flex h-full w-full items-center justify-center">
+      <Loader />
+    </div>
   );
 };
 

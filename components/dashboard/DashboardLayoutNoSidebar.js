@@ -1,56 +1,91 @@
 import aviewLogo from '../../public/img/aview/logo.svg';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import timeGreeting from '../../utils/timeGreeting';
+import defaultProfilePicture from '../../public/img/graphics/default.png';
 
-const DashboardStructure = ({ children }) => {
-    const [time, setTime] = useState(timeGreeting());
-    useEffect(() => {
-      const intervalId = setInterval(() => {
-        setTime(timeGreeting());
-      }, 5000);
-  
-      return () => {
-        clearInterval(intervalId);
-      };
-    }, []);
-
+const DashboardStructure = ({
+  children,
+  setSettings,
+  name,
+  profilePicture = defaultProfilePicture,
+}) => {
   return (
     <>
-      
-        <div>
-        <header className="flex w-full items-center justify-between pt-s4 pb-s2.5 text-white bg-white-transparent">
-            <div className="flex flex-row">
-                <div className="w-[170px] flex justify-center">
-                    <Link href="/">
-                    <a>
-                        <Image
-                        src={aviewLogo}
-                        alt="AVIEW International logo"
-                        width={56}
-                        height={56}
-                        />
-                    </a>
-                    </Link>
-                </div>
-                <div className="pl-s9">
-                    <div>
-                        <h3 className="text-xl"> {time}!</h3>
-                        <p className="text-lg text-gray-2">Welcome to Aview reviewer onboarding.</p>
-                    </div>
-                </div>
+      <div>
+        <header className="flex w-full items-center justify-between pt-s2 pb-s1 pr-s8 text-white">
+          <div className="flex">
+            <div className="flex w-[170px] justify-center">
+              <Link href="/dashboard">
+                <a>
+                  <Image
+                    src={aviewLogo}
+                    alt="AVIEW International logo"
+                    width={56}
+                    height={56}
+                  />
+                </a>
+              </Link>
             </div>
+            <div className="pt-[9px]">
+              <div>
+                <h3 className="text-base"> Hello {name}!</h3>
+                <h3 className="text-base text-gray-2">
+                  {' '}
+                  Welcome to your AVIEW dashboard
+                </h3>
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <div>
+              <Image
+                src={
+                  profilePicture
+                    ? profilePicture + '?v=' + new Date().getTime()
+                    : '/img/graphics/default.png'
+                }
+                // src={settingsIcon}
+                alt="settings button"
+                width={52}
+                height={52}
+                className="cursor-pointer rounded-full"
+                onClick={() => {
+                  setSettings(true);
+                }}
+              />
+              {/* <img
+                // style={{ width: '52px', height: '52px' }}
+                // alt="settings button"
+                // width={52}
+                // height={52}
+                className="cursor-pointer rounded-full"
+                onClick={() => {
+                  setSettings(true);
+                }}
+              /> */}
+            </div>
+          </div>
         </header>
-  
-            <main>{children}</main>
-        </div>
+        <div className="h-[1px] w-full bg-gray-1"></div>
+
+        <main>{children}</main>
+      </div>
     </>
   );
 };
 
-const DashboardLayout = (page) => (
-  <DashboardStructure>{page}</DashboardStructure>
+const DashboardLayout = ({
+  setSettings,
+  children,
+  name,
+  profilePicture = defaultProfilePicture,
+}) => (
+  <DashboardStructure
+    setSettings={setSettings}
+    name={name}
+    profilePicture={profilePicture}
+  >
+    {children}
+  </DashboardStructure>
 );
 export default DashboardLayout;
-

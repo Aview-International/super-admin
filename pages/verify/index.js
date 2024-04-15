@@ -3,7 +3,8 @@ import { useRouter } from 'next/router';
 import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
 import { firebaseAuth } from '../../services/firebase';
 import Cookies from 'js-cookie';
-import { verifyTranslatorEmail } from '../../services/apis';
+import { verifyTranslatorEmail, attachUserIdToTranslator } from '../../services/apis';
+import { authStatus } from '../../utils/authStatus';
 
 const VerifyEmail = () => {
   const router = useRouter();
@@ -27,6 +28,14 @@ const VerifyEmail = () => {
             window.localStorage.removeItem('emailForSignIn');
             Cookies.set('session', result._tokenResponse.idToken);
             await verifyTranslatorEmail();
+            console.log(result);
+
+            const jwtData = authStatus(result._tokenResponse.idToken);
+            const userId = jwtData.data.user_id;
+            const userEmail = result._tokenResponse.email;
+
+            await attachUserIdToTranslator(userEmail, userId);
+
             router.replace('/success');
           })
           .catch(() => {

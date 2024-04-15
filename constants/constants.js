@@ -23,11 +23,6 @@ export const DASHBOARD_NAVLINKS = [
     route: '/pending',
   },
   {
-    text: 'Overlays',
-    image: transcription,
-    route: '/overlays',
-  },
-  {
     text: 'Overlay Flags',
     image: videoedit,
     route: '/overlay-flags',
@@ -37,12 +32,6 @@ export const DASHBOARD_NAVLINKS = [
     image: creator,
     route: '/moderation',
   },
-  {
-    text: 'Manual',
-    image: dubbing,
-    route: '/manual',
-  },
-  
 ];
 
 export const SupportedLanguages = [

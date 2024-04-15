@@ -9,6 +9,7 @@ const Button = ({
   disabled,
   theme,
   classes,
+  type = 'button',
 }) => {
   return disabled ? (
     <button
@@ -17,27 +18,34 @@ const Button = ({
       disabled
     >
       {children}
-    </button>
-  ) : theme === 'success' ? (
-    <button
-      className={`transition-300 w-full cursor-pointer rounded-full bg-green px-s5 pt-s1.5 pb-s1 text-black ${classes}`}
-      onClick={isLoading ? () => null : onClick}
-    >
-      {isLoading ? <Loader /> : children}
-    </button>
-  ) : theme === 'error' ? (
-    <button
-      className={`transition-300 w-full cursor-pointer rounded-full bg-red px-s5 pt-s1.5 pb-s1 text-white ${classes}`}
-      onClick={isLoading ? () => null : onClick}
-    >
-      {isLoading ? <Loader /> : children}
-    </button>
+    </button> ? (
+      theme
+    ) : (
+      <button
+        className={`transition-300 w-full cursor-pointer rounded-full px-s5 pt-s1.5 pb-s1 ${
+          theme === 'success'
+            ? 'bg-green text-black'
+            : theme === 'error'
+            ? 'bg-red text-white'
+            : ''
+        } ${classes}`}
+        onClick={isLoading ? () => null : onClick}
+        type={type}
+      >
+        {isLoading ? <Loader /> : children}
+      </button>
+    )
   ) : (
     <Shadow classes="w-full">
       <Border borderRadius="full" classes="w-full">
         <button
           className={`transition-300 w-full cursor-pointer rounded-full px-s5 pt-s1.5 pb-s1 
-          ${theme === 'light' && 'text-black'} ${theme === 'dark' && 'bg-black text-white'} ${theme === 'gray' && 'bg-gradient-to-t from-gray-4 from-7% to-gray-3 text-white'} ${classes}`}
+          ${theme === 'light' && 'text-black'} ${
+            theme === 'dark' && 'bg-black text-white'
+          } ${
+            theme === 'gray' &&
+            'from-7% bg-gradient-to-t from-gray-4 to-gray-3 text-white'
+          } ${classes}`}
           onClick={isLoading ? () => null : onClick}
         >
           {isLoading ? <Loader /> : children}
