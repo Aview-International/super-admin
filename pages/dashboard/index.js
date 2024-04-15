@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import DashboardLayoutNoSidebar from '../../components/dashboard/DashboardLayoutNoSidebar';
-import PendingJobs from '../../components/dashboard/PendingJobsV2';
+import PendingJobs from '../../components/dashboard/PendingJobs';
 import OverlayJobs from '../../components/dashboard/OverlayJobs';
 import ModerationJobs from '../../components/dashboard/ModerationJobs';
 import AllJobs from '../../components/dashboard/AllJobs';
@@ -8,21 +8,107 @@ import PageTitle from '../../components/SEO/PageTitle';
 import {
   getTranslatorFromUserId,
   getTranslatorLeaderboards,
+  acceptJob,
 } from '../../services/apis';
 import { authStatus } from '../../utils/authStatus';
 import Cookies from 'js-cookie';
 import ReviewerSettingsPopup from '../../components/dashboard/ReviewerSettingsPopup';
+import PieChart from '../../components/UI/PieChart';
+import Popup from '../../components/UI/PopupNormal';
+import Button from '../../components/UI/Button';
+import ErrorHandler from '../../utils/errorHandler';
 
 const Dashboard = () => {
   const [selectedOption, setSelectedOption] = useState('all');
   const [translator, setTranslator] = useState(null);
+  const [translatorId, setTranslatorId] = useState(null);
   const [settings, setSettings] = useState(false);
   const [leaderboards, setLeaderboards] = useState([]);
+  const [pieChartData, setPieChartData] = useState(null);
+  const [popupPreview, setPopupPreview] = useState(false);
+  const [previewJob, setPreviewJob] = useState(null);
+  const [previewJobVideoLink, setPreviewJobVideoLink] = useState(null);
+  const [previewJobType, setPreviewJobType] = useState(null);
 
-  const handleTranslator = async (userId) => {
+  const handleTranslator = async () => {
+    const token = Cookies.get('session');
+    const userId = authStatus(token).data.user_id;
+
     const translatorInfo = await getTranslatorFromUserId(userId);
-    console.log(translatorInfo.data);
     setTranslator(translatorInfo.data);
+    setTranslatorId(translatorInfo.data._id);
+
+    const data = {
+      labels: ['Red', 'Blue', 'Yellow'],
+      datasets: [
+        {
+          label: '# of Votes',
+          data: [
+            translatorInfo.data.pendingJobsCompleted,
+            translatorInfo.data.moderationJobsCompleted,
+            translatorInfo.data.overlayJobsCompleted,
+          ],
+          backgroundColor: ['#FF3939', '#FC00FF', '#00FFFF'],
+          borderColor: ['#FF3939', '#FC00FF', '#00FFFF'],
+          borderWidth: 1,
+        },
+      ],
+    };
+
+    setPieChartData(data);
+  };
+
+  const handleAccept = async () => {
+    console.log(popupPreview);
+    if (popupPreview) {
+      console.log('runs');
+      if (previewJobType == 'moderation') {
+        await handleAcceptModerationjob(previewJob.jobId);
+      } else if (previewJobType == 'pending') {
+        await handleAcceptPendingJob(previewJob.jobId);
+      } else if (previewJobType == 'overlay') {
+        await handleAcceptOverlayJob(previewJob.jobId);
+      }
+    }
+  };
+
+  const handleAcceptPendingJob = async (jobId) => {
+    try {
+      if (translatorId == null) {
+        throw new Error('Invalid translatorId.');
+      }
+      await acceptJob(translatorId, jobId, 'pending');
+
+      window.open(`/pending?jobId=${jobId}`, '_blank');
+    } catch (error) {
+      ErrorHandler(error);
+    }
+  };
+
+  const handleAcceptOverlayJob = async (jobId) => {
+    try {
+      if (translatorId == null) {
+        throw new Error('Invalid translatorId.');
+      }
+      await acceptJob(translatorId, jobId, 'overlay');
+
+      window.open(`/overlays?jobId=${jobId}`, '_blank');
+    } catch (error) {
+      ErrorHandler(error);
+    }
+  };
+
+  const handleAcceptModerationjob = async (jobId) => {
+    try {
+      if (translatorId == null) {
+        throw new Error('Invalid translatorId.');
+      }
+
+      await acceptJob(translatorId, jobId, 'moderation');
+      window.open(`/moderation?jobId=${jobId}`, '_blank');
+    } catch (error) {
+      ErrorHandler(error);
+    }
   };
 
   const handleLeaderboards = async () => {
@@ -33,13 +119,7 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    const token = Cookies.get('session');
-    console.log(token);
-    const userId = authStatus(token).data.user_id;
-    console.log(token);
-    console.log(userId);
-
-    handleTranslator(userId);
+    handleTranslator();
     handleLeaderboards();
   }, []);
 
@@ -59,46 +139,148 @@ const Dashboard = () => {
             }
             `}
       </style>
-      <DashboardLayoutNoSidebar
-        setSettings={setSettings}
-        name={translator ? translator.name : ''}
-      >
-        <PageTitle title="Dashboard" />
-        <ReviewerSettingsPopup
-          show={settings}
-          onClose={() => {
-            setSettings(false);
-          }}
-          translator={translator}
-        />
-        <div className="flex h-full w-full flex-col justify-center p-s8 ">
-          <div className="mb-s2 flex h-[320px] w-full">
-            <div className="h-full w-1/3 pr-s1">
-              <div className="h-full w-full rounded-2xl bg-white-transparent p-s2">
-                <div className="text-2xl text-white">Earnings</div>
-                <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
-                <div className="mb-s1 text-lg text-white">Lifetime</div>
-                <div className="rounded-lg bg-white-transparent p-s1.5 text-lg text-5xl font-bold text-white">
-                  ${translator ? formatMoney(translator.totalPayment) : ''}
-                </div>
-                <div className="mt-s4 mb-s1 text-lg text-white">Weekly</div>
-                <div className="rounded-lg bg-white-transparent p-s1.5 text-lg text-5xl font-bold text-white">
-                  ${translator ? formatMoney(translator.paymentOwed) : ''}
+      <div className="min-w-[1300px]">
+        <DashboardLayoutNoSidebar
+          setSettings={setSettings}
+          profilePicture={translator ? translator.profilePicture : null}
+          name={translator ? translator.name : ''}
+        >
+          <PageTitle title="Dashboard" />
+          <ReviewerSettingsPopup
+            show={settings}
+            onClose={() => {
+              setSettings(false);
+            }}
+            translator={translator}
+          />
+          <Popup
+            show={popupPreview}
+            onClose={() => {
+              setPopupPreview(false);
+              setPreviewJob(null);
+              setPreviewJobType(null);
+              setPreviewJobVideoLink(null);
+            }}
+          >
+            <div className="h-full w-full">
+              <div className="w-[600px] rounded-2xl bg-black">
+                <div className="w-[600px] rounded-2xl bg-white-transparent py-s2 px-s4">
+                  <div className="flex flex-col items-center justify-center">
+                    <h2 className="mb-s2 w-full text-left text-2xl text-white">
+                      Preview
+                    </h2>
+                    <div
+                      className="relative w-full overflow-hidden"
+                      style={{ paddingTop: '56.25%' }}
+                    >
+                      {previewJobVideoLink && (
+                        <video
+                          style={{
+                            objectFit: 'contain',
+                            position: 'absolute',
+                            top: '0',
+                            left: '0',
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: '#000',
+                          }}
+                          controls
+                        >
+                          <source
+                            src={previewJobVideoLink ? previewJobVideoLink : ''}
+                            type="video/mp4"
+                          />
+                        </video>
+                      )}
+                    </div>
+                    <div className="mt-s2 w-full">
+                      <div className="float-right h-[47px] w-[170px]">
+                        <Button
+                          theme="success"
+                          onClick={() => {
+                            handleAccept();
+                          }}
+                        >
+                          Accept job
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
+          </Popup>
+          <div className="flex h-full w-full flex-col justify-center p-s8 ">
+            <div className="mb-s2 flex h-[320px] w-full">
+              <div className="h-full w-1/3 pr-s1">
+                <div className="h-full w-full rounded-2xl bg-white-transparent p-s2">
+                  <div className="text-2xl text-white">Earnings</div>
+                  <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
+                  <div className="mb-s1 text-lg text-white">Lifetime</div>
+                  <div className="rounded-lg bg-white-transparent p-s1.5 text-lg text-5xl font-bold text-white">
+                    ${translator ? formatMoney(translator.totalPayment) : ''}
+                  </div>
+                  <div className="mt-s4 mb-s1 text-lg text-white">Weekly</div>
+                  <div className="rounded-lg bg-white-transparent p-s1.5 text-lg text-5xl font-bold text-white">
+                    ${translator ? formatMoney(translator.paymentOwed) : ''}
+                  </div>
+                </div>
+              </div>
 
-            <div className="h-full w-1/3 pr-s1 pl-s1">
-              <div className="h-full w-full rounded-2xl bg-white-transparent p-s2">
-                <div className="text-2xl text-white">Job Statistics</div>
-                <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
+              <div className="h-full w-1/3 pr-s1 pl-s1">
+                <div className="h-full w-full rounded-2xl bg-white-transparent p-s2">
+                  <div className="text-2xl text-white">Job Statistics</div>
+                  <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
+                  <div className="flex w-full flex-row">
+                    <div className="w-1/2 pr-s1">
+                      <div className="h-full max-h-[221px] w-full">
+                        <PieChart data={pieChartData ? pieChartData : null} />
+                      </div>
+                    </div>
+                    <div className="flex w-1/2 flex-col justify-center pl-s1">
+                      <div className="text-lg font-bold text-white">
+                        {translator ? translator.totalJobsCompleted : ''}{' '}
+                        {(translator && translator.totalJobsCompleted) == 1
+                          ? 'job completed'
+                          : 'jobs completed'}
+                      </div>
+                      <div className="mt-s1 flex w-full flex-row items-center">
+                        <div className="mr-s1 h-[14px] w-[14px] rounded-full bg-blue"></div>
+                        <div className="pt-[4px] text-lg text-white">
+                          Pending
+                        </div>
+                        <div className="ml-auto w-[50px] rounded-lg bg-white-transparent px-[8px] pt-[2px] text-center text-base text-white">
+                          {translator ? translator.pendingJobsCompleted : ''}
+                        </div>
+                      </div>
+                      <div className="flex w-full flex-row items-center">
+                        <div className="mr-s1 h-[14px] w-[14px] rounded-full bg-purple"></div>
+                        <div className="pt-[4px] text-lg text-white">
+                          Moderation
+                        </div>
+                        <div className="ml-auto w-[50px] rounded-lg bg-white-transparent px-[8px] pt-[2px] text-center text-base text-white">
+                          {translator ? translator.moderationJobsCompleted : ''}
+                        </div>
+                      </div>
+                      <div className="flex w-full flex-row items-center">
+                        <div className="mr-s1 h-[14px] w-[14px] rounded-full bg-red"></div>
+                        <div className="pt-[4px] text-lg text-white">
+                          Moderation
+                        </div>
+                        <div className="ml-auto w-[50px] rounded-lg bg-white-transparent px-[8px] pt-[2px] text-center text-base text-white">
+                          {translator ? translator.overlayJobsCompleted : ''}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
             <div className="h-full w-1/3 pl-s1">
               <div className="h-full w-full rounded-2xl bg-white-transparent p-s2">
                 <div className="text-2xl text-white">Leaderboards</div>
-                <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
+                <div className="mt-s2  h-[1px] w-full bg-white"></div>
                 <div className="h-[226px] overflow-x-hidden overflow-y-scroll">
                   {leaderboards.map((translator, i) => (
                     <>
@@ -108,13 +290,20 @@ const Dashboard = () => {
                             <div className="mt-[3px] mr-s2 w-[22px] text-lg font-bold text-white">
                               {i + 1}
                             </div>
-                            <div className="mr-s2 h-[32px] w-[32px] rounded-full bg-white-transparent"></div>
+                            <img
+                              src={
+                                translator.profilePicture
+                                  ? translator.profilePicture +
+                                    '?v=' +
+                                    new Date().getTime()
+                                  : '/img/graphics/default.png'
+                              }
+                              style={{ width: '32px', height: '32px' }}
+                              className="mr-s2 rounded-full"
+                            />
                             <div className="mt-[3px] text-base font-bold text-white">
                               {translator.name}
                             </div>
-                          </div>
-                          <div className="mt-[3px] mr-s2 text-base font-bold text-white">
-                            {translator.totalJobsCompleted} jobs
                           </div>
                         </div>
                       </div>
@@ -173,15 +362,43 @@ const Dashboard = () => {
           </div>
 
           <div>
-            {selectedOption == 'all' && <AllJobs />}
-            {selectedOption == 'pending' && <PendingJobs />}
-            {selectedOption == 'moderation' && <ModerationJobs />}
-            {selectedOption == 'overlay' && <OverlayJobs />}
+            {selectedOption == 'all' && (
+              <AllJobs
+                setPopupPreview={setPopupPreview}
+                setPreviewJob={setPreviewJob}
+                setPreviewJobType={setPreviewJobType}
+                setPreviewJobVideoLink={setPreviewJobVideoLink}
+              />
+            )}
+            {selectedOption == 'pending' && (
+              <PendingJobs
+                setPopupPreview={setPopupPreview}
+                setPreviewJob={setPreviewJob}
+                setPreviewJobType={setPreviewJobType}
+                setPreviewJobVideoLink={setPreviewJobVideoLink}
+              />
+            )}
+            {selectedOption == 'moderation' && (
+              <ModerationJobs
+                setPopupPreview={setPopupPreview}
+                setPreviewJob={setPreviewJob}
+                setPreviewJobType={setPreviewJobType}
+                setPreviewJobVideoLink={setPreviewJobVideoLink}
+              />
+            )}
+            {selectedOption == 'overlay' && (
+              <OverlayJobs
+                setPopupPreview={setPopupPreview}
+                setPreviewJob={setPreviewJob}
+                setPreviewJobType={setPreviewJobType}
+                setPreviewJobVideoLink={setPreviewJobVideoLink}
+              />
+            )}
           </div>
 
           <div></div>
-        </div>
-      </DashboardLayoutNoSidebar>
+        </DashboardLayoutNoSidebar>
+      </div>
     </>
   );
 };

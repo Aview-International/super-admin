@@ -1,9 +1,14 @@
 import aviewLogo from '../../public/img/aview/logo.svg';
-import settingsIcon from '../../public/img/icons/settings.svg';
 import Image from 'next/image';
 import Link from 'next/link';
+import defaultProfilePicture from '../../public/img/graphics/default.png';
 
-const DashboardStructure = ({ children, setSettings, name }) => {
+const DashboardStructure = ({
+  children,
+  setSettings,
+  name,
+  profilePicture = defaultProfilePicture,
+}) => {
   return (
     <>
       <div>
@@ -34,15 +39,30 @@ const DashboardStructure = ({ children, setSettings, name }) => {
           <div className="flex justify-end">
             <div>
               <Image
-                src={settingsIcon}
+                src={
+                  profilePicture
+                    ? profilePicture + '?v=' + new Date().getTime()
+                    : '/img/graphics/default.png'
+                }
+                // src={settingsIcon}
                 alt="settings button"
-                width={36}
-                height={36}
-                className="cursor-pointer"
+                width={52}
+                height={52}
+                className="cursor-pointer rounded-full"
                 onClick={() => {
                   setSettings(true);
                 }}
               />
+              {/* <img
+                // style={{ width: '52px', height: '52px' }}
+                // alt="settings button"
+                // width={52}
+                // height={52}
+                className="cursor-pointer rounded-full"
+                onClick={() => {
+                  setSettings(true);
+                }}
+              /> */}
             </div>
           </div>
         </header>
@@ -54,8 +74,17 @@ const DashboardStructure = ({ children, setSettings, name }) => {
   );
 };
 
-const DashboardLayout = ({ setSettings, children, name }) => (
-  <DashboardStructure setSettings={setSettings} name={name}>
+const DashboardLayout = ({
+  setSettings,
+  children,
+  name,
+  profilePicture = defaultProfilePicture,
+}) => (
+  <DashboardStructure
+    setSettings={setSettings}
+    name={name}
+    profilePicture={profilePicture}
+  >
     {children}
   </DashboardStructure>
 );

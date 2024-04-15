@@ -5,6 +5,7 @@ import {
   getDownloadLink,
   getTranslatorFromUserId,
   getJobAndVerify,
+  getCreatorProfile,
 } from '../../services/apis';
 import QATranslationBubble from '../../components/translation/QATranslationBubble';
 import { useRouter } from 'next/router';
@@ -19,9 +20,6 @@ import SuccessHandler from '../../utils/successHandler';
 import Popup from '../../components/UI/PopupWithBorder';
 import warning from '/public/img/icons/warning.svg';
 import PageTitle from '../../components/SEO/PageTitle';
-import {
-  getUserProfile,
-} from '../../services/firebase';
 import { authStatus } from '../../utils/authStatus';
 import Cookies from 'js-cookie';
 import Timer from '../../components/UI/Timer';
@@ -93,8 +91,10 @@ const QA = () => {
   };
 
   const getProfile = async () => {
-    const res = await getUserProfile(job.creatorId);
-    setCreatorName(res?.firstName + ' ' + res?.lastName);
+    const res = await getCreatorProfile(job.creatorId);
+    const resData = res.data;
+
+    setCreatorName(resData?.firstName + ' ' + resData?.lastName);
   };
 
   const getJob = async (jobId, translatorId) => {
@@ -235,8 +235,8 @@ const QA = () => {
       </Popup>
       {isLoading && <FullScreenLoader />}
       <div className="relative w-full h-screen">
-            <div className="absolute top-0 right-0 py-s2 px-s5">
-                <Timer />
+            <div className="fixed top-0 right-0 py-s2 px-s5 z-1000">
+                <Timer translatorId={translatorId} jobId={jobId} jobType={"moderation"} setIsLoading={setIsLoading} jobTimestamp={job ? job.moderationStatus:null}/>
             </div>
       </div>
       <div className={`flex `}>
@@ -288,7 +288,10 @@ const QA = () => {
           <div
             className={`fixed right-0 top-0 flex h-screen w-1/2 flex-col py-s5 pr-s5 pl-s1`}
           >
-            <h2 className="mb-s2 text-2xl text-white">Content</h2>
+             <div className="absolute top-0 right-0 py-s2 px-s5 bg-black">
+                <Timer translatorId={translatorId} jobId={jobId} jobType={"moderation"} setIsLoading={setIsLoading} jobTimestamp={job ? job.moderationStatus:null}/>
+            </div>
+            <h2 className="mb-s2 text-2xl text-white w-[300px]">Content</h2>
             <div className="flex flex-row gap-s2">
               <div
                 className={`px-s2 py-[9px] ${

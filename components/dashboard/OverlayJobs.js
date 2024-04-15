@@ -3,11 +3,12 @@ import ErrorHandler from '../../utils/errorHandler';
 import { 
   getTranslatorFromUserId,
   getAllOverlayJobs,
-  acceptJob } from '../../services/apis';
+  acceptJob,
+  getDownloadLink } from '../../services/apis';
 import Cookies from 'js-cookie';
 import { authStatus } from '../../utils/authStatus';
 
-const OverlayJobs = () => {
+const OverlayJobs = ({setPopupPreview, setPreviewJob, setPreviewJobType, setPreviewJobVideoLink}) => {
   const [jobs, setJobs] = useState([]);
   const [translatorId, setTranslatorId] = useState(null);
 
@@ -42,6 +43,16 @@ const OverlayJobs = () => {
     }
   };
 
+  const handlePreview = async(job) => {
+    const videoPath = `dubbing-tasks/${job.creatorId}/${job.jobId}/video.mp4`
+    const downloadLink = await getDownloadLink(videoPath);
+    console.log(downloadLink.data);
+    setPreviewJobVideoLink(downloadLink.data);
+    setPreviewJob(job);
+    setPreviewJobType("overlay");
+    setPopupPreview(true);
+  }
+
   useEffect(() => {
     const token = Cookies.get("session");
     const userId = authStatus(token).data.user_id;
@@ -75,10 +86,10 @@ const OverlayJobs = () => {
                 textAlign: 'center',
             }}
             >
-            <div className="text-left font-bold text-white">Job ID</div>
-            <div className="text-left font-bold text-white">Title</div>
-            <div className="text-left font-bold text-white">Original Language</div>
-            <div className="text-left font-bold text-white">Translated Language</div>
+            <div className="text-left font-bold text-white text-lg">Job ID</div>
+            <div className="text-left font-bold text-white text-lg">Title</div>
+            <div className="text-left font-bold text-white text-lg">Original Language</div>
+            <div className="text-left font-bold text-white text-lg">Translated Language</div>
             </div>
 
             <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
@@ -106,10 +117,10 @@ const OverlayJobs = () => {
                     <div
                     className="cursor-pointer text-white underline"
                     onClick={() => {
-                        handleAccept(job.jobId);
+                      handlePreview(job);
                     }}
                     >
-                    Accept job
+                    Preview job
                     </div>
                 </div>
                 <div className="h-[1px] w-full bg-white bg-opacity-25"></div>

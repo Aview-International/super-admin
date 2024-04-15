@@ -5,12 +5,13 @@ import ErrorHandler from '../../utils/errorHandler';
 import Popup from '../../components/UI/PopupWithBorder';
 import FullScreenLoader from '../../public/loaders/FullScreenLoader';
 import { SupportedLanguages } from '../../constants/constants';
-import { getUserProfile } from '../../services/firebase';
 import {
   finishPendingJob,
   getDownloadLink,
   getTranslatorFromUserId,
   getJobAndVerify,
+  flagJob,
+  getCreatorProfile,
 } from '../../services/apis';
 import Check from '../../public/img/icons/check-circle-green.svg';
 import Cookies from 'js-cookie';
@@ -18,6 +19,7 @@ import { authStatus } from '../../utils/authStatus';
 import Button from '../../components/UI/Button';
 import Image from 'next/image';
 import Timer from '../../components/UI/Timer';
+import Textarea from '../../components/FormComponents/Textarea';
 
 const pending = () => {
   const [job, setJob] = useState(null);
@@ -26,9 +28,11 @@ const pending = () => {
   const [videoLink, setVideoLink] = useState(null);
   const [originalVideoLink, setOriginalVideoLink] = useState(null);
   const [creatorName, setCreatorName] = useState(null);
-  const [creatorPfp, setCreatorPfp] = useState(null);
   const [loader, setLoader] = useState(null);
   const [popupApprove, setPopupApprove] = useState(false);
+  const [popupFlag, setPopupFlag] = useState(false);
+  const [flagReason, setFlagReason] = useState(null);
+  const [submitHeader, setSubmitHeader] = useState('Approved!');
 
   const router = useRouter();
   const { jobId } = router.query;

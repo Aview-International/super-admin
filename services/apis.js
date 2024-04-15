@@ -395,3 +395,40 @@ export const getTranslatorLeaderboards = async () => {
 
 export const singleSignOnLogin = async (email, origin) =>
   await axiosInstance.post(baseUrl + 'email/login', { email, origin });
+
+export const uploadReviewerProfilePicture = async (translatorId, picture) => {
+  const formData = new FormData();
+  formData.append('translatorId', translatorId);
+  formData.append('picture', picture);
+
+  return axiosInstance.post('admin/upload-reviewer-profile-picture', formData);
+};
+
+export const addTime = async (translatorId, jobId, jobType) => {
+  return axiosInstance.post('admin/add-time', { translatorId, jobId, jobType });
+};
+
+export const flagJob = async (translatorId, jobId, message, jobType) => {
+  return axiosInstance.post('admin/flag-job', {
+    translatorId,
+    jobId,
+    message,
+    jobType,
+  });
+};
+
+export const clearOverdueJobFromTimer = async (
+  translatorId,
+  jobId,
+  jobType
+) => {
+  return axiosInstance.post('admin/clear-overdue-job-from-timer', {
+    translatorId,
+    jobId,
+    jobType,
+  });
+};
+
+export const getCreatorProfile = async (userId) => {
+  return axiosInstance.post('admin/get-creator-profile', { userId });
+};
