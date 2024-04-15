@@ -41,6 +41,11 @@ const ReviewerSettingsPopup = ({ show, onClose, translator }) => {
     setCheckedState(name);
   };
 
+  const verifyEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+};
+
   const getLanguagesAndCountries = async () => {
     await getSupportedLanguages().then((res) => {
       setSupportedLanguages(res.map((item) => item.languageName).sort());
@@ -109,8 +114,6 @@ const ReviewerSettingsPopup = ({ show, onClose, translator }) => {
         setLoader('');
       }
 
-      //       setLoader('');
-      // }
     } catch (error) {
       ErrorHandler(error);
       setLoader('');
@@ -151,7 +154,6 @@ const ReviewerSettingsPopup = ({ show, onClose, translator }) => {
       }
     }
   };
-  // };
 
   useEffect(() => {
     getLanguagesAndCountries();

@@ -139,19 +139,19 @@
 
   /* Track */
   ::-webkit-scrollbar-track {
-    background: #000017;
+    background: #28243c;
     border-radius: 100vw;
   }
 
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: #99999C;
+    background: #99999c;
     border-radius: 100vw;
   }
 
   /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
-    background: #00FFFF;
+    background: #00ffff;
   }
   @keyframes fadeInDown {
     0% {
@@ -166,6 +166,4 @@
       transform: translateZ(0);
     }
   }
-
-
 }
