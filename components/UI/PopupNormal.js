@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import Border from './Border';
-import OutsideClickHandler from 'react-outside-click-handler';
 
 const Popup = ({ show, children, onClose, disableClose = false }) => {
   const [display, setDisplay] = useState(false);
@@ -23,42 +22,38 @@ const Popup = ({ show, children, onClose, disableClose = false }) => {
     }
   }, [show]);
 
-  // const handleBackgroundClick = (e) => {
-  //   if (!disableClose) {
-  //     if (e.currentTarget === e.target) {
-  //       setAnimationState('hiding');
-  //       setTimeout(() => {
-  //         onClose();
-  //         setDisplay(false);
-  //         setAnimationState('hidden');
-  //       }, 500);
-  //     }
-  //   }
-  // };
+  const handleBackgroundClick = (e) => {
+    if (!disableClose) {
+      if (e.currentTarget === e.target) {
+        setAnimationState('hiding');
+        setTimeout(() => {
+          onClose();
+          setDisplay(false);
+          setAnimationState('hidden');
+        }, 500);
+      }
+    }
+  };
 
   const backgroundStyle = {
-    opacity:
-      animationState === 'showing' || animationState === 'visible' ? 1 : 0,
+    opacity: animationState === 'showing' || animationState === 'visible' ? 1 : 0,
     transition: 'opacity 0.5s ease-out',
+    backdropFilter: 'blur(8px)',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    // backdropFilter: 'blur(8px)',
-    // position: 'fixed',
-    // top: 0,
-    // right: 0,
-    // bottom: 0,
-    // left: 0,
-    // display: 'flex',
-    // alignItems: 'center',
-    // justifyContent: 'center',
+    position: 'fixed',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     zIndex: 50,
   };
 
   const contentStyle = {
     transition: 'transform 0.5s ease-out',
-    transform:
-      animationState === 'showing' || animationState === 'visible'
-        ? 'translateY(0)'
-        : 'translateY(-100%)',
+    transform: animationState === 'showing' || animationState === 'visible' ? 'translateY(0)' : 'translateY(-100%)',
   };
 
   useEffect(() => {
@@ -75,19 +70,11 @@ const Popup = ({ show, children, onClose, disableClose = false }) => {
   return (
     <div
       style={backgroundStyle}
-      // onClick={handleBackgroundClick}
-      // aria-hidden={!show}
+      onClick={handleBackgroundClick}
+      aria-hidden={!show}
     >
-      <div
-        style={contentStyle}
-        // onClick={(e) => e.stopPropagation()}
-        className="fixed inset-0 flex items-center justify-center backdrop-blur"
-      >
-        <div className="relative h-full w-full">
-          <OutsideClickHandler onOutsideClick={onClose}>
-            {children}
-          </OutsideClickHandler>
-        </div>
+      <div style={contentStyle} onClick={(e) => e.stopPropagation()}>
+        <div classes="w-full h-full relative">{children}</div>
       </div>
     </div>
   );
