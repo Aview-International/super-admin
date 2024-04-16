@@ -75,3 +75,17 @@ export const manualSeparation = async (file, setProgress) => {
 
 export const completeSeparation = async (timestamp) =>
   axiosInstance.delete(`dubbing/manual/separation/${timestamp}`);
+
+export const getDownloadLink = async (s3Path) => {
+  const response = axiosInstance.post(baseUrl + 'admin/download-object', {
+    s3Path,
+  });
+
+  return response;
+};
+
+export const getFlaggedJobs = async () => {
+  const response = axiosInstance.post(baseUrl + 'admin/get-flagged-jobs');
+
+  return response;
+}
