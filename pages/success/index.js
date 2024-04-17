@@ -17,12 +17,15 @@ const Success = () => {
           <h2 className="title">
             <span className="gradient-1 gradient-text">Thank You!</span>
           </h2>
-          <p className={`my-s3 max-w-[320px] text-xl text-white`}>
-            We have received your message. We&apos;ll get back to you shortly!
+          <p className={`mt-s3 max-w-[400px] text-xl text-white`}>
+            We have received your application. 
           </p>
-          <Button type="primary" purpose="route" route="/">
+          <p className={`mb-s3 max-w-[400px] text-xl text-white`}>
+            We&apos;ll get back to you shortly!
+          </p>
+          {/* <Button type="primary" purpose="route" route="/">
             Go Home
-          </Button>
+          </Button> */}
         </div>
       </div>
     </>

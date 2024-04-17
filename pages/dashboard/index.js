@@ -56,7 +56,13 @@ const Dashboard = () => {
       ],
     };
 
-    setPieChartData(data);
+    if (translatorInfo.data.pendingJobsCompleted == 0 && translatorInfo.data.moderationJobsCompleted == 0 && translatorInfo.data.overlayJobsCompleted ==0) {
+      setPieChartData(null);
+    }else{
+      setPieChartData(data);
+    }
+
+  
   };
 
   const handleAccept = async () => {
@@ -109,6 +115,13 @@ const Dashboard = () => {
     const leaderboardData = leaderboard.data;
     setLeaderboards(leaderboardData);
   };
+
+  function formatNameString(input) {
+    if (input.length > 22) {
+      return input.substring(0, 20) + '...';
+    }
+    return input;
+  }
 
   useEffect(() => {
     handleTranslator();
@@ -291,7 +304,7 @@ const Dashboard = () => {
                               className="rounded-full"
                             />
                             <div className="mt-[3px] text-base font-bold text-white ml-s2">
-                              {translator.name}
+                              {formatNameString(translator.name)}
                             </div>
                           </div>
                           <div className="mt-[3px] mr-s2 text-base font-bold text-white">
