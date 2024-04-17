@@ -87,7 +87,7 @@ const Caption = ({
         <div className="mt-s2 flex flex-row items-center">
           <FormInput
             label="Start time"
-            placeholder="00:00:00"
+            placeholder="XX:XX:XX"
             value={caption.captionDetails.start_time}
             onChange={(e) => updateCaptionDetails('start_time', e.target.value)}
             name="startTime"
@@ -98,7 +98,7 @@ const Caption = ({
 
           <FormInput
             label="End time"
-            placeholder="00:00:00"
+            placeholder="XX:XX:XX"
             value={caption.captionDetails.end_time}
             onChange={(e) => updateCaptionDetails('end_time', e.target.value)}
             name="endTime"
