@@ -29,7 +29,7 @@ const Home = () => {
       <PageTitle title="Login" />
       <div className="fixed top-2/4 left-2/4 w-[min(400px,90%)] -translate-x-2/4 -translate-y-2/4 text-white">
         <h2 className="text-center text-7xl md:text-8xl">Log In</h2>
-        {!hasSubmitted ? (
+        {process.env.NODE_ENV !== 'production' && !hasSubmitted ? (
           <form onSubmit={handleSSO}>
             <FormInput
               placeholder="Email Address"

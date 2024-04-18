@@ -47,6 +47,10 @@ const Shorts_subtitling = () => {
   const [popupFlag, setPopupFlag] = useState(false);
   const [flagReason, setFlagReason] = useState(null);
   const [submitHeader, setSubmitHeader] = useState("Submitted!");
+  const [videoDuration, setVideoDuration] = useState(null);
+  const [videoWidth, setVideoWidth] = useState(null);
+  const [videoHeight, setVideoHeight] = useState(null);
+  const [videoNode, setVideoNode] = useState(null);
 
   const router = useRouter();
   const { jobId } = router.query;
@@ -63,14 +67,12 @@ const Shorts_subtitling = () => {
 
       const downloadLink = await getDownloadLink(videoPath);
 
-        console.log(downloadLink);
         setVideoLink(downloadLink.data);
       }
   }
 
   const handleTranslator = async (userId) => {
     const translator = await getTranslatorFromUserId(userId);
-    console.log(translator.data._id);
     setTranslatorId(translator.data._id);
   };
 
@@ -81,7 +83,6 @@ const Shorts_subtitling = () => {
       if (!flagReason ){
         throw new Error(`Invalid flag reason`);
       }
-      console.log(translatorId, jobId, flagReason);
       await flagJob(translatorId, jobId, flagReason, "overlay").then(() => {
         setLoader('');
         setPopupFlag(false);
@@ -111,16 +112,15 @@ const Shorts_subtitling = () => {
     }
 
     let parts = timeString.split(':');
-    if (parts.length < 3 || !parts[2].includes('.')) {
-      throw new Error('Time string must be in HH:MM:SS.sss format');
+    if (parts.length !== 3) {
+      throw new Error('Time string must be in HH:MM:SS or HH:MM:SS.sss format');
     }
 
     let secondsParts = parts[2].split('.');
-
     let hours = parseInt(parts[0], 10);
     let minutes = parseInt(parts[1], 10);
     let seconds = parseInt(secondsParts[0], 10);
-    let milliseconds = secondsParts[1] ? parseInt(secondsParts[1], 10) : 0;
+    let milliseconds = secondsParts.length > 1 ? parseInt(secondsParts[1], 10) : 0;
 
     let totalSeconds =
       hours * 3600 + minutes * 60 + seconds + milliseconds / 100;
@@ -128,12 +128,12 @@ const Shorts_subtitling = () => {
     return totalSeconds;
   }
 
-  const handleSubmit = async (jobId) => {
+
+
+  const handleSubmit = async () => {
     try {
 
       setLoader('submit');
-      console.log(captionsArray, subtitleDetails);
-      console.log(rectangles);
 
       let operationsArray = [];
       if (subtitleDetails) {
@@ -141,30 +141,55 @@ const Shorts_subtitling = () => {
       }
 
       for (const caption of captionsArray) {
-        operationsArray.push(caption.captionDetails);
+        const captionWithIndex = {
+          ...caption.captionDetails, 
+          index: caption.index 
+      };
+  
+      operationsArray.push(captionWithIndex); 
       }
 
-      console.log(operationsArray.entries());
+      
 
       for (const operations of operationsArray) {
         const rectangle = rectangles[operations.index];
-        console.log(rectangle);
 
-        operations.top_left = rectangle.start;
-        operations.top_right = rectangle.end;
-        if (
-          operations.start_time == '' ||
-          validateTimeString(operations.start_time) ||
-          operations.end_time == '' ||
-          validateTimeString(operations.end_time)
-        ) {
-          throw new Error('invalid time');
+        if (rectangle.start.x < 0){
+          rectangle.start.x = 0;
         }
+        if (rectangle.start.y < 0){
+          rectangle.start.y = 0;
+        }
+
+        if (rectangle.end.x > videoWidth){
+          rectangle.end.x = videoWidth;
+        }
+        if (rectangle.end.y > videoHeight){
+          rectangle.end.y = videoHeight;
+        }
+
+        operations.top_left = `(${rectangle.start.x}, ${rectangle.start.y})`;
+        operations.bottom_right = `(${rectangle.end.x}, ${rectangle.end.y})`;
+        
         operations.start_time = timeStringToSeconds(operations.start_time);
         operations.end_time = timeStringToSeconds(operations.end_time);
-      }
 
-      await finishOverlayJob(translatorId, jobId).then(() => {
+        if (operations.end_time <= operations.start_time){
+          throw new Error('End time must be greater than start time');
+        }
+        if (operations.start_time < 0){
+          throw new Error('Start time must be greater than 0');
+        }
+        if (operations.end_time > videoDuration){
+          throw new Error('End time must be less than video duration');
+        }
+        
+        if (operations.task === "caption" && (operations.text == ""||operations.text==null)){
+          throw new Error('Please include the captioned text');
+        }
+
+      }
+      await finishOverlayJob(translatorId, jobId, operationsArray).then(() => {
         setLoader('');
         setSubmitHeader("Submitted!");
         setPopupSubmit(true);
@@ -182,14 +207,24 @@ const Shorts_subtitling = () => {
 
   useEffect(() => {
     const token = Cookies.get("session");
-    console.log(token);
     const userId = authStatus(token).data.user_id;
-    console.log(token);
-    console.log(userId);
 
     handleTranslator(userId);
 
   },[]);
+
+  useEffect(() => {
+    setVideoNode(videoRef.current);
+  }, [videoRef.current]);
+
+  useEffect(() => {
+    if (videoNode) {
+      setVideoWidth(videoNode.videoWidth);
+      setVideoHeight(videoNode.videoHeight);
+      setVideoDuration(videoNode.duration);
+  
+    }
+  }, [videoNode]);
 
   useEffect(() => {
     if(jobId && translatorId) {
@@ -232,14 +267,14 @@ const Shorts_subtitling = () => {
     let subtitleDetails = {
       task: 'subtitle',
       index: index,
-      start: '',
-      end: '',
+      start_time: '',
+      end_time: '',
       font: 'Montserrat',
       font_color: 'white',
       outline_color: 'black',
       background: 'blurred',
       top_left: '',
-      bottom_Right: '',
+      bottom_right: '',
     };
 
     setSubtitleDetails(subtitleDetails);
@@ -301,10 +336,10 @@ const Shorts_subtitling = () => {
     setFocused(index);
   };
 
-  useEffect(() => {
-    console.log(rectIndex);
-    console.log(subtitle);
-  }, [rectIndex, subtitle]);
+  // useEffect(() => {
+  //   console.log(rectIndex);
+  //   console.log(subtitle);
+  // }, [rectIndex, subtitle]);
 
   return (
     <>
@@ -349,9 +384,10 @@ const Shorts_subtitling = () => {
             </div>
           </Popup>
       {isLoading && <FullScreenLoader/>}
+      {job &&
       <div className="absolute top-0 left-0 py-s2 px-s5">
-                <Timer translatorId={translatorId} jobId={jobId} jobType={"overlay"} setIsLoading={setIsLoading} jobTimestamp={job ? job.overlayStatus:null}/>
-            </div>
+        <Timer translatorId={translatorId} jobId={jobId} jobType={"overlay"} setIsLoading={setIsLoading} jobTimestamp={job ? job.overlayStatus:null}/>
+      </div>}
       <div className="flex flex-col h-screen">
         {videoLink && (
           <video
@@ -421,7 +457,7 @@ const Shorts_subtitling = () => {
                     <Button
                       theme="success"
                       classes="flex justify-center items-center h-[48px]"
-                      onClick={() => handleSubmit(jobId)}
+                      onClick={() => handleSubmit()}
                       isLoading={loader === 'submit'}
                     >
                       <span className="mr-2">Submit</span>
@@ -480,7 +516,6 @@ const Shorts_subtitling = () => {
                   if (subtitleDetails) {
                     setFocused(subtitleDetails.index);
                   }
-                  console.log(focused);
                 }}
               >
                 <div className="relative">
@@ -515,10 +550,10 @@ const Shorts_subtitling = () => {
                     <div className="mt-s2 flex flex-row items-center">
                       <FormInput
                         label="Start time"
-                        placeholder="00:00:00"
+                        placeholder="XX:XX:XX"
                         value={subtitleDetails.start}
                         onChange={(e) =>
-                          updateSubtitleDetails('start', e.target.value)
+                          updateSubtitleDetails('start_time', e.target.value)
                         }
                         name="title"
                         labelClasses="text-lg text-white !mb-s1"
@@ -528,10 +563,10 @@ const Shorts_subtitling = () => {
 
                       <FormInput
                         label="End time"
-                        placeholder="00:00:00"
+                        placeholder="XX:XX:XX"
                         value={subtitleDetails.end}
                         onChange={(e) =>
-                          updateSubtitleDetails('end', e.target.value)
+                          updateSubtitleDetails('end_time', e.target.value)
                         }
                         name="title"
                         labelClasses="text-lg text-white !mb-s1"

@@ -340,10 +340,11 @@ export const getAllJobs = async (translatorId) => {
   return axiosInstance.post('admin/get-all-jobs', { translatorId });
 };
 
-export const finishOverlayJob = async (translatorId, jobId) => {
+export const finishOverlayJob = async (translatorId, jobId, operationsArray) => {
   return axiosInstance.post(baseUrl + 'admin/finish-overlay-job', {
     translatorId,
     jobId,
+    operationsArray,
   });
 };
 

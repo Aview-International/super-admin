@@ -234,11 +234,12 @@ const QA = () => {
         </div>
       </Popup>
       {isLoading && <FullScreenLoader />}
+      {job &&
       <div className="relative w-full h-screen">
             <div className="fixed top-0 right-0 py-s2 px-s5 z-1000">
                 <Timer translatorId={translatorId} jobId={jobId} jobType={"moderation"} setIsLoading={setIsLoading} jobTimestamp={job ? job.moderationStatus:null}/>
             </div>
-      </div>
+      </div>}
       <div className={`flex `}>
         <div
           className={`fixed left-0 top-0 flex h-screen w-1/2 flex-col py-s5 pl-s5 pr-s1`}

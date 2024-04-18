@@ -44,7 +44,6 @@ const DashboardStructure = ({
                     ? profilePicture + '?v=' + new Date().getTime()
                     : '/img/graphics/default.png'
                 }
-                // src={settingsIcon}
                 alt="settings button"
                 width={52}
                 height={52}
@@ -53,22 +52,12 @@ const DashboardStructure = ({
                   setSettings(true);
                 }}
               />
-              {/* <img
-                // style={{ width: '52px', height: '52px' }}
-                // alt="settings button"
-                // width={52}
-                // height={52}
-                className="cursor-pointer rounded-full"
-                onClick={() => {
-                  setSettings(true);
-                }}
-              /> */}
             </div>
           </div>
         </header>
         <div className="h-[1px] w-full bg-gray-1"></div>
 
-        <main>{children}</main>
+        <main className='relative'>{children}</main>
       </div>
     </>
   );

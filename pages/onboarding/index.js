@@ -263,7 +263,6 @@ const Onboarding = () => {
                 options={supportedLanguages}
                 onChange={(selectedOption) => {
                   handleMultipleLanguages(selectedOption);
-                  console.log(nativeLanguage);
                 }}
                 labelClasses="!text-lg !text-white !mb-[4px]"
                 valueClasses="!text-lg !text-white ml-s1 font-light"
