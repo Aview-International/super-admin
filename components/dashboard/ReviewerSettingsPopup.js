@@ -1,7 +1,7 @@
 import FormInput from '../../components/FormComponents/FormInput';
 import CustomSelectInput from '../../components/FormComponents/CustomSelectInput';
 import Button from '../../components/UI/Button';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import ErrorHandler from '../../utils/errorHandler';
 import SuccessHandler from '../../utils/successHandler';
 import {
@@ -14,6 +14,7 @@ import CheckBox from '../../components/FormComponents/CheckBox';
 import Popup from '../../components/UI/PopupNormal';
 import MultipleSelectInput from '../../components/FormComponents/MultipleSelectInput';
 import { toast } from 'react-toastify';
+import Image from 'next/image';
 
 const ReviewerSettingsPopup = ({ show, onClose, translator }) => {
   const [name, setName] = useState('');
@@ -31,12 +32,6 @@ const ReviewerSettingsPopup = ({ show, onClose, translator }) => {
   const [profilePicture, setProfilePicture] = useState(null);
   const [newProfilePicture, setNewProfilePicture] = useState(null);
   const [newProfilePictureURL, setNewProfilePictureURL] = useState(null);
-  const profilePictureInputRef = useRef(null);
-
-  const triggerFileInput = () => {
-    profilePictureInputRef.current.click();
-  };
-
   const handleCheckBox = (name) => {
     setCheckedState(name);
   };
@@ -44,7 +39,7 @@ const ReviewerSettingsPopup = ({ show, onClose, translator }) => {
   const verifyEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
-};
+  };
 
   const getLanguagesAndCountries = async () => {
     await getSupportedLanguages().then((res) => {
@@ -113,7 +108,6 @@ const ReviewerSettingsPopup = ({ show, onClose, translator }) => {
 
         setLoader('');
       }
-
     } catch (error) {
       ErrorHandler(error);
       setLoader('');
@@ -132,7 +126,6 @@ const ReviewerSettingsPopup = ({ show, onClose, translator }) => {
 
   const handleSetValues = () => {
     if (translator) {
-      console.log(translator.profilePicture);
       setName(translator.name);
       setEmail(translator.email);
       setNativeLanguage(translator.nativeLanguage);
@@ -166,170 +159,162 @@ const ReviewerSettingsPopup = ({ show, onClose, translator }) => {
   return (
     <>
       <Popup show={show} onClose={onClose}>
-        <div className="mx-auto max-h-screen w-full min-w-[768px] max-w-[768px] px-4 sm:px-6 lg:px-8">
-          <div className="h-full w-full rounded-2xl bg-indigo-1 px-s4 pt-s4 pb-s14">
-            <div className="flex w-full justify-center">
-              <div className="relative h-[86px] w-[86px]">
-                <img
-                  src={
-                    newProfilePictureURL
-                      ? newProfilePictureURL
-                      : profilePicture
-                      ? profilePicture + '?v=' + new Date().getTime()
-                      : '/img/graphics/default.png'
-                  }
-                  style={{ width: '86px', height: '86px' }}
-                  alt="profile picture"
-                  height={86}
-                  width={86}
-                  className="rounded-full"
-                />
-                <div
-                  className="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-black bg-opacity-0 opacity-0 transition duration-300 ease-in-out hover:bg-opacity-50 hover:opacity-100"
-                  onClick={triggerFileInput}
-                >
-                  <span className="cursor-pointer font-semibold text-white">
-                    Change
-                  </span>
-                </div>
-              </div>
+        <div className="rounded-2xl bg-indigo-1 px-s4 pt-s4 pb-s14">
+          <div className="relative mx-auto h-[86px] w-[86px]">
+            <Image
+              src={
+                newProfilePictureURL
+                  ? newProfilePictureURL
+                  : profilePicture
+                  ? profilePicture + '?v=' + new Date().getTime()
+                  : '/img/graphics/default.png'
+              }
+              alt="profile picture"
+              height={86}
+              width={86}
+              className="rounded-full"
+            />
+            <label
+              htmlFor="profilePicture"
+              className="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-black bg-opacity-0 opacity-0 transition duration-300 ease-in-out hover:bg-opacity-50 hover:opacity-100"
+            >
               <input
-                ref={profilePictureInputRef}
                 type="file"
                 accept="image/*"
                 onChange={handleImageUpload}
                 className="hidden"
+                id="profilePicture"
               />
-            </div>
-            <FormInput
-              label="Name"
-              placeholder="First and last Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              name="name"
-              labelClasses="text-lg text-white mt-s2 !mb-[4px]"
-              valueClasses="text-lg font-light"
-              classes="!mb-s2"
-            />
+              <span className="font-semibold">Change</span>
+            </label>
+          </div>
+          <FormInput
+            label="Name"
+            placeholder="First and last Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            name="name"
+            labelClasses="text-lg text-white mt-s2 !mb-[4px]"
+            valueClasses="text-lg font-light"
+            classes="!mb-s2"
+          />
 
-            <FormInput
-              label="Email"
-              value={email}
-              placeholder="Your email"
-              onChange={(e) => setEmail(e.target.value)}
-              name="email"
-              labelClasses="text-lg text-white !mb-[4px]"
-              valueClasses="text-lg font-light"
-              classes="!mb-s2"
-            />
+          <FormInput
+            label="Email"
+            value={email}
+            placeholder="Your email"
+            onChange={(e) => setEmail(e.target.value)}
+            name="email"
+            labelClasses="text-lg text-white !mb-[4px]"
+            valueClasses="text-lg font-light"
+            classes="!mb-s2"
+          />
 
-            <MultipleSelectInput
-              text="Native Languages"
-              answer={nativeLanguage}
-              options={supportedLanguages}
-              onChange={(selectedOption) => {
-                handleMultipleLanguages(selectedOption);
-                console.log(nativeLanguage);
+          <MultipleSelectInput
+            text="Native Languages"
+            answer={nativeLanguage}
+            options={supportedLanguages}
+            onChange={(selectedOption) => {
+              handleMultipleLanguages(selectedOption);
+            }}
+            labelClasses="!text-lg !text-white !mb-[4px]"
+            valueClasses="!text-lg !text-white ml-s1 font-light"
+            classes="!mb-s2"
+            hideCheckmark={true}
+          />
+
+          <CustomSelectInput
+            text="Country"
+            value={country}
+            options={countriesAndCodes}
+            onChange={(selectedOption) => setCountry(selectedOption)}
+            labelClasses="text-lg text-white !mb-[px]"
+            valueClasses="text-lg !text-white ml-s1 font-light"
+          />
+
+          <div className="mt-s3 text-xl font-bold text-white">
+            Payment method
+          </div>
+
+          <div className="mt-s2">
+            <CheckBox
+              label="Paypal"
+              onChange={() => handleCheckBox('paypal')}
+              name="checkbox"
+              labelClasses="text-lg mt-[3px]"
+              isChecked={checkedState === 'paypal'}
+            />
+          </div>
+          {checkedState == 'paypal' && (
+            <FormInput
+              value={paypal}
+              placeholder="Name, username, email"
+              onChange={(e) => {
+                setPaypal(e.target.value);
+                setPaymentDetails(e.target.value);
               }}
-              labelClasses="!text-lg !text-white !mb-[4px]"
-              valueClasses="!text-lg !text-white ml-s1 font-light"
+              labelClasses="text-lg text-white mt-s2"
+              valueClasses="text-lg font-light"
               classes="!mb-s2"
-              hideCheckmark={true}
             />
+          )}
 
-            <CustomSelectInput
-              text="Country"
-              value={country}
-              options={countriesAndCodes}
-              onChange={(selectedOption) => setCountry(selectedOption)}
-              labelClasses="text-lg text-white !mb-[px]"
-              valueClasses="text-lg !text-white ml-s1 font-light"
+          <div className="mt-s1">
+            <CheckBox
+              label="Xoom"
+              onChange={() => handleCheckBox('xoom')}
+              name="checkbox"
+              labelClasses="text-lg mt-[5px]"
+              isChecked={checkedState === 'xoom'}
             />
+          </div>
 
-            <div className="mt-s3 text-xl font-bold text-white">
-              Payment method
-            </div>
+          {checkedState === 'xoom' && (
+            <FormInput
+              value={xoom}
+              placeholder="Name, username, email"
+              onChange={(e) => {
+                setXoom(e.target.value);
+                setPaymentDetails(e.target.value);
+              }}
+              labelClasses="text-lg text-white mt-s2"
+              valueClasses="text-lg font-light"
+              classes="!mb-s2"
+            />
+          )}
 
-            <div className="mt-s2">
-              <CheckBox
-                label="Paypal"
-                onChange={() => handleCheckBox('paypal')}
-                name="checkbox"
-                labelClasses="text-lg mt-[3px]"
-                isChecked={checkedState === 'paypal'}
-              />
-            </div>
-            {checkedState == 'paypal' && (
-              <FormInput
-                value={paypal}
-                placeholder="Name, username, email"
-                onChange={(e) => {
-                  setPaypal(e.target.value);
-                  setPaymentDetails(e.target.value);
-                }}
-                labelClasses="text-lg text-white mt-s2"
-                valueClasses="text-lg font-light"
-                classes="!mb-s2"
-              />
-            )}
+          <div className="mt-s1">
+            <CheckBox
+              label="Remitly"
+              onChange={() => handleCheckBox('remitly')}
+              name="checkbox"
+              labelClasses="text-lg mt-[5px]"
+              isChecked={checkedState === 'remitly'}
+            />
+          </div>
 
-            <div className="mt-s1">
-              <CheckBox
-                label="Xoom"
-                onChange={() => handleCheckBox('xoom')}
-                name="checkbox"
-                labelClasses="text-lg mt-[5px]"
-                isChecked={checkedState === 'xoom'}
-              />
-            </div>
+          {checkedState === 'remitly' && (
+            <FormInput
+              value={remitly}
+              placeholder="Name, username, email"
+              onChange={(e) => {
+                setRemitly(e.target.value);
+                setPaymentDetails(e.target.value);
+              }}
+              labelClasses="text-lg text-white mt-s2"
+              valueClasses="text-lg font-light"
+              classes="!mb-s2"
+            />
+          )}
 
-            {checkedState === 'xoom' && (
-              <FormInput
-                value={xoom}
-                placeholder="Name, username, email"
-                onChange={(e) => {
-                  setXoom(e.target.value);
-                  setPaymentDetails(e.target.value);
-                }}
-                labelClasses="text-lg text-white mt-s2"
-                valueClasses="text-lg font-light"
-                classes="!mb-s2"
-              />
-            )}
-
-            <div className="mt-s1">
-              <CheckBox
-                label="Remitly"
-                onChange={() => handleCheckBox('remitly')}
-                name="checkbox"
-                labelClasses="text-lg mt-[5px]"
-                isChecked={checkedState === 'remitly'}
-              />
-            </div>
-
-            {checkedState === 'remitly' && (
-              <FormInput
-                value={remitly}
-                placeholder="Name, username, email"
-                onChange={(e) => {
-                  setRemitly(e.target.value);
-                  setPaymentDetails(e.target.value);
-                }}
-                labelClasses="text-lg text-white mt-s2"
-                valueClasses="text-lg font-light"
-                classes="!mb-s2"
-              />
-            )}
-
-            <div className="float-right mt-s4 h-[47px] w-[134px]">
-              <Button
-                theme="light"
-                onClick={handleUpdate}
-                isLoading={loader === 'update'}
-              >
-                Update
-              </Button>
-            </div>
+          <div className="float-right mt-s4 h-[47px] w-[134px]">
+            <Button
+              theme="light"
+              onClick={handleUpdate}
+              isLoading={loader === 'update'}
+            >
+              Update
+            </Button>
           </div>
         </div>
       </Popup>

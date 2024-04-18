@@ -56,13 +56,15 @@ const Dashboard = () => {
       ],
     };
 
-    if (translatorInfo.data.pendingJobsCompleted == 0 && translatorInfo.data.moderationJobsCompleted == 0 && translatorInfo.data.overlayJobsCompleted ==0) {
+    if (
+      translatorInfo.data.pendingJobsCompleted == 0 &&
+      translatorInfo.data.moderationJobsCompleted == 0 &&
+      translatorInfo.data.overlayJobsCompleted == 0
+    ) {
       setPieChartData(null);
-    }else{
+    } else {
       setPieChartData(data);
     }
-
-  
   };
 
   const handleAccept = async () => {
@@ -252,7 +254,6 @@ const Dashboard = () => {
                       <div className="h-full max-h-[221px] w-full">
                         <PieChart data={pieChartData ? pieChartData : null} />
                       </div>
-
                     </div>
                     <div className="flex w-1/2 flex-col justify-center pl-s1">
                       <div className="text-lg font-bold text-white">
@@ -261,8 +262,11 @@ const Dashboard = () => {
                           ? 'Job completed'
                           : 'Jobs completed'}
                       </div>
-                      {jobTypes.slice(1).map((job) => (
-                        <div className="mt-s1 flex w-full flex-row items-center">
+                      {jobTypes.slice(1).map((job, i) => (
+                        <div
+                          className="mt-s1 flex w-full flex-row items-center"
+                          key={i}
+                        >
                           <div
                             className={`mr-s1 h-3.5	w-3.5 rounded-full ${job.class}`}
                           ></div>
@@ -303,7 +307,7 @@ const Dashboard = () => {
                               height={32}
                               className="rounded-full"
                             />
-                            <div className="mt-[3px] text-base font-bold text-white ml-s2">
+                            <div className="mt-[3px] ml-s2 text-base font-bold text-white">
                               {formatNameString(translator.name)}
                             </div>
                           </div>
