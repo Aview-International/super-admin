@@ -29,6 +29,10 @@ const Subtitling = () => {
   const handleVerify = async () => {
     await approveReferralValidationImage(reviewerId).then(() => {
         successHandler("Verified successfully!");
+        setReviewerName(null);
+        setReviewerImage(null);
+        setReviewerId(null);
+        setPopup(false);
     })
     console.log('hello');
   }
