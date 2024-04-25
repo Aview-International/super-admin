@@ -89,3 +89,14 @@ export const getFlaggedJobs = async () => {
 
   return response;
 }
+
+export const getReviewersWithValidationImages = async() =>{
+  const response = axiosInstance.post(baseUrl + 'admin/get-reviewers-with-validation-images');
+  return response;
+}
+
+export const approveReferralValidationImage = async(translatorId) => {
+  const response = axiosInstance.post(baseUrl + 'admin/approve-referral-validation-image', { translatorId });
+  return response;
+
+}

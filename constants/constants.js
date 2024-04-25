@@ -287,6 +287,11 @@ export const DASHBOARD_NAVLINKS = [
     route: '/reviewer-flags',
   },
   {
+    text: 'Reviewer Validation',
+    image: home,
+    route: '/reviewer-referral-verification',
+  },
+  {
     text: 'Q/A Inquiries',
     image: home,
     route: '/inquiries',
