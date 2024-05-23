@@ -67,45 +67,6 @@ export const approveTranslation = async (
   });
 };
 
-export const downloadYoutubeVideo = async (id) => {
-  const filename = id + '.mp4';
-  const response = await axiosInstance.post(
-    baseUrl + 'admin/download-youtube-video',
-    { id },
-    { responseType: 'blob' }
-  );
-
-  const blob = new Blob([response.data]);
-
-  // create anchor element
-  const downloadLink = document.createElement('a');
-  downloadLink.href = URL.createObjectURL(blob);
-  downloadLink.download = filename;
-  downloadLink.click();
-  // cleanup
-  URL.revokeObjectURL(downloadLink.href);
-};
-
-export const uploadFinalVideo = async (
-  file,
-  jobId,
-  objectKey,
-  date,
-  creatorId,
-  dubbedAudioKey
-) => {
-  let formData = new FormData();
-  formData.append('file', file);
-  formData.append('creatorId', creatorId);
-  formData.append('jobId', jobId);
-  formData.append('date', date);
-  formData.append('objectKey', objectKey);
-  formData.append('dubbedAudioKey', dubbedAudioKey);
-  await axiosInstance.post(baseUrl + 'admin/upload-final-video', formData, {
-    'Content-Type': 'multipart/form-data',
-  });
-};
-
 export const getYoutubeVideoData = async (videoId) => {
   const res = await axiosInstance.post(baseUrl + 'admin/get-youtube-data', {
     videoId,
@@ -189,66 +150,6 @@ export const postToYouTube = async (
 
   console.log(response);
 };
-
-export const uploadManualVideoTranscription = async (video, setProgress) => {
-  let formData = new FormData();
-  formData.append('video', video);
-  const response = await axiosInstance({
-    method: 'POST',
-    url: baseUrl + 'transcription/manual-transcription',
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-    data: formData,
-    onUploadProgress: (progressEvent) =>
-      setProgress(
-        Math.round((progressEvent.loaded * 100) / progressEvent.total)
-      ),
-  });
-  return response.data;
-};
-
-export const uploadManualSrtTranslation = async (
-  srt,
-  langugageCode,
-  languageName
-) => {
-  let formData = new FormData();
-  formData.append('srt', srt);
-  formData.append('langugageCode', langugageCode);
-  formData.append('languageName', languageName);
-  const response = await axiosInstance({
-    method: 'POST',
-    url: baseUrl + 'admin/manual-translation',
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-    data: formData,
-  });
-  return response.data;
-};
-
-export const uploadManualSrtDubbing = async ({ srt, voiceId, multiVoice }) => {
-  let formData = new FormData();
-  formData.append('srt', srt);
-  if (multiVoice) {
-    formData.append('multipleVoices', multiVoice);
-  } else {
-    formData.append('voiceId', voiceId);
-  }
-  const response = await axiosInstance({
-    method: 'POST',
-    url: baseUrl + 'admin/manual-dubbing',
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-    data: formData,
-  });
-  return response.data;
-};
-
-export const getElevenLabsVoices = async () =>
-  (await axiosInstance.get('dubbing/get-voices')).data;
 
 export const transcribeSocialLink = async (body) =>
   await axiosInstance.post('transcription/social', body);
@@ -340,7 +241,11 @@ export const getAllJobs = async (translatorId) => {
   return axiosInstance.post('admin/get-all-jobs', { translatorId });
 };
 
-export const finishOverlayJob = async (translatorId, jobId, operationsArray) => {
+export const finishOverlayJob = async (
+  translatorId,
+  jobId,
+  operationsArray
+) => {
   return axiosInstance.post(baseUrl + 'admin/finish-overlay-job', {
     translatorId,
     jobId,
