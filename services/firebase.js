@@ -1,13 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
-import {
-  getDatabase,
-  ref,
-  get,
-  onValue,
-  update,
-  serverTimestamp,
-} from 'firebase/database';
+import { getDatabase, ref, get, update } from 'firebase/database';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -37,61 +30,61 @@ export const signInWithGoogle = async () => {
   return response;
 };
 
-export const getAllPendingTranscriptions = async (callback) => {
-  const transcriptionRef = ref(database, `admin-jobs/pending/transcription`);
-  onValue(transcriptionRef, (snapshot) => {
-    callback(snapshot.val());
-  });
-};
+// export const getAllPendingTranscriptions = async (callback) => {
+//   const transcriptionRef = ref(database, `admin-jobs/pending/transcription`);
+//   onValue(transcriptionRef, (snapshot) => {
+//     callback(snapshot.val());
+//   });
+// };
 
-export const getAllJobsUnderReview = async (callback) => {
-  const database = getDatabase();
-  const jobsRef = ref(database, 'user-jobs/pending');
+// export const getAllJobsUnderReview = async (callback) => {
+//   const database = getDatabase();
+//   const jobsRef = ref(database, 'user-jobs/pending');
 
-  get(jobsRef)
-    .then((usersSnapshot) => {
-      let allUnderReviewJobs = {};
+//   get(jobsRef)
+//     .then((usersSnapshot) => {
+//       let allUnderReviewJobs = {};
 
-      usersSnapshot.forEach((userSnapshot) => {
-        userSnapshot.forEach((jobSnapshot) => {
-          const job = jobSnapshot.val();
-          const jobId = jobSnapshot.key;
-          if (job.status === 'under review') {
-            allUnderReviewJobs[jobId] = job;
-          }
-        });
-      });
+//       usersSnapshot.forEach((userSnapshot) => {
+//         userSnapshot.forEach((jobSnapshot) => {
+//           const job = jobSnapshot.val();
+//           const jobId = jobSnapshot.key;
+//           if (job.status === 'under review') {
+//             allUnderReviewJobs[jobId] = job;
+//           }
+//         });
+//       });
 
-      callback(allUnderReviewJobs);
-    })
-    .catch((error) => {
-      console.error('Firebase read failed: ', error);
-    });
-};
+//       callback(allUnderReviewJobs);
+//     })
+//     .catch((error) => {
+//       console.error('Firebase read failed: ', error);
+//     });
+// };
 
-export const getAllPendingTranscriptionsApproval = async (callback) => {
-  const transcriptionRef = ref(
-    database,
-    `admin-jobs/pending/transcription-approve`
-  );
-  onValue(transcriptionRef, (snapshot) => {
-    callback(snapshot.val());
-  });
-};
+// export const getAllPendingTranscriptionsApproval = async (callback) => {
+//   const transcriptionRef = ref(
+//     database,
+//     `admin-jobs/pending/transcription-approve`
+//   );
+//   onValue(transcriptionRef, (snapshot) => {
+//     callback(snapshot.val());
+//   });
+// };
 
-export const getAllPendingTranslations = async (callback) => {
-  const translationRef = ref(database, `admin-jobs/pending/translation`);
-  onValue(translationRef, (snapshot) => {
-    callback(snapshot.val());
-  });
-};
+// export const getAllPendingTranslations = async (callback) => {
+//   const translationRef = ref(database, `admin-jobs/pending/translation`);
+//   onValue(translationRef, (snapshot) => {
+//     callback(snapshot.val());
+//   });
+// };
 
-export const getAllPendingVideoEdits = async (callback) => {
-  const dubbingRef = ref(database, `admin-jobs/pending/dubbing`);
-  onValue(dubbingRef, (snapshot) => {
-    callback(snapshot.val());
-  });
-};
+// export const getAllPendingVideoEdits = async (callback) => {
+//   const dubbingRef = ref(database, `admin-jobs/pending/dubbing`);
+//   onValue(dubbingRef, (snapshot) => {
+//     callback(snapshot.val());
+//   });
+// };
 
 export const getAllPendingDistribution = async () => {
   const res = await get(ref(database, `admin-jobs/pending/video-edit`)).then(
