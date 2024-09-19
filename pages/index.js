@@ -29,28 +29,28 @@ const Home = () => {
       <PageTitle title="Login" />
       <div className="fixed top-2/4 left-2/4 w-[min(400px,90%)] -translate-x-2/4 -translate-y-2/4 text-white">
         <h2 className="text-center text-7xl md:text-8xl">Log In</h2>
-        (!hasSubmitted ? (
-        <form onSubmit={handleSSO}>
-          <FormInput
-            placeholder="Email Address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            isValid={emailValidator(email)}
-            hideCheckmark
-            type="email"
-            name="email"
-          />
-          <Button isLoading={isLoading} type>
-            Continue
-          </Button>
-        </form>
+        {!hasSubmitted ? (
+          <form onSubmit={handleSSO}>
+            <FormInput
+              placeholder="Email Address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              isValid={emailValidator(email)}
+              hideCheckmark
+              type="email"
+              name="email"
+            />
+            <Button isLoading={isLoading} type>
+              Continue
+            </Button>
+          </form>
         ) : (
-        <p className="text-center text-xl">
-          An email is on the way 🚀
-          <br />
-          Check your inbox to proceed
-        </p>
-        ))
+          <p className="text-center text-xl">
+            An email is on the way 🚀
+            <br />
+            Check your inbox to proceed
+          </p>
+        )}
       </div>
     </>
   );
