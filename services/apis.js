@@ -223,11 +223,8 @@ export const finishModerationJob = async (jobId, translatorId, updatedSrt) => {
 };
 
 export const getS3DownloadLink = async ({ userId, timestamp, lang }) =>
-  (
-    await axiosInstance.get(
-      `admin/admin-download/${userId}/${timestamp}/${lang}`
-    )
-  ).data;
+  (await axiosInstance.get(`admin/download/${userId}/${timestamp}/${lang}`))
+    .data;
 
 export const getDownloadLink = async (s3Path) => {
   const response = axiosInstance.post(baseUrl + 'admin/download-object', {

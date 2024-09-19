@@ -24,7 +24,6 @@ import { authStatus } from '../../utils/authStatus';
 import Cookies from 'js-cookie';
 import Timer from '../../components/UI/Timer';
 
-
 const QA = () => {
   const [subtitles, setSubtitles] = useState([]);
   const [englishSubtitles, setEnglishSubtitles] = useState([]);
@@ -37,17 +36,15 @@ const QA = () => {
   const [content, setContent] = useState('video');
   const [flags, setFlags] = useState([]);
   const [downloadLink, setDownloadLink] = useState(null);
-  const [translatorId, setTranslatorId] = useState(null);   
+  const [translatorId, setTranslatorId] = useState(null);
 
   const router = useRouter();
   const { jobId } = router.query;
 
   const { width: windowWidth, height: windowHeight } = useWindowSize();
 
-
   const handleTranslator = async (userId) => {
     const translator = await getTranslatorFromUserId(userId);
-    console.log(translator.data._id);
     setTranslatorId(translator.data._id);
   };
 
@@ -59,32 +56,30 @@ const QA = () => {
   };
 
   const handleResetSRT = async () => {
-    try{
-        setLoader('reset');
-        await getSrt(job.creatorId, jobId, lang)
+    try {
+      setLoader('reset');
+      await getSrt(job.creatorId, jobId, lang)
         .then(() => {
-            setLoader('');
-            SuccessHandler("Changes discarded.");
+          setLoader('');
+          SuccessHandler('Changes discarded.');
         })
         .catch((error) => {
-            setLoader('');
-            ErrorHandler("Failed to discard changes", error);
+          setLoader('');
+          ErrorHandler('Failed to discard changes', error);
         });
-    }catch(error) {
-        ErrorHandler(error);
+    } catch (error) {
+      ErrorHandler(error);
     }
-
-  }
+  };
 
   const handleApprove = async () => {
     try {
       setLoader('approve');
       console.log(jobId, translatorId, getSrtText());
-      await finishModerationJob(jobId, translatorId, getSrtText())
-        .then(() => {
-          setLoader('');
-          setPopupSubmit(true);
-        })
+      await finishModerationJob(jobId, translatorId, getSrtText()).then(() => {
+        setLoader('');
+        setPopupSubmit(true);
+      });
     } catch (error) {
       ErrorHandler(error);
     }
@@ -98,22 +93,20 @@ const QA = () => {
   };
 
   const getJob = async (jobId, translatorId) => {
-
     try {
-        const job = await getJobAndVerify(translatorId, jobId)
-        setJob(job.data);
-        setIsLoading(false);
-    }catch(error) {
-        ErrorHandler(error);
+      const job = await getJobAndVerify(translatorId, jobId);
+      setJob(job.data);
+      setIsLoading(false);
+    } catch (error) {
+      ErrorHandler(error);
     }
-  }
+  };
 
   const getSrt = async (creatorId, jobId, key) => {
     const data = await getRawSRT(
       `dubbing-tasks/${creatorId}/${jobId}/${key}.srt`
     );
     let processedSubtitles = [];
-
 
     const lines = data.split('\n');
 
@@ -170,21 +163,17 @@ const QA = () => {
   };
 
   useEffect(() => {
-    const token = Cookies.get("session");
+    const token = Cookies.get('session');
     const userId = authStatus(token).data.user_id;
-    console.log(token);
-    console.log(userId);
 
     handleTranslator(userId);
-
-  },[]);
+  }, []);
 
   useEffect(() => {
-    if(jobId && translatorId) {
+    if (jobId && translatorId) {
       getJob(jobId, translatorId);
     }
-  },[jobId, translatorId]);
-
+  }, [jobId, translatorId]);
 
   useEffect(() => {
     if (job) {
@@ -234,12 +223,19 @@ const QA = () => {
         </div>
       </Popup>
       {isLoading && <FullScreenLoader />}
-      {job &&
-      <div className="relative w-full h-screen">
-            <div className="fixed top-0 right-0 py-s2 px-s5 z-1000">
-                <Timer translatorId={translatorId} jobId={jobId} jobType={"moderation"} setIsLoading={setIsLoading} jobTimestamp={job ? job.moderationStatus:null}/>
-            </div>
-      </div>}
+      {job && (
+        <div className="relative h-screen w-full">
+          <div className="z-1000 fixed top-0 right-0 py-s2 px-s5">
+            <Timer
+              translatorId={translatorId}
+              jobId={jobId}
+              jobType={'moderation'}
+              setIsLoading={setIsLoading}
+              jobTimestamp={job ? job.moderationStatus : null}
+            />
+          </div>
+        </div>
+      )}
       <div className={`flex `}>
         <div
           className={`fixed left-0 top-0 flex h-screen w-1/2 flex-col py-s5 pl-s5 pr-s1`}
@@ -249,7 +245,7 @@ const QA = () => {
             <div className="h-[43px] w-fit rounded-lg bg-white px-s2 py-[9px] text-xl text-indigo-2">
               {job ? job.translatedLanguage : ''}
             </div>
-            {job && flags.length > 0 && (
+            {job && flags?.length > 0 && (
               <div className="ml-auto">
                 <div className="flex flex-row items-center">
                   <Image src={warning}></Image>
@@ -289,10 +285,16 @@ const QA = () => {
           <div
             className={`fixed right-0 top-0 flex h-screen w-1/2 flex-col py-s5 pr-s5 pl-s1`}
           >
-             <div className="absolute top-0 right-0 py-s2 px-s5 bg-black">
-                <Timer translatorId={translatorId} jobId={jobId} jobType={"moderation"} setIsLoading={setIsLoading} jobTimestamp={job ? job.moderationStatus:null}/>
+            <div className="absolute top-0 right-0 bg-black py-s2 px-s5">
+              <Timer
+                translatorId={translatorId}
+                jobId={jobId}
+                jobType={'moderation'}
+                setIsLoading={setIsLoading}
+                jobTimestamp={job ? job.moderationStatus : null}
+              />
             </div>
-            <h2 className="mb-s2 text-2xl text-white w-[300px]">Content</h2>
+            <h2 className="mb-s2 w-[300px] text-2xl text-white">Content</h2>
             <div className="flex flex-row gap-s2">
               <div
                 className={`px-s2 py-[9px] ${
