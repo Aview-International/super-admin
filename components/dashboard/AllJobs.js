@@ -1,13 +1,6 @@
 import { useEffect, useState } from 'react';
 import ErrorHandler from '../../utils/errorHandler';
-import {
-  getTranslatorFromUserId,
-  getAllJobs,
-  acceptJob,
-  getDownloadLink,
-} from '../../services/apis';
-import Cookies from 'js-cookie';
-import { authStatus } from '../../utils/authStatus';
+import { getAllJobs, acceptJob, getDownloadLink } from '../../services/apis';
 
 const AllJobs = ({
   setPopupPreview,
@@ -16,16 +9,13 @@ const AllJobs = ({
   setPreviewJobVideoLink,
 }) => {
   const [jobs, setJobs] = useState([]);
-  const [translatorId, setTranslatorId] = useState(null);
 
-  const handleTranslator = async (userId) => {
-    const translator = await getTranslatorFromUserId(userId);
-    console.log(translator.data._id);
-    setTranslatorId(translator.data._id);
+  const handleTranslator = async () => {
+    getJobs();
   };
 
   const getJobs = async () => {
-    const res = await getAllJobs(translatorId);
+    const res = await getAllJobs();
     const resData = res.data;
     const pending = resData
       ? Object.values(resData).map((item, i) => ({
@@ -37,11 +27,12 @@ const AllJobs = ({
   };
 
   const handleAccept = async (jobId, jobType) => {
+    let translatorId;
     try {
       if (translatorId == null) {
         throw new Error('Invalid translatorId.');
       }
-      await acceptJob(translatorId, jobId, jobType);
+      await acceptJob(jobId, jobType);
 
       if (jobType == 'moderation') {
         window.open(`/moderation?jobId=${jobId}`, '_blank');
@@ -66,23 +57,8 @@ const AllJobs = ({
   };
 
   useEffect(() => {
-    const token = Cookies.get('session');
-    const userId = authStatus(token).data.user_id;
-    console.log(token);
-    console.log(userId);
-
-    handleTranslator(userId);
+    handleTranslator();
   }, []);
-
-  useEffect(() => {
-    if (translatorId) {
-      getJobs();
-    }
-  }, [translatorId]);
-
-  useEffect(() => {
-    console.log(jobs);
-  }, [jobs]);
 
   return (
     <>

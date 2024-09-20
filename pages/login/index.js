@@ -3,14 +3,13 @@ import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
 import Loader from '../../public/loaders/ButtonLoader';
 import { useEffect } from 'react';
 import ErrorHandler from '../../utils/errorHandler';
-import { firebaseAuth } from '../../services/firebase';
+import { auth } from '../../services/firebase';
 import { useRouter } from 'next/router';
 
 const Login = () => {
   const router = useRouter();
   const handleSSOWithCode = async () => {
     try {
-      const auth = firebaseAuth;
       if (isSignInWithEmailLink(auth, window.location.href)) {
         let email = window.localStorage.getItem('emailForSignIn');
         if (!email)

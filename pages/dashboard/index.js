@@ -5,24 +5,18 @@ import OverlayJobs from '../../components/dashboard/OverlayJobs';
 import ModerationJobs from '../../components/dashboard/ModerationJobs';
 import AllJobs from '../../components/dashboard/AllJobs';
 import PageTitle from '../../components/SEO/PageTitle';
-import {
-  getTranslatorFromUserId,
-  getTranslatorLeaderboards,
-  acceptJob,
-} from '../../services/apis';
-import { authStatus } from '../../utils/authStatus';
-import Cookies from 'js-cookie';
+import { getTranslatorLeaderboards, acceptJob } from '../../services/apis';
 import ReviewerSettingsPopup from '../../components/dashboard/ReviewerSettingsPopup';
 import PieChart from '../../components/UI/PieChart';
 import Popup from '../../components/UI/PopupNormal';
 import Button from '../../components/UI/Button';
 import ErrorHandler from '../../utils/errorHandler';
 import Image from 'next/image';
+import { useSelector } from 'react-redux';
 
 const Dashboard = () => {
+  const translator = useSelector((data) => data.user);
   const [selectedOption, setSelectedOption] = useState('all');
-  const [translator, setTranslator] = useState(null);
-  const [translatorId, setTranslatorId] = useState(null);
   const [settings, setSettings] = useState(false);
   const [leaderboards, setLeaderboards] = useState([]);
   const [pieChartData, setPieChartData] = useState(null);
@@ -32,22 +26,15 @@ const Dashboard = () => {
   const [previewJobType, setPreviewJobType] = useState(null);
 
   const handleTranslator = async () => {
-    const token = Cookies.get('session');
-    const userId = authStatus(token).data.user_id;
-
-    const translatorInfo = await getTranslatorFromUserId(userId);
-    setTranslator(translatorInfo.data);
-    setTranslatorId(translatorInfo.data._id);
-
     const data = {
       labels: ['Red', 'Blue', 'Yellow'],
       datasets: [
         {
           label: '# of Votes',
           data: [
-            translatorInfo.data.pendingJobsCompleted,
-            translatorInfo.data.moderationJobsCompleted,
-            translatorInfo.data.overlayJobsCompleted,
+            translator.pendingJobsCompleted,
+            translator.moderationJobsCompleted,
+            translator.overlayJobsCompleted,
           ],
           backgroundColor: ['#FF3939', '#FC00FF', '#00FFFF'],
           borderColor: ['#FF3939', '#FC00FF', '#00FFFF'],
@@ -57,9 +44,9 @@ const Dashboard = () => {
     };
 
     if (
-      translatorInfo.data.pendingJobsCompleted == 0 &&
-      translatorInfo.data.moderationJobsCompleted == 0 &&
-      translatorInfo.data.overlayJobsCompleted == 0
+      translator.pendingJobsCompleted == 0 &&
+      translator.moderationJobsCompleted == 0 &&
+      translator.overlayJobsCompleted == 0
     ) {
       setPieChartData(null);
     } else {
@@ -81,8 +68,7 @@ const Dashboard = () => {
 
   const handleAcceptPendingJob = async (jobId) => {
     try {
-      if (translatorId == null) throw new Error('Invalid translatorId.');
-      await acceptJob(translatorId, jobId, 'pending');
+      await acceptJob(jobId, 'pending');
 
       window.open(`/pending?jobId=${jobId}`, '_blank');
     } catch (error) {
@@ -92,8 +78,7 @@ const Dashboard = () => {
 
   const handleAcceptOverlayJob = async (jobId) => {
     try {
-      if (translatorId == null) throw new Error('Invalid translatorId.');
-      await acceptJob(translatorId, jobId, 'overlay');
+      await acceptJob(jobId, 'overlay');
 
       window.open(`/overlays?jobId=${jobId}`, '_blank');
     } catch (error) {
@@ -103,9 +88,7 @@ const Dashboard = () => {
 
   const handleAcceptModerationjob = async (jobId) => {
     try {
-      if (translatorId == null) throw new Error('Invalid translatorId.');
-
-      await acceptJob(translatorId, jobId, 'moderation');
+      await acceptJob(jobId, 'moderation');
       window.open(`/moderation?jobId=${jobId}`, '_blank');
     } catch (error) {
       ErrorHandler(error);
@@ -235,11 +218,11 @@ const Dashboard = () => {
                   <div className="text-2xl text-white">Earnings</div>
                   <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
                   <div className="mb-s1 text-lg text-white">Lifetime</div>
-                  <div className="rounded-lg bg-white-transparent p-s1.5 text-lg text-5xl font-bold text-white">
+                  <div className="rounded-lg bg-white-transparent p-s1.5 text-lg font-bold text-white">
                     ${translator ? formatMoney(translator.totalPayment) : ''}
                   </div>
                   <div className="mt-s4 mb-s1 text-lg text-white">Weekly</div>
-                  <div className="rounded-lg bg-white-transparent p-s1.5 text-lg text-5xl font-bold text-white">
+                  <div className="rounded-lg bg-white-transparent p-s1.5 text-lg font-bold text-white">
                     ${translator ? formatMoney(translator.paymentOwed) : ''}
                   </div>
                 </div>

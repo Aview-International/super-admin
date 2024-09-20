@@ -8,14 +8,11 @@ import { SupportedLanguages } from '../../constants/constants';
 import {
   finishPendingJob,
   getDownloadLink,
-  getTranslatorFromUserId,
   getJobAndVerify,
   flagJob,
   getCreatorProfile,
 } from '../../services/apis';
 import Check from '../../public/img/icons/check-circle-green.svg';
-import Cookies from 'js-cookie';
-import { authStatus } from '../../utils/authStatus';
 import Button from '../../components/UI/Button';
 import Image from 'next/image';
 import Timer from '../../components/UI/Timer';
@@ -24,7 +21,6 @@ import Textarea from '../../components/FormComponents/Textarea';
 const Pending = () => {
   const [job, setJob] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [translatorId, setTranslatorId] = useState(null);
   const [videoLink, setVideoLink] = useState(null);
   const [originalVideoLink, setOriginalVideoLink] = useState(null);
   const [creatorName, setCreatorName] = useState(null);
@@ -40,7 +36,7 @@ const Pending = () => {
   const handleApproval = async () => {
     try {
       setLoader('approve');
-      await finishPendingJob(translatorId, jobId).then(() => {
+      await finishPendingJob(jobId).then(() => {
         setLoader('');
         setSubmitHeader('Approved!');
         setPopupApprove(true);
@@ -56,8 +52,7 @@ const Pending = () => {
       if (!flagReason) {
         throw new Error(`Invalid flag reason`);
       }
-      console.log(translatorId, jobId, flagReason);
-      await flagJob(translatorId, jobId, flagReason, 'pending').then(() => {
+      await flagJob(jobId, flagReason, 'pending').then(() => {
         setLoader('');
         setPopupFlag(false);
         setSubmitHeader('Flagged!');
@@ -69,9 +64,9 @@ const Pending = () => {
     }
   };
 
-  const getJob = async (jobId, translatorId) => {
+  const getJob = async (jobId) => {
     try {
-      const job = await getJobAndVerify(translatorId, jobId);
+      const job = await getJobAndVerify(jobId);
       setJob(job.data);
       setIsLoading(false);
     } catch (error) {
@@ -79,13 +74,8 @@ const Pending = () => {
     }
   };
 
-  const handleTranslator = async (userId) => {
-    const translator = await getTranslatorFromUserId(userId);
-    setTranslatorId(translator.data._id);
-  };
-
   const handleVideo = async () => {
-    if (job && translatorId) {
+    if (job) {
       const res = await getCreatorProfile(job.creatorId);
       const resData = res.data;
 
@@ -106,23 +96,16 @@ const Pending = () => {
   };
 
   useEffect(() => {
-    const token = Cookies.get('session');
-    const userId = authStatus(token).data.user_id;
-
-    handleTranslator(userId);
-  }, []);
-
-  useEffect(() => {
-    if (jobId && translatorId) {
-      getJob(jobId, translatorId);
+    if (jobId) {
+      getJob(jobId);
     }
-  }, [jobId, translatorId]);
+  }, [jobId]);
 
   useEffect(() => {
-    if (job && translatorId) {
+    if (job) {
       handleVideo();
     }
-  }, [job, translatorId]);
+  }, [job]);
 
   return (
     <>
@@ -172,7 +155,6 @@ const Pending = () => {
       </Popup>
       <div className="absolute top-0 right-0 py-s2 px-s2">
         <Timer
-          translatorId={translatorId}
           jobId={jobId}
           jobType={'pending'}
           setIsLoading={setIsLoading}

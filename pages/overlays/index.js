@@ -12,17 +12,15 @@ import trash from '/public/img/icons/trash.svg';
 import plus from '/public/img/icons/plus.svg';
 import ErrorHandler from '../../utils/errorHandler';
 import { useRouter } from 'next/router';
-import { 
-  getDownloadLink, 
-  finishOverlayJob, 
-  getTranslatorFromUserId,
+import {
+  getDownloadLink,
+  finishOverlayJob,
   getJobAndVerify,
   flagJob,
-  getCreatorProfile, } from '../../services/apis';
+  getCreatorProfile,
+} from '../../services/apis';
 import Popup from '../../components/UI/PopupWithBorder';
 import FullScreenLoader from '../../public/loaders/FullScreenLoader';
-import { authStatus } from '../../utils/authStatus';
-import Cookies from 'js-cookie';
 import Timer from '../../components/UI/Timer';
 import Textarea from '../../components/FormComponents/Textarea';
 
@@ -42,11 +40,10 @@ const Shorts_subtitling = () => {
   const [job, setJob] = useState(null);
   const [loader, setLoader] = useState('');
   const [popupSubmit, setPopupSubmit] = useState(false);
-  const [translatorId, setTranslatorId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [popupFlag, setPopupFlag] = useState(false);
   const [flagReason, setFlagReason] = useState(null);
-  const [submitHeader, setSubmitHeader] = useState("Submitted!");
+  const [submitHeader, setSubmitHeader] = useState('Submitted!');
   const [videoDuration, setVideoDuration] = useState(null);
   const [videoWidth, setVideoWidth] = useState(null);
   const [videoHeight, setVideoHeight] = useState(null);
@@ -56,7 +53,7 @@ const Shorts_subtitling = () => {
   const { jobId } = router.query;
 
   const handleVideo = async () => {
-    if (job && translatorId) {
+    if (job) {
       const res = await getCreatorProfile(job.creatorId);
       const resData = res.data;
 
@@ -67,26 +64,20 @@ const Shorts_subtitling = () => {
 
       const downloadLink = await getDownloadLink(videoPath);
 
-        setVideoLink(downloadLink.data);
-      }
-  }
-
-  const handleTranslator = async (userId) => {
-    const translator = await getTranslatorFromUserId(userId);
-    setTranslatorId(translator.data._id);
+      setVideoLink(downloadLink.data);
+    }
   };
-
 
   const handleFlag = async () => {
     try {
       setLoader('flag');
-      if (!flagReason ){
+      if (!flagReason) {
         throw new Error(`Invalid flag reason`);
       }
-      await flagJob(translatorId, jobId, flagReason, "overlay").then(() => {
+      await flagJob(jobId, flagReason, 'overlay').then(() => {
         setLoader('');
         setPopupFlag(false);
-        setSubmitHeader("Flagged!");
+        setSubmitHeader('Flagged!');
         setPopupSubmit(true);
       });
     } catch (error) {
@@ -95,16 +86,15 @@ const Shorts_subtitling = () => {
     }
   };
 
-  const getJob = async (jobId, translatorId) => {
-
+  const getJob = async (jobId) => {
     try {
-        const job = await getJobAndVerify(translatorId, jobId)
-        setJob(job.data);
-        setIsLoading(false);
-    }catch(error) {
-        ErrorHandler(error);
+      const job = await getJobAndVerify(jobId);
+      setJob(job.data);
+      setIsLoading(false);
+    } catch (error) {
+      ErrorHandler(error);
     }
-  }
+  };
 
   function timeStringToSeconds(timeString) {
     if (typeof timeString !== 'string' || !timeString.includes(':')) {
@@ -120,7 +110,8 @@ const Shorts_subtitling = () => {
     let hours = parseInt(parts[0], 10);
     let minutes = parseInt(parts[1], 10);
     let seconds = parseInt(secondsParts[0], 10);
-    let milliseconds = secondsParts.length > 1 ? parseInt(secondsParts[1], 10) : 0;
+    let milliseconds =
+      secondsParts.length > 1 ? parseInt(secondsParts[1], 10) : 0;
 
     let totalSeconds =
       hours * 3600 + minutes * 60 + seconds + milliseconds / 100;
@@ -128,11 +119,8 @@ const Shorts_subtitling = () => {
     return totalSeconds;
   }
 
-
-
   const handleSubmit = async () => {
     try {
-
       setLoader('submit');
 
       let operationsArray = [];
@@ -142,56 +130,56 @@ const Shorts_subtitling = () => {
 
       for (const caption of captionsArray) {
         const captionWithIndex = {
-          ...caption.captionDetails, 
-          index: caption.index 
-      };
-  
-      operationsArray.push(captionWithIndex); 
-      }
+          ...caption.captionDetails,
+          index: caption.index,
+        };
 
-      
+        operationsArray.push(captionWithIndex);
+      }
 
       for (const operations of operationsArray) {
         const rectangle = rectangles[operations.index];
 
-        if (rectangle.start.x < 0){
+        if (rectangle.start.x < 0) {
           rectangle.start.x = 0;
         }
-        if (rectangle.start.y < 0){
+        if (rectangle.start.y < 0) {
           rectangle.start.y = 0;
         }
 
-        if (rectangle.end.x > videoWidth){
+        if (rectangle.end.x > videoWidth) {
           rectangle.end.x = videoWidth;
         }
-        if (rectangle.end.y > videoHeight){
+        if (rectangle.end.y > videoHeight) {
           rectangle.end.y = videoHeight;
         }
 
         operations.top_left = `(${rectangle.start.x}, ${rectangle.start.y})`;
         operations.bottom_right = `(${rectangle.end.x}, ${rectangle.end.y})`;
-        
+
         operations.start_time = timeStringToSeconds(operations.start_time);
         operations.end_time = timeStringToSeconds(operations.end_time);
 
-        if (operations.end_time <= operations.start_time){
+        if (operations.end_time <= operations.start_time) {
           throw new Error('End time must be greater than start time');
         }
-        if (operations.start_time < 0){
+        if (operations.start_time < 0) {
           throw new Error('Start time must be greater than 0');
         }
-        if (operations.end_time > videoDuration){
+        if (operations.end_time > videoDuration) {
           throw new Error('End time must be less than video duration');
         }
-        
-        if (operations.task === "caption" && (operations.text == ""||operations.text==null)){
+
+        if (
+          operations.task === 'caption' &&
+          (operations.text == '' || operations.text == null)
+        ) {
           throw new Error('Please include the captioned text');
         }
-
       }
-      await finishOverlayJob(translatorId, jobId, operationsArray).then(() => {
+      await finishOverlayJob(jobId, operationsArray).then(() => {
         setLoader('');
-        setSubmitHeader("Submitted!");
+        setSubmitHeader('Submitted!');
         setPopupSubmit(true);
       });
     } catch (error) {
@@ -203,15 +191,7 @@ const Shorts_subtitling = () => {
   const validateTimeString = (time) => {
     const pattern = /^\d{2}:\d{2}:\d{2}(\.\d{2})?$/;
     return pattern.test(time);
-  }
-
-  useEffect(() => {
-    const token = Cookies.get("session");
-    const userId = authStatus(token).data.user_id;
-
-    handleTranslator(userId);
-
-  },[]);
+  };
 
   useEffect(() => {
     setVideoNode(videoRef.current);
@@ -222,21 +202,20 @@ const Shorts_subtitling = () => {
       setVideoWidth(videoNode.videoWidth);
       setVideoHeight(videoNode.videoHeight);
       setVideoDuration(videoNode.duration);
-  
     }
   }, [videoNode]);
 
   useEffect(() => {
-    if(jobId && translatorId) {
-      getJob(jobId, translatorId);
+    if (jobId) {
+      getJob(jobId);
     }
-  },[jobId, translatorId]);
+  }, [jobId]);
 
   useEffect(() => {
-    if (job && translatorId) {
+    if (job) {
       handleVideo();
     }
-  }, [job, translatorId]);
+  }, [job]);
 
   const updateSubtitleDetails = (field, value) => {
     setSubtitleDetails((prevDetails) => ({
@@ -357,38 +336,46 @@ const Shorts_subtitling = () => {
         </div>
       </Popup>
       <Popup show={popupFlag} onClose={() => setPopupFlag(false)}>
-            <div className="h-full w-full">
-              <div className="w-[600px] rounded-2xl bg-indigo-2 p-s2">
-                <div className="flex flex-col items-center justify-center">
-                  <h2 className="mb-s4 text-2xl text-white">Flag job?</h2>
-                  <h2 className="w-full text-lg text-white">Flag reasoning</h2>
-                  <Textarea
-                    placeholder="Write a short description of the problem"
-                    classes="!mb-s2"
-                    textAreaClasses="text-lg text-white font-light"
-                    onChange={(e) => setFlagReason(e.target.value)}
-                  />
-                  <div className="w-full">
-                    <div className="float-right h-[47px] w-[134px]">
-                      <Button
-                        theme="error"
-                        onClick={() => {handleFlag()}}
-                        isLoading={loader === 'flag'}
-                      >
-                        Flag
-                      </Button>
-                    </div>
-                  </div>
+        <div className="h-full w-full">
+          <div className="w-[600px] rounded-2xl bg-indigo-2 p-s2">
+            <div className="flex flex-col items-center justify-center">
+              <h2 className="mb-s4 text-2xl text-white">Flag job?</h2>
+              <h2 className="w-full text-lg text-white">Flag reasoning</h2>
+              <Textarea
+                placeholder="Write a short description of the problem"
+                classes="!mb-s2"
+                textAreaClasses="text-lg text-white font-light"
+                onChange={(e) => setFlagReason(e.target.value)}
+              />
+              <div className="w-full">
+                <div className="float-right h-[47px] w-[134px]">
+                  <Button
+                    theme="error"
+                    onClick={() => {
+                      handleFlag();
+                    }}
+                    isLoading={loader === 'flag'}
+                  >
+                    Flag
+                  </Button>
                 </div>
               </div>
             </div>
-          </Popup>
-      {isLoading && <FullScreenLoader/>}
-      {job &&
-      <div className="absolute top-0 left-0 py-s2 px-s5">
-        <Timer translatorId={translatorId} jobId={jobId} jobType={"overlay"} setIsLoading={setIsLoading} jobTimestamp={job ? job.overlayStatus:null}/>
-      </div>}
-      <div className="flex flex-col h-screen">
+          </div>
+        </div>
+      </Popup>
+      {isLoading && <FullScreenLoader />}
+      {job && (
+        <div className="absolute top-0 left-0 py-s2 px-s5">
+          <Timer
+            jobId={jobId}
+            jobType={'overlay'}
+            setIsLoading={setIsLoading}
+            jobTimestamp={job ? job.overlayStatus : null}
+          />
+        </div>
+      )}
+      <div className="flex h-screen flex-col">
         {videoLink && (
           <video
             ref={hiddenVideoRef}

@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
-import { firebaseAuth } from '../../services/firebase';
+import { auth } from '../../services/firebase';
 import Cookies from 'js-cookie';
-import { verifyTranslatorEmail, attachUserIdToTranslator } from '../../services/apis';
-import { authStatus } from '../../utils/authStatus';
+import { verifyTranslatorEmail } from '../../services/apis';
 
 const VerifyEmail = () => {
   const router = useRouter();
@@ -18,23 +17,16 @@ const VerifyEmail = () => {
 
   const handleSSOWithCode = () => {
     try {
-      if (isSignInWithEmailLink(firebaseAuth, window.location.href)) {
+      if (isSignInWithEmailLink(auth, window.location.href)) {
         let email = window.localStorage.getItem('emailForSignIn');
         if (!email)
           email = window.prompt('Please provide your email for confirmation');
 
-        signInWithEmailLink(firebaseAuth, email, window.location.href)
+        signInWithEmailLink(auth, email, window.location.href)
           .then(async (result) => {
             window.localStorage.removeItem('emailForSignIn');
             Cookies.set('session', result._tokenResponse.idToken);
             await verifyTranslatorEmail();
-            console.log(result);
-
-            const jwtData = authStatus(result._tokenResponse.idToken);
-            const userId = jwtData.data.user_id;
-            const userEmail = result._tokenResponse.email;
-
-            await attachUserIdToTranslator(userEmail, userId);
 
             router.replace('/success');
           })

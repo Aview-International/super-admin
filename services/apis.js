@@ -2,15 +2,41 @@ import axios from 'axios';
 import { baseUrl } from './baseUrl';
 import FormData from 'form-data';
 import Cookies from 'js-cookie';
+import { decodeJwt } from 'jose';
+import { auth } from './firebase';
 
+// Create an Axios instance with default config
 const axiosInstance = axios.create({
   baseURL: baseUrl,
 });
 
+const isTokenExpired = (token) => {
+  try {
+    if (!token) return false;
+    else {
+      const data = decodeJwt(token);
+      if (!data) return false;
+      const newDate = new Date(data.exp) * 1000;
+      if (newDate < new Date().getTime()) return true;
+      else {
+        return data;
+      }
+    }
+  } catch (error) {
+    return false;
+  }
+};
+
 axiosInstance.interceptors.request.use(
   async (config) => {
-    const token = Cookies.get('session');
-    if (token) config.headers.Authorization = `Bearer ${token}`;
+    let token = Cookies.get('session');
+    if (isTokenExpired(token) === true || !isTokenExpired(token)) {
+      const newToken = await auth.currentUser?.getIdToken(true); // force token refresh
+      Cookies.set('session', newToken);
+      token = newToken;
+    }
+
+    config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
   (error) => {
@@ -154,9 +180,8 @@ export const postToYouTube = async (
 export const transcribeSocialLink = async (body) =>
   await axiosInstance.post('transcription/social', body);
 
-export const finishPendingJob = async (translatorId, jobId) => {
+export const finishPendingJob = async (jobId) => {
   await axiosInstance.post('admin/finish-pending-job', {
-    translatorId,
     jobId,
   });
 };
@@ -208,16 +233,9 @@ export const sendSupportMessage = async (email, message) => {
   });
 };
 
-export const getTranslatorById = async (translatorId) => {
-  return axiosInstance.post(baseUrl + 'admin/get-translator-by-id', {
-    translatorId,
-  });
-};
-
-export const finishModerationJob = async (jobId, translatorId, updatedSrt) => {
+export const finishModerationJob = async (jobId, updatedSrt) => {
   return axiosInstance.post(baseUrl + 'admin/finish-moderation-job', {
     jobId,
-    translatorId,
     updatedSrt,
   });
 };
@@ -238,13 +256,8 @@ export const getAllJobs = async (translatorId) => {
   return axiosInstance.post('admin/get-all-jobs', { translatorId });
 };
 
-export const finishOverlayJob = async (
-  translatorId,
-  jobId,
-  operationsArray
-) => {
+export const finishOverlayJob = async (jobId, operationsArray) => {
   return axiosInstance.post(baseUrl + 'admin/finish-overlay-job', {
-    translatorId,
     jobId,
     operationsArray,
   });
@@ -254,40 +267,30 @@ export const verifyTranslatorEmail = async () => {
   await axiosInstance.get('admin/verify-translator');
 };
 
-export const attachUserIdToTranslator = async (email, userId) => {
-  await axiosInstance.post('admin/attach-userid-to-translator', {
-    email,
-    userId,
-  });
+export const getTranslatorFromUserId = async () =>
+  (await axiosInstance.get('admin/translator')).data;
+
+export const getAllPendingJobs = async () => {
+  return axiosInstance.get('admin/get-pending-jobs');
 };
 
-export const getTranslatorFromUserId = async (userId) => {
-  return axiosInstance.post('admin/get-translator-from-userid', { userId });
+export const getAllModerationJobs = async () => {
+  return axiosInstance.get('admin/get-moderation-jobs');
 };
 
-export const getAllPendingJobs = async (translatorId) => {
-  return axiosInstance.post('admin/get-pending-jobs', { translatorId });
+export const getAllOverlayJobs = async () => {
+  return axiosInstance.get('admin/get-overlay-jobs');
 };
 
-export const getAllModerationJobs = async (translatorId) => {
-  return axiosInstance.post('admin/get-moderation-jobs', { translatorId });
-};
-
-export const getAllOverlayJobs = async (translatorId) => {
-  return axiosInstance.post('admin/get-overlay-jobs', { translatorId });
-};
-
-export const acceptJob = async (translatorId, jobId, jobType) => {
+export const acceptJob = async (jobId, jobType) => {
   return axiosInstance.post('admin/accept-job', {
-    translatorId,
     jobId,
     jobType,
   });
 };
 
-export const getJobAndVerify = async (translatorId, jobId) => {
+export const getJobAndVerify = async (jobId) => {
   return axiosInstance.post('admin/get-job-and-verify', {
-    translatorId,
     jobId,
   });
 };
@@ -307,26 +310,20 @@ export const uploadReviewerProfilePicture = async (translatorId, picture) => {
   return axiosInstance.post('admin/upload-reviewer-profile-picture', formData);
 };
 
-export const addTime = async (translatorId, jobId, jobType) => {
-  return axiosInstance.post('admin/add-time', { translatorId, jobId, jobType });
+export const addTime = async (jobId, jobType) => {
+  return axiosInstance.post('admin/add-time', { jobId, jobType });
 };
 
-export const flagJob = async (translatorId, jobId, message, jobType) => {
+export const flagJob = async (jobId, message, jobType) => {
   return axiosInstance.post('admin/flag-job', {
-    translatorId,
     jobId,
     message,
     jobType,
   });
 };
 
-export const clearOverdueJobFromTimer = async (
-  translatorId,
-  jobId,
-  jobType
-) => {
+export const clearOverdueJobFromTimer = async (jobId, jobType) => {
   return axiosInstance.post('admin/clear-overdue-job-from-timer', {
-    translatorId,
     jobId,
     jobType,
   });
