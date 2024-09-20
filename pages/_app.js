@@ -11,7 +11,15 @@ import store from '../store';
 import { auth } from '../services/firebase';
 import Cookies from 'js-cookie';
 import { logOutUser, setUser } from '../store/reducers/user.reducer';
-import { getTranslatorFromUserId } from '../services/apis';
+import {
+  getCountriesAndCodes,
+  getSupportedLanguages,
+  getTranslatorFromUserId,
+} from '../services/apis';
+import {
+  setCountriesAndCodes,
+  setSupportedLanguages,
+} from '../store/reducers/languages.reducer';
 
 const MyApp = ({ Component, pageProps }) => {
   useEffect(() => {
@@ -66,6 +74,16 @@ const Layout = ({ Component, pageProps }) => {
     });
 
     return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const lang = await getSupportedLanguages();
+      dispatch(setSupportedLanguages(lang));
+
+      const countries = await getCountriesAndCodes();
+      dispatch(setCountriesAndCodes(countries));
+    })();
   }, []);
 
   if (Component.getLayout) {
