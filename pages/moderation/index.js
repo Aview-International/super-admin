@@ -3,7 +3,6 @@ import {
   getRawSRT,
   finishModerationJob,
   getDownloadLink,
-  getTranslatorFromUserId,
   getJobAndVerify,
   getCreatorProfile,
 } from '../../services/apis';
@@ -20,8 +19,6 @@ import SuccessHandler from '../../utils/successHandler';
 import Popup from '../../components/UI/PopupWithBorder';
 import warning from '/public/img/icons/warning.svg';
 import PageTitle from '../../components/SEO/PageTitle';
-import { authStatus } from '../../utils/authStatus';
-import Cookies from 'js-cookie';
 import Timer from '../../components/UI/Timer';
 
 const QA = () => {
@@ -36,17 +33,11 @@ const QA = () => {
   const [content, setContent] = useState('video');
   const [flags, setFlags] = useState([]);
   const [downloadLink, setDownloadLink] = useState(null);
-  const [translatorId, setTranslatorId] = useState(null);
 
   const router = useRouter();
   const { jobId } = router.query;
 
   const { width: windowWidth, height: windowHeight } = useWindowSize();
-
-  const handleTranslator = async (userId) => {
-    const translator = await getTranslatorFromUserId(userId);
-    setTranslatorId(translator.data._id);
-  };
 
   const handleVideo = async () => {
     const videoPath = `dubbing-tasks/${job.creatorId}/${jobId}/video.mp4`;
@@ -75,8 +66,7 @@ const QA = () => {
   const handleApprove = async () => {
     try {
       setLoader('approve');
-      console.log(jobId, translatorId, getSrtText());
-      await finishModerationJob(jobId, translatorId, getSrtText()).then(() => {
+      await finishModerationJob(jobId, getSrtText()).then(() => {
         setLoader('');
         setPopupSubmit(true);
       });
@@ -92,9 +82,9 @@ const QA = () => {
     setCreatorName(resData?.firstName + ' ' + resData?.lastName);
   };
 
-  const getJob = async (jobId, translatorId) => {
+  const getJob = async (jobId) => {
     try {
-      const job = await getJobAndVerify(translatorId, jobId);
+      const job = await getJobAndVerify(jobId);
       setJob(job.data);
       setIsLoading(false);
     } catch (error) {
@@ -163,17 +153,10 @@ const QA = () => {
   };
 
   useEffect(() => {
-    const token = Cookies.get('session');
-    const userId = authStatus(token).data.user_id;
-
-    handleTranslator(userId);
-  }, []);
-
-  useEffect(() => {
-    if (jobId && translatorId) {
-      getJob(jobId, translatorId);
+    if (jobId) {
+      getJob(jobId);
     }
-  }, [jobId, translatorId]);
+  }, [jobId]);
 
   useEffect(() => {
     if (job) {
@@ -227,7 +210,6 @@ const QA = () => {
         <div className="relative h-screen w-full">
           <div className="z-1000 fixed top-0 right-0 py-s2 px-s5">
             <Timer
-              translatorId={translatorId}
               jobId={jobId}
               jobType={'moderation'}
               setIsLoading={setIsLoading}
@@ -287,7 +269,6 @@ const QA = () => {
           >
             <div className="absolute top-0 right-0 bg-black py-s2 px-s5">
               <Timer
-                translatorId={translatorId}
                 jobId={jobId}
                 jobType={'moderation'}
                 setIsLoading={setIsLoading}

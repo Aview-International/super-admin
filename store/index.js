@@ -1,14 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
 import logger from 'redux-logger';
-// import userReducer from './reducers/user.reducer';
-// import instagramReducer from './reducers/instagram.reducer';
-// import youtubeReducer from './reducers/youtube.reducer';
+import userReducer from './reducers/user.reducer';
 
 const store = configureStore({
   reducer: {
-    // user: userReducer,
-    // instagram: instagramReducer,
-    // youtube: youtubeReducer,
+    user: userReducer,
   },
   middleware: (getDefaultMiddleware) => {
     const middleware = getDefaultMiddleware({});

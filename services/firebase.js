@@ -21,12 +21,12 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
 // Initialize the auth service
-export const firebaseAuth = getAuth(app);
+export const auth = getAuth(app);
 
 // get user from google account
 export const signInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
-  const response = await signInWithPopup(firebaseAuth, provider);
+  const response = await signInWithPopup(auth, provider);
   return response;
 };
 
