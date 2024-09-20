@@ -25,7 +25,9 @@ const VerifyEmail = () => {
         signInWithEmailLink(auth, email, window.location.href)
           .then(async (result) => {
             window.localStorage.removeItem('emailForSignIn');
-            Cookies.set('session', result._tokenResponse.idToken);
+            Cookies.set('session', result._tokenResponse.idToken, {
+              sameSite: 'Strict',
+            });
             await verifyTranslatorEmail();
 
             router.replace('/success');

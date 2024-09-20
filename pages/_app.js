@@ -60,9 +60,9 @@ const Layout = ({ Component, pageProps }) => {
     // handle auth
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        Cookies.set('uid', user.uid);
+        Cookies.set('uid', user.uid, { sameSite: 'Strict' });
         const userData = await getTranslatorFromUserId();
-        Cookies.set('_id', userData.uid);
+        Cookies.set('_id', userData.uid, {sameSite:"Strict"});
         dispatch(
           setUser({ ...userData, isLoggedIn: true, _id: userData.userId })
         );

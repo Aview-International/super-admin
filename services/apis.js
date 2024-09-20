@@ -32,7 +32,7 @@ axiosInstance.interceptors.request.use(
     let token = Cookies.get('session');
     if (isTokenExpired(token) === true || !isTokenExpired(token)) {
       const newToken = await auth.currentUser?.getIdToken(true); // force token refresh
-      Cookies.set('session', newToken);
+      Cookies.set('session', newToken, { sameSite: 'Strict' });
       token = newToken;
     }
 

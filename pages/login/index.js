@@ -21,7 +21,9 @@ const Login = () => {
           window.location.href
         );
         window.localStorage.removeItem('emailForSignIn');
-        Cookies.set('session', res._tokenResponse.idToken);
+        Cookies.set('session', res._tokenResponse.idToken, {
+          sameSite: 'Strict',
+        });
         router.push('/dashboard');
       }
     } catch (error) {
