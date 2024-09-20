@@ -1,94 +1,82 @@
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import Image from 'next/image';
-import DashboardLayout from '../../components/dashboard/DashboardLayoutOnboarding';
+import { createTranslator, sendSupportMessage } from '../../services/apis';
+import { emailValidator } from '/utils/regex';
+import ErrorHandler from '../../utils/errorHandler';
+import aviewLogo from '/public/img/aview/logo.svg';
+import messages from '../../public/img/icons/messages.svg';
 import FormInput from '../../components/FormComponents/FormInput';
 import CustomSelectInput from '../../components/FormComponents/CustomSelectInput';
 import Button from '../../components/UI/Button';
 import Blobs from '../../components/UI/blobs';
-import React, { useState, useEffect, useSelector } from 'react';
-import ErrorHandler from '../../utils/errorHandler';
-import SuccessHandler from '../../utils/successHandler';
-import {
-  getSupportedLanguages,
-  getCountriesAndCodes,
-  createTranslator,
-  sendSupportMessage,
-} from '../../services/apis';
-import FullScreenLoader from '../../public/loaders/FullScreenLoader';
 import CheckBox from '../../components/FormComponents/CheckBox';
 import Popup from '../../components/UI/PopupWithBorder';
-import messages from '../../public/img/icons/messages.svg';
 import Textarea from '../../components/FormComponents/Textarea';
 import PageTitle from '../../components/SEO/PageTitle';
 import MultipleSelectInput from '../../components/FormComponents/MultipleSelectInput';
 
 const Onboarding = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [nativeLanguage, setNativeLanguage] = useState([]);
-  const [country, setCountry] = useState('Select');
-  const [paypal, setPaypal] = useState('');
-  const [xoom, setXoom] = useState('');
-  const [remitly, setRemitly] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
-  const [supportedLanguages, setSupportedLanguages] = useState([]);
-  const [countriesAndCodes, setCountriesAndCodes] = useState([]);
-  const [checkedState, setCheckedState] = useState('');
-  const [paymentDetails, setPaymentDetails] = useState('');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    nativeLanguage: [],
+    country: 'Select',
+    checkedState: '',
+    paymentDetails: '',
+  });
   const [loader, setLoader] = useState('');
   const [popupSupport, setPopupSupport] = useState(false);
   const [popupSubmit, setPopupSubmit] = useState(false);
-  const [supportEmail, setSupportEmail] = useState('');
-  const [supportInquiry, setSupportInquiry] = useState('');
+  const [supportData, setSupportData] = useState({ email: '', inquiry: '' });
+  const supportedLanguages = useSelector((el) =>
+    el.languages.supportedLanguages.map((item) => item.languageName).sort()
+  );
+  const countriesAndCodes = useSelector((el) =>
+    el.languages.countriesAndCodes.map((item) => item.name).sort()
+  );
+  const paymentOptions = ['Remitly', 'Paypal', 'Xoom'];
 
-  const handleCheckBox = (name) => {
-    setCheckedState(name);
+  const handleInputChange = (name, value) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async () => {
     setLoader('submit');
     try {
-      if (!name) {
-        throw new Error('Please enter name');
-      } else if (!email) {
-        throw new Error('Please enter email');
-      } else if (!verifyEmail(email)) {
-        throw new Error('Please enter a valid email');
-      } else if (nativeLanguage.length === 0) {
-        throw new Error('Please select native language');
-      } else if (country === 'Select') {
-        throw new Error('Please select country');
-      } else if (!checkedState) {
-        throw new Error('Please select payment method');
-      } else if (
-        !(
-          (checkedState === 'xoom' && xoom) ||
-          (checkedState === 'remitly' && remitly) ||
-          (checkedState === 'paypal' && paypal)
-        )
+      const {
+        name,
+        email,
+        nativeLanguage,
+        country,
+        checkedState,
+        paymentDetails,
+      } = formData;
+      if (
+        !name ||
+        !email ||
+        !emailValidator(email) ||
+        nativeLanguage.length === 0 ||
+        country === 'Select' ||
+        !checkedState
       ) {
-        throw new Error('Please enter payment details');
-      } else {
-        try {
-          localStorage.setItem('emailForSignIn', email);
-
-          await createTranslator(
-            name,
-            email,
-            nativeLanguage,
-            country,
-            checkedState,
-            paymentDetails,
-          );
-
-          setPopupSubmit(true);
-        } catch (error) {
-          ErrorHandler(error);
-        }
-
-        setLoader('');
+        throw new Error('Please fill all required fields correctly');
       }
+
+      localStorage.setItem('emailForSignIn', email);
+      await createTranslator(
+        name,
+        email,
+        nativeLanguage,
+        country,
+        checkedState,
+        paymentDetails
+      );
+      setPopupSubmit(true);
     } catch (error) {
       ErrorHandler(error);
+    } finally {
       setLoader('');
     }
   };
@@ -96,282 +84,210 @@ const Onboarding = () => {
   const handleSupport = async (e) => {
     e.preventDefault();
     setLoader('support');
-
     try {
-      if (!supportEmail) {
-        throw new Error('Please enter email');
-      } else if (!verifyEmail(supportEmail)) {
-        throw new Error('Please enter a valid email');
-      } else if (!supportInquiry) {
-        throw new Error('Please enter inquiry');
-      } else {
-        try {
-          await sendSupportMessage(supportEmail, supportInquiry);
-          SuccessHandler('sent!');
-          setPopupSupport(false);
-        } catch (error) {
-          ErrorHandler(error);
-        }
-
-        setLoader('');
-      }
+      const { email, inquiry } = supportData;
+      if (!emailValidator(email) || !inquiry)
+        throw new Error('Please enter valid email and inquiry');
+      await sendSupportMessage(email, inquiry);
+      toast.success('Inquiry has been sent!');
+      setSupportData({ email: '', inquiry: '' });
+      setPopupSupport(false);
     } catch (error) {
       ErrorHandler(error);
+    } finally {
       setLoader('');
     }
   };
 
-  const verifyEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const getLanguagesAndCountries = async () => {
-    await getSupportedLanguages().then((res) => {
-      setSupportedLanguages(res.map((item) => item.languageName).sort());
-    });
-
-    await getCountriesAndCodes().then((res) => {
-      setCountriesAndCodes(res.map((item) => item.name).sort());
-    });
-
-    setIsLoading(false);
-  };
-
   const handleMultipleLanguages = (option) => {
-    const allLanguages = [...nativeLanguage];
-    if (allLanguages.includes(option))
-      allLanguages.splice(allLanguages.indexOf(option), 1);
-    else allLanguages.push(option);
-    setNativeLanguage(allLanguages);
+    const updatedLanguages = formData.nativeLanguage.includes(option)
+      ? formData.nativeLanguage.filter((lang) => lang !== option)
+      : [...formData.nativeLanguage, option];
+    handleInputChange('nativeLanguage', updatedLanguages);
   };
-
-  useEffect(() => {
-    getLanguagesAndCountries();
-  }, []);
 
   return (
     <>
       <PageTitle
         title="Onboarding"
-        description={
-          'Join the league of reviewers servicing and distributing contents globally'
-        }
+        description="Join the league of reviewers servicing and distributing contents globally"
       />
-      {isLoading ? (
-        <FullScreenLoader />
-      ) : (
-        <>
-          <Popup show={popupSubmit} disableClose={true}>
-            <div className="h-full w-full text-white">
-              <div className="w-[500px] rounded-2xl bg-indigo-2 p-s3">
-                <div className="flex flex-col items-center justify-center">
-                  <h2 className="mb-s2 text-2xl">Verify email address</h2>
-                  <p className="text-center">
-                    Please check your email inbox to verify and continue, thank
-                    you
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Popup>
-          <Popup show={popupSupport} onClose={() => setPopupSupport(false)}>
-            <div className="h-full w-full">
-              <div className="w-[600px] rounded-2xl bg-indigo-2 p-s2">
-                <div className="flex flex-col items-center justify-center">
-                  <h2 className="mb-s4 text-2xl text-white">Contact Support</h2>
-                  <FormInput
-                    label="Email"
-                    value={supportEmail}
-                    placeholder="Your email"
-                    onChange={(e) => setSupportEmail(e.target.value)}
-                    name="title"
-                    labelClasses="text-lg text-white !mb-[4px]"
-                    valueClasses="text-lg font-light"
-                    classes="!mb-s4"
-                  />
-                  <h2 className="w-full text-lg text-white">Support Message</h2>
-                  <Textarea
-                    placeholder="Your inquiry"
-                    classes="!mb-s2"
-                    textAreaClasses="text-lg text-white font-light"
-                    onChange={(e) => setSupportInquiry(e.target.value)}
-                  />
-                  <div className="w-full">
-                    <div className="float-right h-[47px] w-[134px]">
-                      <Button
-                        theme="light"
-                        onClick={handleSupport}
-                        isLoading={loader === 'support'}
-                      >
-                        Send
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Popup>
-          <div className="float-right mt-s2 mr-[100px] cursor-pointer">
-            <a
-              className="relative flex items-center rounded-full bg-white-transparent px-s2 py-2.5 text-sm"
-              onClick={() => setPopupSupport(true)}
-            >
-              <span className="mr-s1.5 grid place-content-center brightness-0 invert">
-                <Image src={messages} alt="Messages" />
-              </span>
-              <span className="mt-0.5 text-white">Support</span>
-            </a>
+      <header className="w-full pt-s4 pb-s2.5">
+        <div className="flex flex-row">
+          <div className="flex w-[170px] justify-center">
+            <Image
+              src={aviewLogo}
+              alt="AVIEW International logo"
+              width={56}
+              height={56}
+            />
           </div>
-          <div className="mx-auto mt-s5 mb-[200px] max-h-screen w-full max-w-[768px] px-4 sm:px-6 lg:px-8">
-            <div className="text-6xl font-bold text-white text-center">
-              Work with us
-            </div>
-            <div className="mt-s2 text-lg font-normal text-white text-center mb-s5">
-              Sign up today to become a translator and manage content.
-            </div>
-            
-            <div className="w-full h-full bg-white-transparent px-s4 pt-s4 pb-s14 rounded-2xl">
-              <div className=" text-xl font-bold text-white">
-                Personal Information
-              </div>
-              <FormInput
-                label="Name"
-                placeholder="First and last Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                name="name"
-                labelClasses="text-lg text-white mt-s2 !mb-[4px]"
-                valueClasses="text-lg font-light"
-                classes="!mb-s2"
-              />
+          <div className="pl-s9">
+            <h3 className="text-xl">Aview International</h3>
+            <p className="text-lg text-gray-2">
+              Welcome to Aview reviewer onboarding.
+            </p>
+          </div>
+        </div>
+      </header>
 
+      <main>
+        <Popup show={popupSubmit} disableClose={true}>
+          <div className="w-[500px] rounded-2xl bg-indigo-2 p-s3 text-center">
+            <h2 className="mb-s2 text-2xl">Verify email address</h2>
+            <p>
+              Please check your email inbox to verify and continue, thank you
+            </p>
+          </div>
+        </Popup>
+        <Popup show={popupSupport} onClose={() => setPopupSupport(false)}>
+          <div className="w-[600px] rounded-2xl bg-indigo-2 p-s2">
+            <div className="flex flex-col items-center justify-center">
+              <h2 className="mb-s4 text-2xl">Contact Support</h2>
               <FormInput
                 label="Email"
-                value={email}
+                value={supportData.email}
                 placeholder="Your email"
-                onChange={(e) => setEmail(e.target.value)}
-                name="email"
-                labelClasses="text-lg text-white !mb-[4px]"
-                valueClasses="text-lg font-light"
+                type="email"
+                onChange={(e) =>
+                  setSupportData((prev) => ({ ...prev, email: e.target.value }))
+                }
+                name="Email"
+                labelClasses="text-lg !mb-[4px]"
+                classes="!mb-s4"
+              />
+              <h2 className="w-full text-lg">Support Message</h2>
+              <Textarea
+                placeholder="Your inquiry"
                 classes="!mb-s2"
+                textAreaClasses="text-lg font-light"
+                onChange={(e) =>
+                  setSupportData((prev) => ({
+                    ...prev,
+                    inquiry: e.target.value,
+                  }))
+                }
               />
-
-              <MultipleSelectInput
-                text="Native Languages"
-                answer={nativeLanguage}
-                options={supportedLanguages}
-                onChange={(selectedOption) => {
-                  handleMultipleLanguages(selectedOption);
-                }}
-                labelClasses="!text-lg !text-white !mb-[4px]"
-                valueClasses="!text-lg !text-white ml-s1 font-light"
-                classes="!mb-s2"
-                hideCheckmark={true}
-              />
-
-              <CustomSelectInput
-                text="Country"
-                value={country}
-                options={countriesAndCodes}
-                onChange={(selectedOption) => setCountry(selectedOption)}
-                labelClasses="text-lg text-white !mb-[px]"
-                valueClasses="text-lg !text-white ml-s1 font-light"
-              />
-
-              <div className="mt-s3 text-xl font-bold text-white">
-                Payment method
-              </div>
-
-              <div className="mt-s2">
-                <CheckBox
-                  label="Paypal"
-                  onChange={() => handleCheckBox('paypal')}
-                  name="checkbox"
-                  labelClasses="text-lg mt-[3px]"
-                  isChecked={checkedState === 'paypal'}
-                />
-              </div>
-              {checkedState == 'paypal' && (
-                <FormInput
-                  value={paypal}
-                  placeholder="Name, username, email"
-                  onChange={(e) => {
-                    setPaypal(e.target.value);
-                    setPaymentDetails(e.target.value);
-                  }}
-                  labelClasses="text-lg text-white mt-s2"
-                  valueClasses="text-lg font-light"
-                  classes="!mb-s2"
-                />
-              )}
-
-              <div className="mt-s1">
-                <CheckBox
-                  label="Xoom"
-                  onChange={() => handleCheckBox('xoom')}
-                  name="checkbox"
-                  labelClasses="text-lg mt-[5px]"
-                  isChecked={checkedState === 'xoom'}
-                />
-              </div>
-
-              {checkedState === 'xoom' && (
-                <FormInput
-                  value={xoom}
-                  placeholder="Name, username, email"
-                  onChange={(e) => {
-                    setXoom(e.target.value);
-                    setPaymentDetails(e.target.value);
-                  }}
-                  labelClasses="text-lg text-white mt-s2"
-                  valueClasses="text-lg font-light"
-                  classes="!mb-s2"
-                />
-              )}
-
-              <div className="mt-s1">
-                <CheckBox
-                  label="Remitly"
-                  onChange={() => handleCheckBox('remitly')}
-                  name="checkbox"
-                  labelClasses="text-lg mt-[5px]"
-                  isChecked={checkedState === 'remitly'}
-                />
-              </div>
-
-              {checkedState === 'remitly' && (
-                <FormInput
-                  value={remitly}
-                  placeholder="Name, username, email"
-                  onChange={(e) => {
-                    setRemitly(e.target.value);
-                    setPaymentDetails(e.target.value);
-                  }}
-                  labelClasses="text-lg text-white mt-s2"
-                  valueClasses="text-lg font-light"
-                  classes="!mb-s2"
-                />
-              )}
-
-              <div className="float-right mt-s4 h-[47px] w-[134px]">
+              <div className="float-right ml-auto w-[134px] font-semibold">
                 <Button
                   theme="light"
-                  onClick={handleSubmit}
-                  isLoading={loader === 'submit'}
+                  onClick={handleSupport}
+                  isLoading={loader === 'support'}
                 >
-                  Submit
+                  Send
                 </Button>
               </div>
             </div>
           </div>
-          <Blobs />
-        </>
-      )}
+        </Popup>
+
+        <div className="float-right mt-s2 mr-[100px] cursor-pointer">
+          <a
+            className="relative flex items-center rounded-full bg-white-transparent px-s2 py-2.5 text-sm"
+            onClick={() => setPopupSupport(true)}
+          >
+            <span className="mr-s1.5 grid place-content-center brightness-0 invert">
+              <Image src={messages} alt="Messages" />
+            </span>
+            <span className="mt-0.5">Support</span>
+          </a>
+        </div>
+
+        <div className="mx-auto mt-s5 mb-[200px] max-h-screen w-full max-w-[768px] px-4 sm:px-6 lg:px-8">
+          <div className="text-center text-6xl font-bold">Work with us</div>
+          <div className="mt-s2 mb-s5 text-center text-lg font-normal">
+            Sign up today to become a translator and manage content.
+          </div>
+
+          <div className="h-full w-full rounded-2xl bg-white-transparent px-s4 pt-s4 pb-s14">
+            <div className="text-xl font-bold">Personal Information</div>
+            <FormInput
+              label="Name"
+              placeholder="First and Last Name"
+              value={formData.name}
+              onChange={(e) => handleInputChange('name', e.target.value)}
+              name="name"
+              labelClasses="text-lg mt-s2 !mb-[4px]"
+              valueClasses="text-lg font-light"
+              classes="!mb-s2"
+            />
+
+            <FormInput
+              label="Email"
+              value={formData.email}
+              placeholder="Your email"
+              onChange={(e) => handleInputChange('email', e.target.value)}
+              name="email"
+              labelClasses="text-lg !mb-[4px]"
+              valueClasses="text-lg font-light"
+              classes="!mb-s2"
+            />
+
+            <MultipleSelectInput
+              text="Native Languages"
+              answer={formData.nativeLanguage}
+              options={supportedLanguages}
+              onChange={handleMultipleLanguages}
+              labelClasses="!text-lg !mb-[4px]"
+              valueClasses="!text-lg ml-s1 font-light"
+              classes="!mb-s2"
+              hideCheckmark={true}
+            />
+
+            <CustomSelectInput
+              text="Country"
+              value={formData.country}
+              options={countriesAndCodes}
+              onChange={(selectedOption) =>
+                handleInputChange('country', selectedOption)
+              }
+              labelClasses="text-lg !mb-[px]"
+              valueClasses="text-lg ml-s1 font-light"
+            />
+
+            <div className="mt-s3 text-xl font-bold">Payment method</div>
+
+            {paymentOptions.map((el, idx) => (
+              <div key={idx}>
+                <div className="mt-s1">
+                  <CheckBox
+                    label={el}
+                    onChange={() => handleInputChange('checkedState', el)}
+                    name="checkbox"
+                    labelClasses="text-lg mt-[5px]"
+                    isChecked={formData.checkedState === el}
+                  />
+                </div>
+
+                {formData.checkedState === el && (
+                  <FormInput
+                    value={formData.paymentDetails}
+                    placeholder="Name, username, email"
+                    onChange={(e) =>
+                      handleInputChange('paymentDetails', e.target.value)
+                    }
+                    labelClasses="text-lg mt-s2"
+                    valueClasses="text-lg font-light"
+                    classes="!mb-s2"
+                  />
+                )}
+              </div>
+            ))}
+            <div className="float-right mt-s4 h-[47px] w-[134px]">
+              <Button
+                theme="light"
+                onClick={handleSubmit}
+                isLoading={loader === 'submit'}
+              >
+                Submit
+              </Button>
+            </div>
+          </div>
+        </div>
+        <Blobs />
+      </main>
     </>
   );
 };
-
-Onboarding.getLayout = DashboardLayout;
 
 export default Onboarding;

@@ -116,20 +116,11 @@ export const getYoutubePlaylistData = async (videoId) => {
   return playlists;
 };
 
-export const getSupportedLanguages = async () => {
-  const response = await axiosInstance.get(
-    baseUrl + 'admin/supported-languages'
-  );
-  return response.data;
-};
+export const getSupportedLanguages = async () =>
+  (await axiosInstance.get(baseUrl + 'admin/supported-languages')).data;
 
-export const getCountriesAndCodes = async () => {
-  const response = await axiosInstance.get(
-    baseUrl + 'admin/countries-and-codes'
-  );
-
-  return response.data;
-};
+export const getCountriesAndCodes = async () =>
+  (await axiosInstance.get(baseUrl + 'admin/countries-and-codes')).data;
 
 export const getRegionCategory = async (language) => {
   const response = await axiosInstance.post(
