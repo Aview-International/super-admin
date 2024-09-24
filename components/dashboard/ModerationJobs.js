@@ -54,73 +54,67 @@ const ModerationJobs = ({
   }, []);
 
   return (
-    <>
-      <div className="rounded-2xl bg-white-transparent p-4">
-        {jobs.length > 0 ? (
-          <div>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr',
-                gap: '1rem',
-                textAlign: 'center',
-              }}
-            >
-              <div className="text-left text-lg font-bold text-white">
-                Job ID
-              </div>
-              <div className="text-left text-lg font-bold text-white">
-                Title
-              </div>
-              <div className="text-left text-lg font-bold text-white">
-                Original Language
-              </div>
-              <div className="text-left text-lg font-bold text-white">
-                Translated Language
-              </div>
+    <div className="rounded-2xl bg-white-transparent p-4">
+      {jobs.length > 0 ? (
+        <div>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr',
+              gap: '1rem',
+              textAlign: 'center',
+            }}
+          >
+            <div className="text-left text-lg font-bold text-white">Job ID</div>
+            <div className="text-left text-lg font-bold text-white">Title</div>
+            <div className="text-left text-lg font-bold text-white">
+              Original Language
             </div>
+            <div className="text-left text-lg font-bold text-white">
+              Translated Language
+            </div>
+          </div>
 
-            <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
-            {jobs.map((job) => (
-              <div key={job.jobId} className="">
-                <div className="py-s2 hover:bg-white-transparent">
+          <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
+          {jobs.map((job) => (
+            <div key={job.jobId} className="">
+              <div className="py-s2 hover:bg-white-transparent">
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr',
+                    gap: '1rem',
+                    textAlign: 'left',
+                  }}
+                >
+                  <div className="text-left text-white">{job.jobId}</div>
+                  <div className="text-left text-white">
+                    {job.videoData.caption}
+                  </div>
+                  <div className="text-left text-white">
+                    {job.originalLanguage}
+                  </div>
+                  <div className="text-left text-white">
+                    {job.translatedLanguage}
+                  </div>
                   <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr',
-                      gap: '1rem',
-                      textAlign: 'left',
+                    className="cursor-pointer text-white underline"
+                    onClick={() => {
+                      handlePreview(job);
                     }}
                   >
-                    <div className="text-left text-white">{job.jobId}</div>
-                    <div className="text-left text-white">
-                      {job.videoData.caption}
-                    </div>
-                    <div className="text-left text-white">
-                      {job.originalLanguage}
-                    </div>
-                    <div className="text-left text-white">
-                      {job.translatedLanguage}
-                    </div>
-                    <div
-                      className="cursor-pointer text-white underline"
-                      onClick={() => {
-                        handlePreview(job);
-                      }}
-                    >
-                      Preview job
-                    </div>
+                    Preview job
                   </div>
-                  <div className="h-[1px] w-full bg-white bg-opacity-25"></div>
                 </div>
+                <div className="h-[1px] w-full bg-white bg-opacity-25"></div>
               </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-white">No jobs available.</p>
-        )}
-      </div>
-    </>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-white">No jobs available.</p>
+      )}
+    </div>
   );
 };
 

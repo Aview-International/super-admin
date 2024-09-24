@@ -4,9 +4,7 @@ import { authStatus } from './utils/authStatus';
 export function middleware(request) {
   const sessionCookie = request.cookies.get('session');
   const currentUrl = request.url;
-  const response = NextResponse.redirect(
-    new URL('/login?rdr=true', currentUrl)
-  );
+  const response = NextResponse.redirect(new URL('/?rdr=true', currentUrl));
 
   try {
     if (!authStatus(sessionCookie)) {
@@ -24,6 +22,7 @@ export const config = {
     '/transcription',
     '/dubbing-edits',
     '/creator',
+    '/dashboard',
     // '/distribution/:path*',
     '/manual/:path*',
   ],

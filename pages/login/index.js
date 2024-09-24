@@ -1,12 +1,13 @@
 import Cookies from 'js-cookie';
 import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
 import Loader from '../../public/loaders/ButtonLoader';
-import { useEffect } from 'react';
-import ErrorHandler from '../../utils/errorHandler';
+import { useEffect, useState } from 'react';
 import { auth } from '../../services/firebase';
 import { useRouter } from 'next/router';
+import { authStatus } from '../../utils/authStatus';
 
 const Login = () => {
+  const [error, setError] = useState(false);
   const router = useRouter();
   const handleSSOWithCode = async () => {
     try {
@@ -24,11 +25,12 @@ const Login = () => {
         Cookies.set('session', res._tokenResponse.idToken, {
           sameSite: 'Strict',
         });
-        router.push('/dashboard');
+        const user = authStatus(res._tokenResponse.idToken);
+        if (user && user.data.accountVerifiedByAview) router.push('/dashboard');
+        else throw Error;
       }
     } catch (error) {
-      console.log(error);
-      ErrorHandler(null, 'Something went wrong, please try again');
+      setError(true);
     }
   };
 
@@ -37,8 +39,16 @@ const Login = () => {
   }, []);
 
   return (
-    <div className="mt-s20 flex h-full w-full items-center justify-center">
-      <Loader />
+    <div className="mt-s20 h-full w-full items-center justify-center">
+      {!error ? (
+        <div className="mx-auto">
+          <Loader />
+        </div>
+      ) : (
+        <p className="text-center text-3xl">
+          You do not have access to the platform(yet)
+        </p>
+      )}
     </div>
   );
 };
