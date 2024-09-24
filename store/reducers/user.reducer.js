@@ -2,27 +2,29 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   isLoggedIn: false,
+  __v: 0,
+  _id: undefined,
   averageVideoDuration: '',
-  categories: [],
-  defaultLanguage: '',
-  email: '',
-  firstName: '',
-  languages: [],
-  lastName: '',
-  monthlyView: '',
-  pendingVideos: [],
   completedVideos: [],
-  picture: '',
-  preferences: [],
-  region: [],
-  role: '',
-  saveSettings: false,
+  country: '',
+  createdAt: '',
+  email: '',
+  emailVerified: false,
+  firstName: '',
+  jobsCompletedArray: [],
+  moderationJobsCompleted: 0,
+  name: '',
+  nativeLanguage: [],
+  overlayJobsCompleted: 0,
+  paymentDetails: '',
+  paymentMethod: '',
+  paymentOwed: 0,
+  pendingJobsCompleted: 0,
+  profilePicture: null,
+  totalJobsCompleted: 0,
+  totalPayment: 0,
   uid: '',
-  usage: '',
-  youtubeChannelId: '',
-  youtubeChannelName: '',
-  _id: '',
-  chatAssistantOption: 'Title',
+  updatedAt: '',
 };
 
 const userSlice = createSlice({
@@ -39,6 +41,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUser, setAuthState } = userSlice.actions;
+export const { setUser, logOutUser } = userSlice.actions;
 
 export default userSlice.reducer;
