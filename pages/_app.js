@@ -60,12 +60,14 @@ const Layout = ({ Component, pageProps }) => {
     // handle auth
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        Cookies.set('uid', user.uid, { sameSite: 'Strict' });
-        const userData = await getTranslatorFromUserId();
-        Cookies.set('_id', userData.uid, {sameSite:"Strict"});
-        dispatch(
-          setUser({ ...userData, isLoggedIn: true, _id: userData.userId })
-        );
+        try {
+          Cookies.set('uid', user.uid, { sameSite: 'Strict' });
+          const userData = await getTranslatorFromUserId();
+          Cookies.set('_id', userData.uid, { sameSite: 'Strict' });
+          dispatch(
+            setUser({ ...userData, isLoggedIn: true, _id: userData.userId })
+          );
+        } catch (error) {}
       } else {
         Cookies.remove('uid');
         Cookies.remove('session');
@@ -78,11 +80,13 @@ const Layout = ({ Component, pageProps }) => {
 
   useEffect(() => {
     (async () => {
-      const lang = await getSupportedLanguages();
-      dispatch(setSupportedLanguages(lang));
+      try {
+        const lang = await getSupportedLanguages();
+        dispatch(setSupportedLanguages(lang));
 
-      const countries = await getCountriesAndCodes();
-      dispatch(setCountriesAndCodes(countries));
+        const countries = await getCountriesAndCodes();
+        dispatch(setCountriesAndCodes(countries));
+      } catch (error) {}
     })();
   }, []);
 
