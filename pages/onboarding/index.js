@@ -54,24 +54,26 @@ const Onboarding = () => {
         paymentDetails,
       } = formData;
       if (
-        !name ||
-        !email ||
-        !emailValidator(email) ||
+        !name.trim() ||
+        !email.trim() ||
+        !emailValidator(email.trim()) ||
         nativeLanguage.length === 0 ||
         country === 'Select' ||
-        !checkedState
+        !checkedState ||
+        !paymentDetails.trim()
       ) {
-        throw new Error('Please fill all required fields correctly');
+        throw new Error('Please fill all fields correctly');
       }
 
       localStorage.setItem('emailForSignIn', email);
+
       await createTranslator(
-        name,
-        email,
+        name.trim(),
+        email.trim(),
         nativeLanguage,
         country,
         checkedState,
-        paymentDetails
+        paymentDetails.trim()
       );
       setPopupSubmit(true);
     } catch (error) {
