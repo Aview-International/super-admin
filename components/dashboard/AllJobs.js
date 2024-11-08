@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import ErrorHandler from '../../utils/errorHandler';
 import { getAllJobs, acceptJob, getDownloadLink } from '../../services/apis';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAllJobs } from '../../store/reducers/jobs.reducer';
 
 const AllJobs = ({
   setPopupPreview,
@@ -8,8 +10,8 @@ const AllJobs = ({
   setPreviewJobType,
   setPreviewJobVideoLink,
 }) => {
-  const [jobs, setJobs] = useState([]);
-
+  const jobs = useSelector((el) => el.jobs);
+  const dispatch = useDispatch();
   const handleTranslator = async () => {
     getJobs();
   };
@@ -23,7 +25,7 @@ const AllJobs = ({
           jobId: Object.keys(resData)[i],
         }))
       : [];
-    setJobs(pending);
+    dispatch(setAllJobs(pending));
   };
 
   const handleAccept = async (jobId, jobType) => {
@@ -49,7 +51,6 @@ const AllJobs = ({
   const handlePreview = async (job, jobType) => {
     const videoPath = `dubbing-tasks/${job.creatorId}/${job.jobId}/video.mp4`;
     const downloadLink = await getDownloadLink(videoPath);
-    console.log(downloadLink.data);
     setPreviewJobVideoLink(downloadLink.data);
     setPreviewJob(job);
     setPreviewJobType(jobType);
@@ -111,7 +112,7 @@ const AllJobs = ({
                     </div>
                     <div className="text-left text-white">{job.jobId}</div>
                     <div className="text-left text-white">
-                      {job.videoData.caption}
+                      {job.videoData?.caption}
                     </div>
                     <div className="text-left text-white">
                       {job.originalLanguage}
