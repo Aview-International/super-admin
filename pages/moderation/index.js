@@ -114,7 +114,7 @@ const QA = () => {
 
   const getEnglishSrt = async (creatorId, jobId) => {
     const data = await getRawSRT(
-      `dubbing-tasks/${creatorId}/${jobId}/original.srt`
+      `dubbing-tasks/${creatorId}/${jobId}/speakers.srt`
     );
     let processedSubtitles = [];
 
@@ -166,7 +166,7 @@ const QA = () => {
         ).translateCode
       );
       getProfile();
-      setFlags(job.flags);
+      setFlags(job.flags || []);
       handleVideo();
       console.log(job);
     }

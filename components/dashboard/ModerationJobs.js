@@ -5,6 +5,8 @@ import {
   getDownloadLink,
 } from '../../services/apis';
 import ErrorHandler from '../../utils/errorHandler';
+import { useDispatch } from 'react-redux';
+import { setAllJobs } from '../../store/reducers/jobs.reducer';
 
 const ModerationJobs = ({
   setPopupPreview,
@@ -13,7 +15,7 @@ const ModerationJobs = ({
   setPreviewJobVideoLink,
 }) => {
   const [jobs, setJobs] = useState([]);
-
+  const dispatch = useDispatch();
   const getModerationJobs = async () => {
     const res = await getAllModerationJobs();
     const resData = res.data;
@@ -23,6 +25,7 @@ const ModerationJobs = ({
           jobId: Object.keys(resData)[i],
         }))
       : [];
+    dispatch(setAllJobs(pending));
     setJobs(pending);
   };
 
@@ -44,10 +47,6 @@ const ModerationJobs = ({
     setPreviewJobType('moderation');
     setPopupPreview(true);
   };
-
-  useEffect(() => {
-    handleTranslator();
-  }, []);
 
   useEffect(() => {
     getModerationJobs();
