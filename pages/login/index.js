@@ -26,7 +26,6 @@ const Login = () => {
           sameSite: 'Strict',
         });
         const user = authStatus(res._tokenResponse.idToken);
-        console.log(user);
         if (user && user.data.accountVerifiedByAview) router.push('/dashboard');
         else throw Error;
       }
