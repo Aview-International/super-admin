@@ -25,14 +25,11 @@ const Login = () => {
         Cookies.set('session', res._tokenResponse.idToken, {
           sameSite: 'Strict',
         });
-        console.log(res);
         const user = authStatus(res._tokenResponse.idToken);
-        console.log(user);
         if (user && user.data.accountVerifiedByAview) router.push('/dashboard');
         else throw Error;
       }
     } catch (error) {
-      console.log(error);
       setError(true);
     }
   };
