@@ -19,11 +19,10 @@ export function middleware(request) {
 
 export const config = {
   matcher: [
-    '/transcription',
-    '/dubbing-edits',
-    '/creator',
     '/dashboard',
-    // '/distribution/:path*',
-    '/manual/:path*',
+    '/distribution/:path*',
+    '/moderation',
+    '/overlay-flags',
+    '/pending',
   ],
 };

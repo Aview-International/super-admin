@@ -1,6 +1,7 @@
 import { decodeJwt } from 'jose';
 
 export const authStatus = (token) => {
+  try {
     if (!token) return false;
     else {
       const data = decodeJwt(token);
@@ -15,4 +16,7 @@ export const authStatus = (token) => {
         };
       }
     }
-  };
+  } catch (error) {
+    return false;
+  }
+};
