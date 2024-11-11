@@ -20,6 +20,7 @@ const Home = () => {
       setHasSubmitted(true);
     } catch (error) {
       setIsLoading(false);
+      console.log(error);
       ErrorHandler(error);
     }
   };
