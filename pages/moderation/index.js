@@ -41,7 +41,6 @@ const QA = () => {
 
   const handleVideo = async () => {
     const videoPath = `dubbing-tasks/${job.creatorId}/${jobId}/video.mp4`;
-    console.log(videoPath);
     const downloadLink = await getDownloadLink(videoPath);
     setDownloadLink(downloadLink.data);
   };
@@ -168,7 +167,6 @@ const QA = () => {
       getProfile();
       setFlags(job.flags || []);
       handleVideo();
-      console.log(job);
     }
   }, [job]);
 
@@ -185,14 +183,6 @@ const QA = () => {
   return (
     <div>
       <PageTitle title="Moderation" />
-      <style>
-        {`
-            ::-webkit-scrollbar-track {
-                background: #28243c !important;
-                border-radius: 100vw;
-            }
-            `}
-      </style>
       <Popup show={popupSubmit} disableClose={true}>
         <div className="h-full w-full">
           <div className="w-[500px] rounded-2xl bg-indigo-2 p-s3">
@@ -206,19 +196,8 @@ const QA = () => {
         </div>
       </Popup>
       {isLoading && <FullScreenLoader />}
-      {job && (
-        <div className="relative h-screen w-full">
-          <div className="z-1000 fixed top-0 right-0 py-s2 px-s5">
-            <Timer
-              jobId={jobId}
-              jobType={'moderation'}
-              setIsLoading={setIsLoading}
-              jobTimestamp={job ? job.moderationStatus : null}
-            />
-          </div>
-        </div>
-      )}
-      <div className={`flex `}>
+
+      <div className={`flex`}>
         <div
           className={`fixed left-0 top-0 flex h-screen w-1/2 flex-col py-s5 pl-s5 pr-s1`}
         >
@@ -312,15 +291,7 @@ const QA = () => {
                   style={{ paddingTop: '56.25%' }}
                 >
                   <video
-                    style={{
-                      objectFit: 'contain',
-                      position: 'absolute',
-                      top: '0',
-                      left: '0',
-                      width: '100%',
-                      height: '100%',
-                      backgroundColor: '#000',
-                    }}
+                    className="absolute top-0 left-0 h-full w-full bg-black object-contain"
                     controls
                   >
                     <source

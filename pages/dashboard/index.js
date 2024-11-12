@@ -266,7 +266,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          <div className="flex flex-row my-s3">
+          <div className="my-s3 flex flex-row">
             {jobTypes.map((job) => (
               <div
                 key={job.id}
