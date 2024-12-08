@@ -19,9 +19,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import defaultProfilePicture from '../../public/img/graphics/default.png';
 import { setAllJobs, setJobsLoading } from '../../store/reducers/jobs.reducer';
 import CircleLoader from '../../public/loaders/CircleLoader';
+import { useRouter } from 'next/router';
 
 const Dashboard = () => {
-  const translator = useSelector((data) => data.user);
+  const translator = useSelector((state) => state.user);
   const { jobs, isLoading } = useSelector((state) => state.jobs);
   const [selectedOption, setSelectedOption] = useState('all');
   const [leaderboards, setLeaderboards] = useState([]);
@@ -31,6 +32,7 @@ const Dashboard = () => {
   const [previewJob, setPreviewJob] = useState(null);
   const [previewJobVideoLink, setPreviewJobVideoLink] = useState(null);
   const [previewJobType, setPreviewJobType] = useState(null);
+  const router = useRouter();
 
   const handleTranslator = async () => {
     const data = {
@@ -142,6 +144,11 @@ const Dashboard = () => {
   useEffect(() => {
     handleAllJobs();
   }, []);
+
+  if (!translator.isLoggedIn) {
+    router.push('/');
+    return null;
+  }
 
   const formatMoney = (amount) => {
     let dollars = Math.floor(amount / 100);
