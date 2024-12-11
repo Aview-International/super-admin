@@ -21,7 +21,7 @@ import { setAllJobs, setJobsLoading } from '../../store/reducers/jobs.reducer';
 import CircleLoader from '../../public/loaders/CircleLoader';
 
 const Dashboard = () => {
-  const translator = useSelector((data) => data.user);
+  const translator = useSelector((state) => state.user);
   const { jobs, isLoading } = useSelector((state) => state.jobs);
   const [selectedOption, setSelectedOption] = useState('all');
   const [leaderboards, setLeaderboards] = useState([]);
@@ -195,7 +195,7 @@ const Dashboard = () => {
         >
           <div className="h-full w-full">
             <div className="w-[600px] rounded-2xl">
-              <div className="w-[600px] rounded-2xl bg-indigo-1 py-s2 px-s4">
+              <div className="w-[600px] rounded-2xl bg-indigo-1 px-s4 py-s2">
                 <div className="flex flex-col items-center justify-center">
                   <h2 className="mb-s2 w-full text-left text-2xl text-white">
                     Preview
@@ -206,7 +206,7 @@ const Dashboard = () => {
                   >
                     {previewJobVideoLink && (
                       <video
-                        className="absolute top-0 left-0 h-full w-full bg-black object-contain"
+                        className="absolute left-0 top-0 h-full w-full bg-black object-contain"
                         controls
                       >
                         <source
@@ -239,7 +239,7 @@ const Dashboard = () => {
               <div className="rounded-lg bg-white-transparent p-s1.5 font-bold">
                 ${translator ? formatMoney(translator.totalPayment) : ''}
               </div>
-              <div className="mt-s4 mb-s1">Weekly</div>
+              <div className="mb-s1 mt-s4">Weekly</div>
               <div className="rounded-lg bg-white-transparent p-s1.5 font-bold">
                 ${translator ? formatMoney(translator.paymentOwed) : ''}
               </div>
@@ -247,7 +247,7 @@ const Dashboard = () => {
 
             <div className="h-full w-full rounded-2xl bg-white-transparent p-s2">
               <div className="text-2xl text-white">Job Statistics</div>
-              <div className="mt-s2 mb-s2 h-[1px] w-full bg-white"></div>
+              <div className="mb-s2 mt-s2 h-[1px] w-full bg-white"></div>
               <div className="flex w-full flex-row">
                 <div className="h-full max-h-[221px] w-1/2 pr-s1">
                   <PieChart data={pieChartData ? pieChartData : null} />
@@ -309,7 +309,7 @@ const Dashboard = () => {
             {jobTypes.map((job) => (
               <div
                 key={job.id}
-                className={`mr-s2 min-w-fit cursor-pointer rounded-xl py-s1 px-s2 text-xl ${
+                className={`mr-s2 min-w-fit cursor-pointer rounded-xl px-s2 py-s1 text-xl ${
                   selectedOption == job.id
                     ? 'bg-white text-black'
                     : 'bg-white-transparent text-white'

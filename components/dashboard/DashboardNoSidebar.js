@@ -5,10 +5,20 @@ import defaultProfilePicture from '../../public/img/graphics/default.png';
 import { useSelector } from 'react-redux';
 import { useState } from 'react';
 import ReviewerSettingsPopup from './ReviewerSettingsPopup';
+import GlobalButton from '../UI/GlobalButton';
+import { logoutUser } from '../../services/firebase';
+import { useDispatch } from 'react-redux';
+import { logOut } from '../../store/reducers/user.reducer';
 
 const DashboardNoSidebar = ({ children }) => {
   const translator = useSelector((data) => data.user);
   const [settings, setSettings] = useState(false);
+  const dispatch = useDispatch()
+
+  const handleLogOut = () => {
+    dispatch(logOut())
+    logoutUser();
+  }
 
   return (
     <div>
@@ -36,21 +46,31 @@ const DashboardNoSidebar = ({ children }) => {
             <h3 className="text-gray-2">Welcome to your AVIEW dashboard</h3>
           </div>
         </div>
-        <Image
-          src={
-            () => {
-              if(translator.profilePicture) return translator.profilePicture;
-              return defaultProfilePicture
-            }
-          }
-          alt="profile"
-          width={52}
-          height={52}
-          className="cursor-pointer rounded-full"
-          onClick={() => {
-            setSettings(true);
-          }}
-        />
+        <div className="flex items-center justify-center gap-4">
+          <div>
+            <GlobalButton
+              purpose="onClick"
+              onClick={handleLogOut}
+              type="primary"
+              fullWidth={true}
+            >
+              Sign Out
+            </GlobalButton>
+          </div>
+          <Image
+            src={() => {
+              if (translator.profilePicture) return translator.profilePicture;
+              return defaultProfilePicture;
+            }}
+            alt="profile"
+            width={52}
+            height={52}
+            className="cursor-pointer rounded-full"
+            onClick={() => {
+              setSettings(true);
+            }}
+          />
+        </div>
       </header>
       <div className="h-[1px] w-full bg-gray-1"></div>
 
