@@ -61,22 +61,6 @@ export const getRawSRT = async (s3Path) => {
   return response.data;
 };
 
-export const approveSrt = async (
-  jobId,
-  date,
-  objectKey,
-  creatorId,
-  language
-) => {
-  return axiosInstance.post(baseUrl + 'admin/approve-srt', {
-    jobId,
-    date,
-    creatorId,
-    objectKey,
-    language,
-  });
-};
-
 export const approveTranslation = async (
   jobId,
   objectKey,
