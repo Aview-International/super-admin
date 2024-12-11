@@ -84,6 +84,7 @@ const QA = () => {
   const getJob = async (jobId) => {
     try {
       const job = await getJobAndVerify(jobId);
+      console.log(job);
       setJob(job.data);
       setIsLoading(false);
     } catch (error) {
@@ -162,7 +163,7 @@ const QA = () => {
       setLang(
         SupportedLanguages.find(
           (language) => language.languageName === job.translatedLanguage
-        ).translateCode
+        ).translateCode.toLocaleLowerCase()
       );
       getProfile();
       setFlags(job.flags || []);
@@ -242,9 +243,9 @@ const QA = () => {
 
         {content == 'video' && (
           <div
-            className={`fixed right-0 top-0 flex h-screen w-1/2 flex-col py-s5 pr-s5 pl-s1`}
+            className={`fixed right-0 top-0 flex h-screen w-1/2 flex-col py-s5 pl-s1 pr-s5`}
           >
-            <div className="absolute top-0 right-0 bg-black py-s2 px-s5">
+            <div className="absolute right-0 top-0 bg-black px-s5 py-s2">
               <Timer
                 jobId={jobId}
                 jobType={'moderation'}
@@ -289,7 +290,7 @@ const QA = () => {
                   style={{ paddingTop: '56.25%' }}
                 >
                   <video
-                    className="absolute top-0 left-0 h-full w-full bg-black object-contain"
+                    className="absolute left-0 top-0 h-full w-full bg-black object-contain"
                     controls
                   >
                     <source
@@ -314,7 +315,7 @@ const QA = () => {
                   onClick={() => handleApprove()}
                   isLoading={loader === 'approve'}
                 >
-                  <span className="mr-2">Approve</span>
+                  <span className="mr-2">Submit</span>
                   <Image src={Check} alt="" width={24} height={24} />
                 </Button>
               </div>
@@ -324,7 +325,7 @@ const QA = () => {
 
         {content == 'original subtitles' && (
           <div
-            className={`fixed right-0 top-0 flex h-screen w-1/2 flex-col py-s5 pr-s5 pl-s1`}
+            className={`fixed right-0 top-0 flex h-screen w-1/2 flex-col py-s5 pl-s1 pr-s5`}
           >
             <h2 className="mb-s2 text-2xl text-white">Content</h2>
             <div className="flex flex-row gap-s2">

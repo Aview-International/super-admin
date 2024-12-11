@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { baseUrl } from './baseUrl';
 import FormData from 'form-data';
 import Cookies from 'js-cookie';
 import { decodeJwt } from 'jose';
@@ -7,7 +6,7 @@ import { auth } from './firebase';
 
 // Create an Axios instance with default config
 const axiosInstance = axios.create({
-  baseURL: baseUrl,
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
 });
 
 const isTokenExpired = (token) => {
@@ -45,36 +44,20 @@ axiosInstance.interceptors.request.use(
 );
 
 export const signInWithGoogleAcc = async (token) =>
-  (await axiosInstance.post(baseUrl + 'auth/login', { token })).data;
+  (await axiosInstance.post('auth/login', { token })).data;
 
 export const downloadS3Object = async (s3Path) => {
-  await axiosInstance.post(baseUrl + 'admin/download-object', {
+  await axiosInstance.post('admin/download-object', {
     s3Path,
   });
 };
 
 export const getRawSRT = async (s3Path) => {
-  const response = await axiosInstance.post(baseUrl + 'admin/get-raw-srt', {
+  const response = await axiosInstance.post('admin/get-raw-srt', {
     s3Path,
   });
 
   return response.data;
-};
-
-export const approveSrt = async (
-  jobId,
-  date,
-  objectKey,
-  creatorId,
-  language
-) => {
-  return axiosInstance.post(baseUrl + 'admin/approve-srt', {
-    jobId,
-    date,
-    creatorId,
-    objectKey,
-    language,
-  });
 };
 
 export const approveTranslation = async (
@@ -84,7 +67,7 @@ export const approveTranslation = async (
   translatedLanguageKey,
   creatorId
 ) => {
-  return axiosInstance.post(baseUrl + 'dubbing/dub-srt', {
+  return axiosInstance.post('dubbing/dub-srt', {
     jobId,
     objectKey,
     date,
@@ -94,19 +77,16 @@ export const approveTranslation = async (
 };
 
 export const getYoutubeVideoData = async (videoId) => {
-  const res = await axiosInstance.post(baseUrl + 'admin/get-youtube-data', {
+  const res = await axiosInstance.post('admin/get-youtube-data', {
     videoId,
   });
   return res.data;
 };
 
 export const getYoutubePlaylistData = async (videoId) => {
-  const response = await axiosInstance.post(
-    baseUrl + 'admin/get-youtube-playlist',
-    {
-      videoId,
-    }
-  );
+  const response = await axiosInstance.post('admin/get-youtube-playlist', {
+    videoId,
+  });
 
   const playlists = response.data.items.map((playlist) => ({
     name: playlist.snippet.title,
@@ -117,18 +97,15 @@ export const getYoutubePlaylistData = async (videoId) => {
 };
 
 export const getSupportedLanguages = async () =>
-  (await axiosInstance.get(baseUrl + 'admin/supported-languages')).data;
+  (await axiosInstance.get('admin/supported-languages')).data;
 
 export const getCountriesAndCodes = async () =>
-  (await axiosInstance.get(baseUrl + 'admin/countries-and-codes')).data;
+  (await axiosInstance.get('admin/countries-and-codes')).data;
 
 export const getRegionCategory = async (language) => {
-  const response = await axiosInstance.post(
-    baseUrl + 'admin/youtube-categories',
-    {
-      language,
-    }
-  );
+  const response = await axiosInstance.post('admin/youtube-categories', {
+    language,
+  });
 
   const categories = response.data
     .map((category) => {
@@ -145,7 +122,7 @@ export const getRegionCategory = async (language) => {
 };
 
 export const translateText = async (text, target_lang) => {
-  const response = await axiosInstance.post(baseUrl + 'admin/translate-text', {
+  const response = await axiosInstance.post('admin/translate-text', {
     text,
     target_lang,
   });
@@ -158,7 +135,7 @@ export const postToYouTube = async (
   date,
   youtubePayload
 ) => {
-  const response = await axiosInstance.post(baseUrl + 'admin/post-to-youtube', {
+  const response = await axiosInstance.post('admin/post-to-youtube', {
     filePath,
     creatorId,
     date,
@@ -185,7 +162,7 @@ export const createTranslator = async (
   paymentMethod,
   paymentDetails
 ) => {
-  return axiosInstance.post(baseUrl + 'admin/create-translator', {
+  return axiosInstance.post('admin/create-translator', {
     name,
     email,
     nativeLanguage,
@@ -196,14 +173,14 @@ export const createTranslator = async (
 };
 
 export const sendSupportMessage = async (email, message) => {
-  return axiosInstance.post(baseUrl + 'admin/create-translator-inquiry', {
+  return axiosInstance.post('admin/create-translator-inquiry', {
     email,
     message,
   });
 };
 
 export const finishModerationJob = async (jobId, updatedSrt) => {
-  return axiosInstance.post(baseUrl + 'admin/finish-moderation-job', {
+  return axiosInstance.post('admin/finish-moderation-job', {
     jobId,
     updatedSrt,
   });
@@ -214,7 +191,7 @@ export const getS3DownloadLink = async ({ userId, timestamp, lang }) =>
     .data;
 
 export const getDownloadLink = async (s3Path) => {
-  const response = axiosInstance.post(baseUrl + 'admin/download-object', {
+  const response = axiosInstance.post('admin/download-object', {
     s3Path,
   });
 
@@ -226,7 +203,7 @@ export const getAllJobs = async (translatorId) => {
 };
 
 export const finishOverlayJob = async (jobId, operationsArray) => {
-  return axiosInstance.post(baseUrl + 'admin/finish-overlay-job', {
+  return axiosInstance.post('admin/finish-overlay-job', {
     jobId,
     operationsArray,
   });
@@ -269,7 +246,7 @@ export const getTranslatorLeaderboards = async () => {
 };
 
 export const singleSignOnLogin = async (email, origin) =>
-  await axiosInstance.post(baseUrl + 'email/login', { email, origin });
+  await axiosInstance.post('email/login', { email, origin });
 
 export const uploadReviewerProfilePicture = async (translatorId, picture) => {
   const formData = new FormData();
