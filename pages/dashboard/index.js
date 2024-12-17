@@ -1,8 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
 import DashboardNoSidebar from '../../components/dashboard/DashboardNoSidebar';
-import PendingJobs from '../../components/dashboard/PendingJobs';
-import OverlayJobs from '../../components/dashboard/OverlayJobs';
-import ModerationJobs from '../../components/dashboard/ModerationJobs';
 import AllJobs from '../../components/dashboard/AllJobs';
 import PageTitle from '../../components/SEO/PageTitle';
 import {
@@ -63,38 +60,24 @@ const Dashboard = () => {
 
   const handleAllJobs = async () => {
     dispatch(setJobsLoading(true));
-    const res = await getAllJobs();
-    const resData = res.data;
-    const pending = resData
-      ? Object.values(resData).map((item, i) => ({
-          ...item,
-          jobId: Object.keys(resData)[i],
-        }))
-      : [];
-
-    const sortedJobs = pending.sort((a, b) => {
-      return Number(b.timestamp) - Number(a.timestamp);
-    });
-
-    dispatch(setAllJobs(sortedJobs));
+    const allJobs = await getAllJobs();
+    dispatch(setAllJobs(allJobs));
     dispatch(setJobsLoading(false));
   };
 
   const handleAccept = async () => {
-    if (popupPreview) {
-      if (previewJobType == 'moderation') {
-        await handleAcceptModerationjob(previewJob.jobId);
-      } else if (previewJobType == 'pending') {
-        await handleAcceptPendingJob(previewJob.jobId);
-      } else if (previewJobType == 'overlay') {
-        await handleAcceptOverlayJob(previewJob.jobId);
-      }
+    if (previewJobType == 'moderation') {
+      await handleAcceptModerationjob(previewJob.jobId);
+    } else if (previewJobType == 'under review') {
+      await handleAcceptPendingJob(previewJob.jobId);
+    } else if (previewJobType == 'overlay') {
+      await handleAcceptOverlayJob(previewJob.jobId);
     }
   };
 
   const handleAcceptPendingJob = async (jobId) => {
     try {
-      await acceptJob(jobId, 'pending');
+      await acceptJob(jobId, 'review');
 
       window.open(`/pending?jobId=${jobId}`, '_blank');
     } catch (error) {
@@ -131,6 +114,9 @@ const Dashboard = () => {
     if (selectedOption === 'all') {
       return jobs;
     }
+    if (selectedOption === 'active') {
+      return jobs.filter((job) => job['admin-status'] === 'active');
+    }
     return jobs.filter((job) => job.status === selectedOption);
   }, [jobs, selectedOption]);
 
@@ -149,36 +135,16 @@ const Dashboard = () => {
     return dollars + '.' + (cents < 10 ? '0' : '') + cents;
   };
 
-  const jobTypes = [
-    {
-      title: 'All Jobs',
-      id: 'all',
-      component: AllJobs,
-    },
-    {
-      title: 'Pending',
-      id: 'pending',
-      component: PendingJobs,
-    },
-    {
-      title: 'Moderation',
-      id: 'moderation',
-      component: ModerationJobs,
-    },
-    {
-      title: 'Overlay',
-      id: 'overlay',
-      component: OverlayJobs,
-    },
-    {
-      title: 'Active',
-      id: 'active',
-      component: AllJobs,
-    },
+  const TableHeader = [
+    'Job Type',
+    'Date',
+    'Title',
+    'Original Language',
+    'Translated Language',
+    'Preview Link',
   ];
 
-  const selectedJobType = jobTypes.find((job) => job.id === selectedOption);
-  const ComponentToRender = selectedJobType.component;
+  const jobTypes = ['all', 'under review', 'moderation', 'overlay', 'active'];
 
   return (
     <>
@@ -265,7 +231,7 @@ const Dashboard = () => {
                       key={i}
                     >
                       <div
-                        className={`mr-s1 h-3.5	w-3.5 rounded-full ${job.class}`}
+                        className={`mr-s1 h-3.5	w-3.5 rounded-full ${job}`}
                       ></div>
                       <div className="pt-1 text-lg">{job.title}</div>
                       <div className="ml-auto w-[50px] rounded-lg bg-white-transparent px-[8px] pt-[2px] text-center text-base">
@@ -306,18 +272,24 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="my-s3 flex flex-row">
-            {jobTypes.map((job) => (
+            {jobTypes.map((job, i) => (
               <div
-                key={job.id}
-                className={`mr-s2 min-w-fit cursor-pointer rounded-xl px-s2 py-s1 text-xl ${
-                  selectedOption == job.id
+                key={i}
+                className={`mr-s2 min-w-fit cursor-pointer rounded-xl px-s2 py-s1 text-xl capitalize ${
+                  selectedOption == job
                     ? 'bg-white text-black'
                     : 'bg-white-transparent text-white'
                 }`}
-                onClick={() => setSelectedOption(job.id)}
+                onClick={() => setSelectedOption(job)}
               >
-                {job.title}
+                {job}
               </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-6 gap-1 rounded-lg bg-white-transparent p-s2 text-left text-lg font-bold">
+            {TableHeader.map((headerItem, index) => (
+              <div key={index}>{headerItem}</div>
             ))}
           </div>
 
@@ -325,7 +297,7 @@ const Dashboard = () => {
             {isLoading ? (
               <CircleLoader />
             ) : (
-              <ComponentToRender
+              <AllJobs
                 jobs={filteredJobs}
                 setPopupPreview={setPopupPreview}
                 setPreviewJob={setPreviewJob}

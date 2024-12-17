@@ -17,7 +17,7 @@ class MyDocument extends Document {
             rel="stylesheet"
           />
         </Head>
-        <body className="transition-300 relative m-0 min-h-screen overflow-hidden overflow-x-hidden bg-black p-0 font-overpass">
+        <body className="transition-300 relative m-0 min-h-screen overflow-hidden overflow-x-hidden bg-black p-0 font-overpass text-white">
           <Main />
           <NextScript />
         </body>

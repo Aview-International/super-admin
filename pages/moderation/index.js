@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
 import {
-  getRawSRT,
   finishModerationJob,
   getDownloadLink,
   getJobAndVerify,
-  getCreatorProfile,
 } from '../../services/apis';
 import QATranslationBubble from '../../components/translation/QATranslationBubble';
 import { useRouter } from 'next/router';
@@ -12,7 +10,7 @@ import Button from '/components/UI/Button';
 import Check from '/public/img/icons/check-circle-green.svg';
 import Image from 'next/image';
 import useWindowSize from '../../hooks/useWindowSize';
-import { SupportedLanguages } from '../../constants/constants';
+// import { SupportedLanguages } from '../../constants/constants';
 import FullScreenLoader from '../../public/loaders/FullScreenLoader';
 import ErrorHandler from '../../utils/errorHandler';
 import SuccessHandler from '../../utils/successHandler';
@@ -28,7 +26,7 @@ const QA = () => {
   const [job, setJob] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [creatorName, setCreatorName] = useState('');
-  const [lang, setLang] = useState('');
+  // const [lang, setLang] = useState('');
   const [popupSubmit, setPopupSubmit] = useState(false);
   const [content, setContent] = useState('video');
   const [flags, setFlags] = useState([]);
@@ -46,20 +44,7 @@ const QA = () => {
   };
 
   const handleResetSRT = async () => {
-    try {
-      setLoader('reset');
-      await getSrt(job.creatorId, jobId, lang)
-        .then(() => {
-          setLoader('');
-          SuccessHandler('Changes discarded.');
-        })
-        .catch((error) => {
-          setLoader('');
-          ErrorHandler('Failed to discard changes', error);
-        });
-    } catch (error) {
-      ErrorHandler(error);
-    }
+    window.location.reload();
   };
 
   const handleApprove = async () => {
@@ -74,62 +59,45 @@ const QA = () => {
     }
   };
 
-  const getProfile = async () => {
-    const res = await getCreatorProfile(job.creatorId);
-    const resData = res.data;
-
-    setCreatorName(resData?.firstName + ' ' + resData?.lastName);
-  };
-
   const getJob = async (jobId) => {
     try {
-      const job = await getJobAndVerify(jobId);
-      console.log(job);
-      setJob(job.data);
+      const { jobData, translatedSrtContent, originalSrtContent, creatorName } =
+        await getJobAndVerify('moderation', jobId);
+
+      setJob(jobData);
+      // get original srt lines
+      let originalSrts = [];
+      const lines = originalSrtContent.split('\n');
+
+      for (let i = 0; i < lines.length; i += 4) {
+        let subtitleBlock = {
+          index: lines[i],
+          time: lines[i + 1],
+          text: lines[i + 2],
+        };
+        originalSrts.push(subtitleBlock);
+      }
+      setEnglishSubtitles(originalSrts);
+
+      // get translated srt lines
+      let translatedSrt = [];
+      const translated = translatedSrtContent.split('\n');
+
+      for (let i = 0; i < translated.length; i += 4) {
+        let subtitleBlock = {
+          index: translated[i],
+          time: translated[i + 1],
+          text: translated[i + 2],
+        };
+        translatedSrt.push(subtitleBlock);
+      }
+
+      setSubtitles(translatedSrt);
+      setCreatorName(creatorName);
       setIsLoading(false);
     } catch (error) {
       ErrorHandler(error);
     }
-  };
-
-  const getSrt = async (creatorId, jobId, key) => {
-    const data = await getRawSRT(
-      `dubbing-tasks/${creatorId}/${jobId}/${key}.srt`
-    );
-    let processedSubtitles = [];
-
-    const lines = data.split('\n');
-
-    for (let i = 0; i < lines.length; i += 4) {
-      let subtitleBlock = {
-        index: lines[i],
-        time: lines[i + 1],
-        text: lines[i + 2],
-      };
-      processedSubtitles.push(subtitleBlock);
-    }
-
-    setSubtitles(processedSubtitles);
-  };
-
-  const getEnglishSrt = async (creatorId, jobId) => {
-    const data = await getRawSRT(
-      `dubbing-tasks/${creatorId}/${jobId}/speakers.srt`
-    );
-    let processedSubtitles = [];
-
-    const lines = data.split('\n');
-
-    for (let i = 0; i < lines.length; i += 4) {
-      let subtitleBlock = {
-        index: lines[i],
-        time: lines[i + 1],
-        text: lines[i + 2],
-      };
-      processedSubtitles.push(subtitleBlock);
-    }
-
-    setEnglishSubtitles(processedSubtitles);
   };
 
   const getSrtText = () => {
@@ -160,26 +128,10 @@ const QA = () => {
 
   useEffect(() => {
     if (job) {
-      setLang(
-        SupportedLanguages.find(
-          (language) => language.languageName === job.translatedLanguage
-        ).translateCode.toLocaleLowerCase()
-      );
-      getProfile();
       setFlags(job.flags || []);
       handleVideo();
     }
   }, [job]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (lang) {
-        await getSrt(job.creatorId, jobId, lang);
-        await getEnglishSrt(job.creatorId, jobId);
-      }
-    };
-    fetchData();
-  }, [lang]);
 
   return (
     <div>
@@ -273,7 +225,7 @@ const QA = () => {
                 } mb-s2 h-[43px] w-fit cursor-pointer rounded-lg text-xl`}
                 onClick={() => setContent('original subtitles')}
               >
-                {job ? job.originalLanguage : ''} subtitles
+                Original subtitles
               </div>
             </div>
 
@@ -347,7 +299,7 @@ const QA = () => {
                 } mb-s2 h-[43px] w-fit cursor-pointer rounded-lg text-xl`}
                 onClick={() => setContent('original subtitles')}
               >
-                {job ? job.originalLanguage : ''} subtitles
+                Original subtitles
               </div>
             </div>
             <div className="relative h-full w-full flex-1 overflow-hidden rounded-2xl bg-white-transparent p-s2">

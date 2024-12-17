@@ -43,21 +43,10 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-export const signInWithGoogleAcc = async (token) =>
-  (await axiosInstance.post('auth/login', { token })).data;
-
 export const downloadS3Object = async (s3Path) => {
   await axiosInstance.post('admin/download-object', {
     s3Path,
   });
-};
-
-export const getRawSRT = async (s3Path) => {
-  const response = await axiosInstance.post('admin/get-raw-srt', {
-    s3Path,
-  });
-
-  return response.data;
 };
 
 export const approveTranslation = async (
@@ -145,13 +134,8 @@ export const postToYouTube = async (
   console.log(response);
 };
 
-export const transcribeSocialLink = async (body) =>
-  await axiosInstance.post('transcription/social', body);
-
-export const finishPendingJob = async (jobId) => {
-  await axiosInstance.post('admin/finish-pending-job', {
-    jobId,
-  });
+export const approveVideoReview = async (jobId) => {
+  await axiosInstance.get('admin/approve-video/' + jobId);
 };
 
 export const createTranslator = async (
@@ -198,9 +182,11 @@ export const getDownloadLink = async (s3Path) => {
   return response;
 };
 
-export const getAllJobs = async (translatorId) => {
-  return axiosInstance.post('admin/get-all-jobs', { translatorId });
-};
+export const getAllJobs = async () =>
+  (await axiosInstance.get('admin/get-all-jobs')).data;
+
+export const getActiveJobs = async () =>
+  (await axiosInstance.get('admin/active-jobs')).data;
 
 export const finishOverlayJob = async (jobId, operationsArray) => {
   return axiosInstance.post('admin/finish-overlay-job', {
@@ -216,18 +202,6 @@ export const verifyTranslatorEmail = async () => {
 export const getTranslatorFromUserId = async () =>
   (await axiosInstance.get('admin/translator')).data;
 
-export const getAllPendingJobs = async () => {
-  return axiosInstance.get('admin/get-pending-jobs');
-};
-
-export const getAllModerationJobs = async () => {
-  return axiosInstance.get('admin/get-moderation-jobs');
-};
-
-export const getAllOverlayJobs = async () => {
-  return axiosInstance.get('admin/get-overlay-jobs');
-};
-
 export const acceptJob = async (jobId, jobType) => {
   return axiosInstance.post('admin/accept-job', {
     jobId,
@@ -235,11 +209,8 @@ export const acceptJob = async (jobId, jobType) => {
   });
 };
 
-export const getJobAndVerify = async (jobId) => {
-  return axiosInstance.post('admin/get-job-and-verify', {
-    jobId,
-  });
-};
+export const getJobAndVerify = async (jobType, jobId) =>
+  (await axiosInstance.get(`admin/verify-job/${jobType}/${jobId}`)).data;
 
 export const getTranslatorLeaderboards = async () => {
   return axiosInstance.post('admin/get-translator-leaderboards');
