@@ -13,12 +13,12 @@ import { logOut } from '../../store/reducers/user.reducer';
 const DashboardNoSidebar = ({ children }) => {
   const translator = useSelector((data) => data.user);
   const [settings, setSettings] = useState(false);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const handleLogOut = () => {
-    dispatch(logOut())
+    dispatch(logOut());
     logoutUser();
-  }
+  };
 
   return (
     <div>
@@ -29,7 +29,7 @@ const DashboardNoSidebar = ({ children }) => {
         }}
         user={translator}
       />
-      <header className="flex w-full items-center justify-between py-s2 px-s4">
+      <header className="flex w-full items-center justify-between px-s4 py-s2">
         <div className="flex">
           <Link href="/dashboard">
             <a className="mx-s4 capitalize">
@@ -41,7 +41,7 @@ const DashboardNoSidebar = ({ children }) => {
               />
             </a>
           </Link>
-          <div className="pt-[9px]">
+          <div className="pt-s1">
             <h3>Hello {translator ? translator.name : ''}!</h3>
             <h3 className="text-gray-2">Welcome to your AVIEW dashboard</h3>
           </div>
@@ -57,19 +57,19 @@ const DashboardNoSidebar = ({ children }) => {
               Sign Out
             </GlobalButton>
           </div>
-          <Image
-            src={() => {
-              if (translator.profilePicture) return translator.profilePicture;
-              return defaultProfilePicture;
-            }}
-            alt="profile"
-            width={52}
-            height={52}
-            className="cursor-pointer rounded-full"
+          <button
             onClick={() => {
               setSettings(true);
             }}
-          />
+          >
+            <Image
+              src={translator.profilePicture || defaultProfilePicture}
+              alt="profile"
+              width={52}
+              height={52}
+              className="cursor-pointer rounded-full"
+            />
+          </button>
         </div>
       </header>
       <div className="h-[1px] w-full bg-gray-1"></div>

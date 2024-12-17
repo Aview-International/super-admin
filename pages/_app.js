@@ -2,15 +2,13 @@ import '../styles/globals.css';
 import '../styles/fonts.css';
 import 'react-toastify/dist/ReactToastify.css';
 import { useEffect } from 'react';
-import UserContextProvider from '../store/user-profile';
 import { onAuthStateChanged } from 'firebase/auth';
-import { MenuOpenContextProvider } from '../store/menu-open-context';
 import { ToastContainer } from 'react-toastify';
 import { Provider, useDispatch } from 'react-redux';
 import store from '../store';
-import { auth } from '../services/firebase';
+import { auth, logoutUser } from '../services/firebase';
 import Cookies from 'js-cookie';
-import { logOut, setUser } from '../store/reducers/user.reducer';
+import { setUser } from '../store/reducers/user.reducer';
 import {
   getCountriesAndCodes,
   getSupportedLanguages,
@@ -33,23 +31,19 @@ const MyApp = ({ Component, pageProps }) => {
 
   return (
     <Provider store={store}>
-      <MenuOpenContextProvider>
-        <UserContextProvider>
-          <ToastContainer
-            position="top-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="dark"
-          />
-          <Layout Component={Component} pageProps={pageProps} />
-        </UserContextProvider>
-      </MenuOpenContextProvider>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
+      <Layout Component={Component} pageProps={pageProps} />
     </Provider>
   );
 };
@@ -62,38 +56,23 @@ const Layout = ({ Component, pageProps }) => {
         if (user) {
           Cookies.set('uid', user.uid, { sameSite: 'Strict' });
           const userData = await getTranslatorFromUserId();
-          Cookies.set('_id', userData.uid, { sameSite: 'Strict' });
           dispatch(
             setUser({
               ...userData,
               isLoggedIn: true,
-              _id: userData._id,
               isAuthChecking: false,
             })
           );
         } else {
-        
-          Cookies.remove('uid');
-          Cookies.remove('session');
-          dispatch(
-            logOut({
-              isAuthChecking: false,
-            })
-          );
+          logoutUser();
         }
       } catch (error) {
-      
-        dispatch(
-          logOut({
-            isAuthChecking: false,
-          })
-        );
+        logoutUser();
       }
     });
-  
+
     return () => unsubscribe();
   }, []);
-  
 
   useEffect(() => {
     (async () => {

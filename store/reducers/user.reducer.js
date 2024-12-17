@@ -43,8 +43,8 @@ const userSlice = createSlice({
       const { field, value } = action.payload;
       state[field] = value;
     },
-    logOut(state, action) {
-      return { ...initialState, isLoggedIn: false, isAuthChecking: action.payload?.isAuthChecking ?? false };
+    logOut() {
+      return { ...initialState, isAuthChecking: false };
     },
   },
 });
