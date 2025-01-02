@@ -121,7 +121,7 @@ const Pending = () => {
           jobTimestamp={job ? job.pendingStatus : null}
         />
       </div> */}
-      <div className="flex h-screen w-full flex-col items-center justify-center px-s8 py-s7 font-bold text-white">
+      <div className="flex w-full flex-col items-center justify-center px-s8 py-s7 font-bold text-white">
         <div className="text-2xl">
           <p>Video Title: {job?.videoData?.caption}</p>
           <p className="my-s3">Creator Name: {creatorName}</p>
@@ -138,7 +138,7 @@ const Pending = () => {
             {videoLinks['original'] && (
               <div>
                 <video
-                  className="h-full w-full bg-black object-contain"
+                  className="h-full w-full bg-black object-contain max-h-96"
                   controls
                 >
                   <source src={videoLinks['original']} type="video/mp4" />
@@ -157,7 +157,7 @@ const Pending = () => {
             {videoLinks['serviced'] && (
               <div>
                 <video
-                  className="h-full w-full bg-black object-contain"
+                  className="h-full w-full bg-black object-contain max-h-96"
                   controls
                 >
                   <source src={videoLinks['serviced']} type="video/mp4" />
