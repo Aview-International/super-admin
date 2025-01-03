@@ -1,12 +1,12 @@
 import '../styles/globals.css';
 import '../styles/fonts.css';
 import 'react-toastify/dist/ReactToastify.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { ToastContainer } from 'react-toastify';
 import { Provider, useDispatch } from 'react-redux';
 import store from '../store';
-import { auth, logoutUser } from '../services/firebase';
+import { auth } from '../services/firebase';
 import Cookies from 'js-cookie';
 import { setUser } from '../store/reducers/user.reducer';
 import {
@@ -18,6 +18,7 @@ import {
   setCountriesAndCodes,
   setSupportedLanguages,
 } from '../store/reducers/languages.reducer';
+import CircleLoader from '../public/loaders/CircleLoader';
 
 const MyApp = ({ Component, pageProps }) => {
   useEffect(() => {
@@ -50,6 +51,8 @@ const MyApp = ({ Component, pageProps }) => {
 
 const Layout = ({ Component, pageProps }) => {
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
@@ -59,16 +62,12 @@ const Layout = ({ Component, pageProps }) => {
           dispatch(
             setUser({
               ...userData,
-              isLoggedIn: true,
-              isAuthChecking: false,
             })
           );
-        } else {
-          logoutUser();
+          router.push('/dashboard');
         }
-      } catch (error) {
-        logoutUser();
-      }
+        setIsLoading(false);
+      } catch (error) {}
     });
 
     return () => unsubscribe();
@@ -85,6 +84,14 @@ const Layout = ({ Component, pageProps }) => {
       } catch (error) {}
     })();
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="fixed left-0 top-0 flex h-screen w-screen items-center justify-center bg-black text-white">
+        <CircleLoader />
+      </div>
+    );
+  }
 
   if (Component.getLayout) {
     return Component.getLayout(<Component {...pageProps} />);

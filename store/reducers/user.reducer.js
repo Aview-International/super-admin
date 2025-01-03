@@ -1,8 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  isLoggedIn: false,
-  isAuthChecking: true,
   __v: 0,
   _id: undefined,
   averageVideoDuration: '',
@@ -44,7 +42,7 @@ const userSlice = createSlice({
       state[field] = value;
     },
     logOut() {
-      return { ...initialState, isAuthChecking: false };
+      return { ...initialState };
     },
   },
 });
