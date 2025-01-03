@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { uploadReviewerProfilePicture } from '../../services/apis';
 import { toast } from 'react-toastify';
 import Image from 'next/image';
-import defaultProfilePicture from '/public/img/graphics/default.png';
+import defaultProfilePicture from '../../public/img/graphics/default.png';
 import Popup from '../UI/PopupNormal';
 import edit from '../../public/img/icons/edit.svg';
 import {

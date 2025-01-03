@@ -6,8 +6,8 @@ import {
 } from '../../services/apis';
 import QATranslationBubble from '../../components/translation/QATranslationBubble';
 import { useRouter } from 'next/router';
-import Button from '/components/UI/Button';
-import Check from '/public/img/icons/check-circle-green.svg';
+import Button from '../../components/UI/Button';
+import Check from '../../public/img/icons/check-circle-green.svg';
 import Image from 'next/image';
 import useWindowSize from '../../hooks/useWindowSize';
 // import { SupportedLanguages } from '../../constants/constants';
@@ -15,7 +15,7 @@ import FullScreenLoader from '../../public/loaders/FullScreenLoader';
 import ErrorHandler from '../../utils/errorHandler';
 import SuccessHandler from '../../utils/successHandler';
 import Popup from '../../components/UI/PopupWithBorder';
-import warning from '/public/img/icons/warning.svg';
+import warning from '../../public/img/icons/warning.svg';
 import PageTitle from '../../components/SEO/PageTitle';
 import Timer from '../../components/UI/Timer';
 

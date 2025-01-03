@@ -1,7 +1,7 @@
 import '../styles/globals.css';
 import '../styles/fonts.css';
 import 'react-toastify/dist/ReactToastify.css';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { ToastContainer } from 'react-toastify';
 import { Provider, useDispatch } from 'react-redux';
@@ -18,7 +18,6 @@ import {
   setCountriesAndCodes,
   setSupportedLanguages,
 } from '../store/reducers/languages.reducer';
-import CircleLoader from '../public/loaders/CircleLoader';
 
 const MyApp = ({ Component, pageProps }) => {
   useEffect(() => {
@@ -51,7 +50,6 @@ const MyApp = ({ Component, pageProps }) => {
 
 const Layout = ({ Component, pageProps }) => {
   const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -59,14 +57,8 @@ const Layout = ({ Component, pageProps }) => {
         if (user) {
           Cookies.set('uid', user.uid, { sameSite: 'Strict' });
           const userData = await getTranslatorFromUserId();
-          dispatch(
-            setUser({
-              ...userData,
-            })
-          );
-          router.push('/dashboard');
+          dispatch(setUser(userData));
         }
-        setIsLoading(false);
       } catch (error) {}
     });
 
@@ -84,14 +76,6 @@ const Layout = ({ Component, pageProps }) => {
       } catch (error) {}
     })();
   }, []);
-
-  if (isLoading) {
-    return (
-      <div className="fixed left-0 top-0 flex h-screen w-screen items-center justify-center bg-black text-white">
-        <CircleLoader />
-      </div>
-    );
-  }
 
   if (Component.getLayout) {
     return Component.getLayout(<Component {...pageProps} />);
