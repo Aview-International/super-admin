@@ -3,22 +3,22 @@ import { useEffect, useState } from 'react';
 import PageTitle from '../../components/SEO/PageTitle';
 import { getDownloadLink } from '../../services/apis';
 import { SupportedLanguages } from '../../constants/constants';
-import { getFlaggedSubtitledAndCaptionedJobs } from '../../services/firebase';
+// import { getFlaggedSubtitledAndCaptionedJobs } from '../../services/firebase';
 
 const Subtitling = () => {
   const [jobs, setJobs] = useState([]);
 
-  const getPendingJobs = async () => {
-    const res = await getFlaggedSubtitledAndCaptionedJobs();
+  // const getPendingJobs = async () => {
+  //   const res = await getFlaggedSubtitledAndCaptionedJobs();
 
-    const pending = res
-      ? Object.values(res).map((item, i) => ({
-          ...item,
-          jobId: Object.keys(res)[i],
-        }))
-      : [];
-    setJobs(pending);
-  };
+  //   const pending = res
+  //     ? Object.values(res).map((item, i) => ({
+  //         ...item,
+  //         jobId: Object.keys(res)[i],
+  //       }))
+  //     : [];
+  //   setJobs(pending);
+  // };
 
   useEffect(() => {
     // getPendingJobs();

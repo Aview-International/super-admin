@@ -14,7 +14,7 @@ import {
 } from '../../services/apis';
 import { toast } from 'react-toastify';
 import Cancel from '../../public/img/icons/cancel-white.svg';
-import Image from 'next/image';
+import Image from "next/image";
 import VideoSubTitle from '../../components/UI/VideoSubtitle';
 import Textarea from '../../components/FormComponents/Textarea';
 import CustomSelectInput from '../../components/FormComponents/CustomSelectInput';
@@ -33,7 +33,7 @@ const Creators = () => {
     query: { lang, id, date, 'video-id': videoId },
   } = router;
 
-  const language = lang.split('-')[0];
+  const language = lang?.split('-')[0];
   const [payload, setPayload] = useState(undefined);
   const [playlists, setPlaylists] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -200,153 +200,150 @@ const Creators = () => {
     postToYouTube(lang, creatorId, date, youtubePayload);
   };
 
-  return (
-    <>
-      <PageTitle title="Distribution" />
-      <div className="gradient-dark rounded-2xl p-s3">
-        <>
-          <div className="my-12 flex  flex-col items-center justify-center">
-            <div className="w-1/2">
-              <VideoUpload />
-            </div>
-            <div className="w-1/2">
-              <div className="mt-8 flex w-full flex-col gap-y-8">
-                <div className={`w-full text-white`}>
-                  <div className="w-full">
-                    <FormInput
-                      label="Title"
-                      placeholder="Add a title..."
-                      value={youtubePayload.snippet.title}
-                      onChange={(e) =>
-                        handleInputChange('snippet', 'title', e.target.value)
-                      }
-                      name="title"
-                    />
-                  </div>
+  return (<>
+    <PageTitle title="Distribution" />
+    <div className="gradient-dark rounded-2xl p-s3">
+      <>
+        <div className="my-12 flex  flex-col items-center justify-center">
+          <div className="w-1/2">
+            <VideoUpload />
+          </div>
+          <div className="w-1/2">
+            <div className="mt-8 flex w-full flex-col gap-y-8">
+              <div className={`w-full text-white`}>
+                <div className="w-full">
+                  <FormInput
+                    label="Title"
+                    placeholder="Add a title..."
+                    value={youtubePayload.snippet.title}
+                    onChange={(e) =>
+                      handleInputChange('snippet', 'title', e.target.value)
+                    }
+                    name="title"
+                  />
                 </div>
-                <div className="flex h-full w-full flex-col justify-between py-2">
+              </div>
+              <div className="flex h-full w-full flex-col justify-between py-2">
+                <div>
+                  <Textarea
+                    placeholder="Tell viewers about your video"
+                    name="description"
+                    textColor="false"
+                    label="Description"
+                    value={youtubePayload.snippet.description}
+                    onChange={(e) =>
+                      handleInputChange(
+                        'snippet',
+                        'description',
+                        e.target.value
+                      )
+                    }
+                  />
+                </div>
+              </div>
+              <VideoSubTitle image={paperclip} text="Thumbnail">
+                <Thumbnail thumbnail={youtubePayload.snippet.thumbnail} />
+              </VideoSubTitle>
+              <VideoSubTitle image={info} text="Details">
+                <div className="flex flex-col justify-start gap-y-2">
                   <div>
-                    <Textarea
-                      placeholder="Tell viewers about your video"
-                      name="description"
-                      textColor="false"
-                      label="Description"
-                      value={youtubePayload.snippet.description}
-                      onChange={(e) =>
-                        handleInputChange(
-                          'snippet',
-                          'description',
-                          e.target.value
-                        )
-                      }
+                    <CustomSelectInput
+                      text="Playlists"
+                      name="playlists"
+                      onChange={handleInputChange}
+                      options={playlists.map((el) => el.name)}
                     />
                   </div>
-                </div>
-                <VideoSubTitle image={paperclip} text="Thumbnail">
-                  <Thumbnail thumbnail={youtubePayload.snippet.thumbnail} />
-                </VideoSubTitle>
-                <VideoSubTitle image={info} text="Details">
-                  <div className="flex flex-col justify-start gap-y-2">
-                    <div>
-                      <CustomSelectInput
-                        text="Playlists"
-                        name="playlists"
-                        onChange={handleInputChange}
-                        options={playlists.map((el) => el.name)}
-                      />
-                    </div>
 
-                    <div className="flex flex-col">
-                      <h3 className="mb-1 text-lg">Audience</h3>
-                      <div className="mb-2">
-                        <RadioInput
-                          value={true}
-                          chosenValue={youtubePayload.status.madeForKids}
-                          label={"Yes, it's made for kids"}
-                          onChange={() => handleRadioButtonClick(true)}
-                          name={'madeForKids'}
-                        />
-                      </div>
+                  <div className="flex flex-col">
+                    <h3 className="mb-1 text-lg">Audience</h3>
+                    <div className="mb-2">
                       <RadioInput
-                        value={false}
+                        value={true}
                         chosenValue={youtubePayload.status.madeForKids}
-                        label={"No, it's not made for kids"}
-                        onChange={() => handleRadioButtonClick(false)}
+                        label={"Yes, it's made for kids"}
+                        onChange={() => handleRadioButtonClick(true)}
                         name={'madeForKids'}
                       />
                     </div>
-
-                    <div className="my-4">
-                      <h3 className="mb-2 mt-4 text-lg">Tags</h3>
-                      <Border borderRadius="md w-full">
-                        <div className="rounded-md bg-black p-s2">
-                          {payload?.snippet.tags.map((el, i) => (
-                            <div
-                              key={i}
-                              className="m-2 inline-flex items-center rounded-full bg-white-transparent p-2"
-                            >
-                              {el}
-                              <span
-                                className="ml-2 flex cursor-pointer items-center justify-center"
-                                onClick={() => handleTagsAction(el, 'remove')}
-                              >
-                                <Image
-                                  src={Cancel}
-                                  alt=""
-                                  style={{
-                                    maxWidth: '100%',
-                                    height: 'auto',
-                                  }}
-                                />
-                              </span>
-                            </div>
-                          ))}
-                          <input
-                            className="bg-transparent"
-                            ref={tagsInputRef}
-                            onChange={(e) =>
-                              handleTagsAction(e.target.value, 'add')
-                            }
-                          />
-                        </div>
-                      </Border>
-                      <small>Enter a comma after each tag</small>
-                    </div>
-
-                    <h3 className="text-lg">
-                      Video Language:
-                      {' ' + videoLanguage?.languageName}
-                    </h3>
-
-                    <CustomSelectInput
-                      text="Category"
-                      value={
-                        categories.find(
-                          (el) => el.id === youtubePayload.snippet.categoryId
-                        )?.name
-                      }
-                      onChange={(val) => {
-                        const category = categories.find(
-                          (el) => el.name === val
-                        );
-                        handleInputChange('snippet', 'categoryId', category.id);
-                      }}
-                      options={categories.map((category) => category.name)}
+                    <RadioInput
+                      value={false}
+                      chosenValue={youtubePayload.status.madeForKids}
+                      label={"No, it's not made for kids"}
+                      onChange={() => handleRadioButtonClick(false)}
+                      name={'madeForKids'}
                     />
                   </div>
-                </VideoSubTitle>
-              </div>
-              <div className="ml-8 w-36 text-center text-xl font-semibold">
-                <Button theme="light" onClick={handleSubmit}>
-                  Submit
-                </Button>
-              </div>
+
+                  <div className="my-4">
+                    <h3 className="mb-2 mt-4 text-lg">Tags</h3>
+                    <Border borderRadius="md w-full">
+                      <div className="rounded-md bg-black p-s2">
+                        {payload?.snippet.tags.map((el, i) => (
+                          <div
+                            key={i}
+                            className="m-2 inline-flex items-center rounded-full bg-white-transparent p-2"
+                          >
+                            {el}
+                            <span
+                              className="ml-2 flex cursor-pointer items-center justify-center"
+                              onClick={() => handleTagsAction(el, 'remove')}
+                            >
+                              <Image
+                                src={Cancel}
+                                alt=""
+                                style={{
+                                  maxWidth: "100%",
+                                  height: "auto"
+                                }} />
+                            </span>
+                          </div>
+                        ))}
+                        <input
+                          className="bg-transparent"
+                          ref={tagsInputRef}
+                          onChange={(e) =>
+                            handleTagsAction(e.target.value, 'add')
+                          }
+                        />
+                      </div>
+                    </Border>
+                    <small>Enter a comma after each tag</small>
+                  </div>
+
+                  <h3 className="text-lg">
+                    Video Language:
+                    {' ' + videoLanguage?.languageName}
+                  </h3>
+
+                  <CustomSelectInput
+                    text="Category"
+                    value={
+                      categories.find(
+                        (el) => el.id === youtubePayload.snippet.categoryId
+                      )?.name
+                    }
+                    onChange={(val) => {
+                      const category = categories.find(
+                        (el) => el.name === val
+                      );
+                      handleInputChange('snippet', 'categoryId', category.id);
+                    }}
+                    options={categories.map((category) => category.name)}
+                  />
+                </div>
+              </VideoSubTitle>
+            </div>
+            <div className="ml-8 w-36 text-center text-xl font-semibold">
+              <Button theme="light" onClick={handleSubmit}>
+                Submit
+              </Button>
             </div>
           </div>
-        </>
-      </div>
-    </>
-  );
+        </div>
+      </>
+    </div>
+  </>);
 };
 
 // Creators.getLayout = DashboardLayout;
