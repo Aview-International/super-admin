@@ -8,16 +8,16 @@ const Blobs = () => {
   return (
     <>
       <div className={`absolute -right-[5%] -top-[5%] -z-30 w-[70vw]`}>
-        <Image src={blob1} alt="blob2" />
+        <Image src={blob1} alt="blob2" className="h-auto max-w-full" />
       </div>
       <div className={`absolute -left-[30vw] top-[80vh] -z-30 w-[70vw]`}>
-        <Image src={blob2} alt="blob2" />
+        <Image src={blob2} alt="blob2" className="h-auto max-w-full" />
       </div>
       <div className={`absolute -right-[30vw] top-[200vh] -z-30 w-[90vw]`}>
-        <Image src={blob3} alt="blob3" />
+        <Image src={blob3} alt="blob3" className="h-auto max-w-full" />
       </div>
       <div className={`absolute -left-[10vw] top-[250vh] -z-30 w-[80vw]`}>
-        <Image src={blob4} alt="blob4" />
+        <Image src={blob4} alt="blob4" className="h-auto max-w-full" />
       </div>
     </>
   );

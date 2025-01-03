@@ -31,15 +31,13 @@ const DashboardNoSidebar = ({ children }) => {
       />
       <header className="flex w-full items-center justify-between px-s4 py-s2">
         <div className="flex">
-          <Link href="/dashboard">
-            <a className="mx-s4 capitalize">
-              <Image
-                src={aviewLogo}
-                alt="AVIEW International logo"
-                width={56}
-                height={56}
-              />
-            </a>
+          <Link href="/dashboard" className="mx-s4 capitalize">
+            <Image
+              src={aviewLogo}
+              alt="AVIEW International logo"
+              width={56}
+              height={56}
+            />
           </Link>
           <div className="pt-s1">
             <h3>Hello {translator ? translator.name : ''}!</h3>

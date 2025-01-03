@@ -160,7 +160,7 @@ const QA = () => {
             {job && flags?.length > 0 && (
               <div className="ml-auto">
                 <div className="flex flex-row items-center">
-                  <Image src={warning}></Image>
+                  <Image src={warning} className="h-auto max-w-full"></Image>
                   <span className="ml-[6px] mt-[4px] text-lg text-white">
                     May be potentially offensive
                   </span>

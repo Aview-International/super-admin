@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import DashboardLayout from '../../components/dashboard/DashboardLayout';
+// import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import PageTitle from '../../components/SEO/PageTitle';
 import Logo from '../../public/img/aview/logo.svg';
 import Image from 'next/image';
@@ -58,7 +58,14 @@ const Distribution = () => {
           </div>
         ) : (
           <div className="flex w-1/2 items-start justify-center pt-s10">
-            <Image src={Logo} alt="" />
+            <Image
+              src={Logo}
+              alt=""
+              style={{
+                maxWidth: '100%',
+                height: 'auto',
+              }}
+            />
           </div>
         )}
       </div>
@@ -66,6 +73,6 @@ const Distribution = () => {
   );
 };
 
-Distribution.getLayout = DashboardLayout;
+// Distribution.getLayout = DashboardLayout;
 
 export default Distribution;

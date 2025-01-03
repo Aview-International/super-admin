@@ -3,9 +3,9 @@ import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Image from 'next/image';
 import { createTranslator, sendSupportMessage } from '../../services/apis';
-import { emailValidator } from '/utils/regex';
+import { emailValidator } from '../../utils/regex';
 import ErrorHandler from '../../utils/errorHandler';
-import aviewLogo from '/public/img/aview/logo.svg';
+import aviewLogo from '../../public/img/aview/logo.svg';
 import messages from '../../public/img/icons/messages.svg';
 import FormInput from '../../components/FormComponents/FormInput';
 import CustomSelectInput from '../../components/FormComponents/CustomSelectInput';
@@ -114,7 +114,7 @@ const Onboarding = () => {
         title="Onboarding"
         description="Join the league of reviewers servicing and distributing contents globally"
       />
-      <header className="w-full pt-s4 pb-s2.5">
+      <header className="w-full pb-s2.5 pt-s4">
         <div className="flex flex-row">
           <div className="flex w-[170px] justify-center">
             <Image
@@ -132,7 +132,6 @@ const Onboarding = () => {
           </div>
         </div>
       </header>
-
       <main>
         <Popup show={popupSubmit} disableClose={true}>
           <div className="w-[500px] rounded-2xl bg-indigo-2 p-s3 text-center">
@@ -183,25 +182,25 @@ const Onboarding = () => {
           </div>
         </Popup>
 
-        <div className="float-right mt-s2 mr-[100px] cursor-pointer">
+        <div className="float-right mr-[100px] mt-s2 cursor-pointer">
           <a
             className="relative flex items-center rounded-full bg-white-transparent px-s2 py-2.5 text-sm"
             onClick={() => setPopupSupport(true)}
           >
             <span className="mr-s1.5 grid place-content-center brightness-0 invert">
-              <Image src={messages} alt="Messages" />
+              <Image src={messages} alt="Messages" width={24} height={24} />
             </span>
             <span className="mt-0.5">Support</span>
           </a>
         </div>
 
-        <div className="mx-auto mt-s5 mb-[200px] max-h-screen w-full max-w-[768px] px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto mb-[200px] mt-s5 max-h-screen w-full max-w-[768px] px-4 sm:px-6 lg:px-8">
           <div className="text-center text-6xl font-bold">Work with us</div>
-          <div className="mt-s2 mb-s5 text-center text-lg font-normal">
+          <div className="mb-s5 mt-s2 text-center text-lg font-normal">
             Sign up today to become a translator and manage content.
           </div>
 
-          <div className="h-full w-full rounded-2xl bg-white-transparent px-s4 pt-s4 pb-s14">
+          <div className="h-full w-full rounded-2xl bg-white-transparent px-s4 pb-s14 pt-s4">
             <div className="text-xl font-bold">Personal Information</div>
             <FormInput
               label="Name"

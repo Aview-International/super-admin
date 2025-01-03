@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import DashboardLayout from '../../components/dashboard/DashboardLayout';
+// import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import PageTitle from '../../components/SEO/PageTitle';
 import { getDownloadLink } from '../../services/apis';
 import { SupportedLanguages } from '../../constants/constants';
@@ -139,6 +139,6 @@ const Subtitling = () => {
   );
 };
 
-Subtitling.getLayout = DashboardLayout;
+// Subtitling.getLayout = DashboardLayout;
 
 export default Subtitling;

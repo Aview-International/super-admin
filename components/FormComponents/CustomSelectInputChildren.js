@@ -17,7 +17,7 @@ const CustomSelectInputChildren = ({
   labelClasses,
   valueClasses,
   classes,
-  children // Accept children
+  children, // Accept children
 }) => {
   const elementRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -32,29 +32,40 @@ const CustomSelectInputChildren = ({
 
   return (
     <OutsideClickHandler onOutsideClick={() => setIsOpen(false)}>
-      <div className={`relative mb-s4 text-xl text-white ${classes}`} ref={elementRef}>
+      <div
+        className={`relative mb-s4 text-xl text-white ${classes}`}
+        ref={elementRef}
+      >
         <p className={`mb-s1 ${labelClasses}`}>{text}</p>
         <Border borderRadius="[5px] w-full">
           <div
             className="flex w-full cursor-pointer items-center justify-between rounded-md bg-black p-s1"
             onClick={() => setIsOpen(!isOpen)}
           >
-            <p className={`text-white/70 ${valueClasses}`}>{value || 'Your response'}</p>
+            <p className={`text-white/70 ${valueClasses}`}>
+              {value || 'Your response'}
+            </p>
             <span className={`transition-300 ${isOpen ? 'rotate-180' : ''}`}>
-              <Image src={Arrow} alt="arrow" />
+              <Image src={Arrow} alt="arrow" className="h-auto max-w-full" />
             </span>
           </div>
         </Border>
         {!hideCheckmark && (
-          <span className="absolute right-[35px] bottom-[7px]">
-            {isValid && <Image src={Correct} alt="Correct" width={20} height={20} />}
-            {hasSubmitted && !isValid && <Image src={Incorrect} alt="Incorrect" width={20} height={20} />}
+          <span className="absolute bottom-[7px] right-[35px]">
+            {isValid && (
+              <Image src={Correct} alt="Correct" width={20} height={20} />
+            )}
+            {hasSubmitted && !isValid && (
+              <Image src={Incorrect} alt="Incorrect" width={20} height={20} />
+            )}
           </span>
         )}
         {isOpen && (
           <Border
             borderRadius="[5px]"
-            classes={`w-full absolute left-0 ${isBottom ? 'bottom-1/2' : 'top-full'} mt-3 z-10 transition-300 max-h-[300px] overflow-x-hidden overflow-y-scroll`}
+            classes={`w-full absolute left-0 ${
+              isBottom ? 'bottom-1/2' : 'top-full'
+            } mt-3 z-10 transition-300 max-h-[300px] overflow-x-hidden overflow-y-scroll`}
           >
             <div className="gradient-1 rounded-[5px]">
               {React.Children.map(children, (child, i) =>
@@ -66,7 +77,7 @@ const CustomSelectInputChildren = ({
                     }
                     setIsOpen(false);
                   },
-                  className: `${child.props.className} cursor-pointer`
+                  className: `${child.props.className} cursor-pointer`,
                 })
               )}
             </div>

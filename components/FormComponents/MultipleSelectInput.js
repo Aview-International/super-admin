@@ -56,12 +56,12 @@ const MultipleSelectInput = ({
                 : 'Select'}
             </p>
             <span className={`transition-300  ${isOpen && 'rotate-180'}`}>
-              <Image src={Arrow} alt="arrow" />
+              <Image src={Arrow} alt="arrow" width={16} height={9} />
             </span>
           </div>
         </Border>
         {!hideCheckmark && (
-          <span className="absolute right-[35px] bottom-[7px]">
+          <span className="absolute bottom-[7px] right-[35px]">
             {answer.length > 0 && !isOpen && (
               <Image src={Correct} alt="Correct" width={20} height={20} />
             )}

@@ -50,7 +50,12 @@ const QATranslationBubble = ({
         />
         {offensive && (
           <div className="relative top-[3px] mr-s2">
-            <Image src={warning} onLoad={() => setImageLoaded(true)} alt="" />
+            <Image
+              src={warning}
+              onLoad={() => setImageLoaded(true)}
+              alt=""
+              className="h-auto max-w-full"
+            />
           </div>
         )}
       </div>

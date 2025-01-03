@@ -114,13 +114,13 @@ const Pending = () => {
         </div>
       </Popup>
       {/* <div className="fixed right-0 top-0 px-s2 py-s2">
-        <Timer
-          jobId={jobId}
-          jobType={'pending'}
-          setIsLoading={setIsLoading}
-          jobTimestamp={job ? job.pendingStatus : null}
-        />
-      </div> */}
+      <Timer
+        jobId={jobId}
+        jobType={'pending'}
+        setIsLoading={setIsLoading}
+        jobTimestamp={job ? job.pendingStatus : null}
+      />
+    </div> */}
       <div className="flex w-full flex-col items-center justify-center px-s8 py-s7 font-bold text-white">
         <div className="text-2xl">
           <p>Video Title: {job?.videoData?.caption}</p>
@@ -138,7 +138,7 @@ const Pending = () => {
             {videoLinks['original'] && (
               <div>
                 <video
-                  className="h-full w-full bg-black object-contain max-h-96"
+                  className="h-full max-h-96 w-full bg-black object-contain"
                   controls
                 >
                   <source src={videoLinks['original']} type="video/mp4" />
@@ -157,7 +157,7 @@ const Pending = () => {
             {videoLinks['serviced'] && (
               <div>
                 <video
-                  className="h-full w-full bg-black object-contain max-h-96"
+                  className="h-full max-h-96 w-full bg-black object-contain"
                   controls
                 >
                   <source src={videoLinks['serviced']} type="video/mp4" />

@@ -1,4 +1,4 @@
-import DashboardLayout from '../../components/dashboard/DashboardLayout';
+// import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import PageTitle from '../../components/SEO/PageTitle';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import info from '../../public/img/icons/info_1.svg';
@@ -290,7 +290,14 @@ const Creators = () => {
                                 className="ml-2 flex cursor-pointer items-center justify-center"
                                 onClick={() => handleTagsAction(el, 'remove')}
                               >
-                                <Image src={Cancel} alt="" />
+                                <Image
+                                  src={Cancel}
+                                  alt=""
+                                  style={{
+                                    maxWidth: '100%',
+                                    height: 'auto',
+                                  }}
+                                />
                               </span>
                             </div>
                           ))}
@@ -342,6 +349,6 @@ const Creators = () => {
   );
 };
 
-Creators.getLayout = DashboardLayout;
+// Creators.getLayout = DashboardLayout;
 
 export default Creators;

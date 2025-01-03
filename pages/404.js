@@ -8,7 +8,7 @@ const Page404 = () => {
 
   return (
     <div className="h-screen-trick grid w-screen place-content-center text-center">
-      <h1 className="-mt-s6 -mb-s2 flex items-center gap-s3 sm:-mb-s5 md:-mb-s8 md:gap-s4">
+      <h1 className="-mb-s2 -mt-s6 flex items-center gap-s3 sm:-mb-s5 md:-mb-s8 md:gap-s4">
         <span className="gradient-text gradient-1 text-[120px] font-bold xs:text-[160px] sm:text-[200px] md:text-[300px]">
           4
         </span>
@@ -16,7 +16,8 @@ const Page404 = () => {
           <Image
             src={aviewLogo}
             alt="AVIEW International logo"
-            layout="responsive"
+            width={240}
+            height={240}
           />
         </span>
         <span className="gradient-text gradient-1 text-[120px] font-bold xs:text-[160px] sm:text-[200px] md:text-[300px]">

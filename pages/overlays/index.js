@@ -366,7 +366,7 @@ const Shorts_subtitling = () => {
       </Popup>
       {/* {isLoading && <FullScreenLoader />} */}
       {job && (
-        <div className="absolute top-0 left-0 py-s2 px-s5">
+        <div className="absolute left-0 top-0 px-s5 py-s2">
           <Timer
             jobId={jobId}
             jobType={'overlay'}
@@ -455,7 +455,7 @@ const Shorts_subtitling = () => {
               </div>
 
               <div
-                className="mb-s2 flex cursor-pointer flex-col justify-center rounded-2xl bg-white-transparent px-s2 pt-s2 pb-s1"
+                className="mb-s2 flex cursor-pointer flex-col justify-center rounded-2xl bg-white-transparent px-s2 pb-s1 pt-s2"
                 onClick={handleCreateCaption}
               >
                 <div className="relative">
@@ -490,7 +490,7 @@ const Shorts_subtitling = () => {
               </div>
 
               <div
-                className={`mb-s2 flex flex-col justify-center rounded-2xl bg-white-transparent px-s2 pt-s2 pb-s1 ${
+                className={`mb-s2 flex flex-col justify-center rounded-2xl bg-white-transparent px-s2 pb-s1 pt-s2 ${
                   subtitle ? '' : 'cursor-pointer'
                 } ${
                   subtitleDetails && focused == subtitleDetails.index

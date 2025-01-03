@@ -64,10 +64,9 @@ const Login = () => {
         </p>
       )}
       <br />
-
       {error === 404 && (
-        <Link href="/onboarding">
-          <a className="text-blue underline">Get started here</a>
+        <Link href="/onboarding" className="text-blue underline">
+          Get started here
         </Link>
       )}
     </div>
