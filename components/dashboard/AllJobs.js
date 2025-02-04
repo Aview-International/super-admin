@@ -24,7 +24,7 @@ const AllJobs = ({
   };
 
   return (
-    <div className="rounded-2xl bg-black p-4 text-left text-white">
+    <div className="rounded-2xl bg-black h-[720px] overflow-y-auto p-4 text-left text-white">
       {jobs.length > 0 ? (
         jobs.map((job, i) => (
           <Fragment key={i}>
